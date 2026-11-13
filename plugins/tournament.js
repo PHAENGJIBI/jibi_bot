@@ -73,6 +73,17 @@ module.exports = {
     const save = () => store.save('tourney-regs', db);
     const count = () => Object.keys(db.players).length;
 
+    const codeLink = () => { const c = guild.channels.cache.find(isCodeChannel); return c ? `<#${c.id}>` : '🔑・ລະຫັດຫ້ອງ'; };
+    // ข้อมูลสำคัญหลังสมัคร (ตอบในห้อง + ส่ง DM)
+    function infoText(no) {
+      const t = EV.startAt ? Math.floor(new Date(EV.startAt).getTime() / 1000) : 0;
+      return [
+        `🏆 **${EVENT}**${no ? ` · ນັກແຂ່ງ #${no}${no > MAX ? ' (ຕົວສຳຮອງ)' : ''}` : ''}`,
+        t ? `🕗 ເລີ່ມແຂ່ງ: <t:${t}:F>` : '🕗 ເວລາແຂ່ງ: ແອດມິນຈະປະກາດ ແລະ ແຈ້ງເຕືອນໃນຫ້ອງລະຫັດ',
+        `🔑 **ລະຫັດຫ້ອງ + ແຈ້ງເຕືອນ ຈະສົ່ງຢູ່ ${codeLink()}** — ຢ່າລືມເຂົ້າໄປເບິ່ງກ່ອນເວລາແຂ່ງເດີ້`,
+        '🎮 ວິທີເຂົ້າຫ້ອງ: ກົດ 📋 ກັອບລະຫັດ → ເປີດ Valorant → PARTY CODE → ວາງລະຫັດ → JOIN',
+      ].join('\n');
+    }
     function panelMessage() {
       const n = count();
       const embed = new EmbedBuilder()
@@ -83,6 +94,10 @@ module.exports = {
           '• ຊື່  • Riot ID  • ເລືອກແຣງ  • ສັງກັດ (ບໍ່ໃສ່ກໍໄດ້)  • ເຄີຍເຕີມເກມກັບ P SHOP ບໍ່',
           '',
           'ກົດອີກຄັ້ງ = **ແກ້ໄຂຂໍ້ມູນ** · ກົດ **❌ ຍົກເລີກ** ຖ້າບໍ່ແຂ່ງແລ້ວ',
+          '',
+          `📌 **ສຳຄັນ — ອ່ານກ່ອນສະໝັກ:** ລົງທະບຽນແລ້ວ ຈະເຫັນຫ້ອງ ${codeLink()} (ເຫັນສະເພາະນັກແຂ່ງ)`,
+          '• ແຈ້ງເຕືອນກ່ອນແຂ່ງ ແລະ **ລະຫັດຫ້ອງ Custom** ຈະສົ່ງຢູ່ຫ້ອງນັ້ນເທົ່ານັ້ນ',
+          '• ໃກ້ເວລາແຂ່ງ ໃຫ້ເຂົ້າໄປເບິ່ງຫ້ອງນັ້ນ ແລ້ວກົດ 📋 ກັອບລະຫັດ → Valorant → PARTY CODE → JOIN',
           `ນັກແຂ່ງຕົວຈິງ ${MAX} ຄົນທຳອິດ — ຄົນທີ ${MAX + 1} ຂຶ້ນໄປ ເປັນ **ຕົວສຳຮອງ**`,
           '',
           `📊 ລົງທະບຽນແລ້ວ: **${Math.min(n, MAX)} / ${MAX}**${n > MAX ? ` · ສຳຮອງ ${n - MAX} ຄົນ` : ''}${n >= MAX ? ' · ຕົວຈິງເຕັມແລ້ວ ✅' : ''}`,
@@ -343,7 +358,11 @@ module.exports = {
           await setPlayerRole(i.user.id, true);
           await bumpPanel(ch);
           logTo(`📝 **${i.user.username}** ${old ? 'ແກ້ໄຂ' : 'ລົງທະບຽນ'}ນັກແຂ່ງ #${no}: ${v.name} · ${v.riot} · ${v.rank}${v.team ? ` · ${v.team}` : ''} · ${v.pshop ? '✅ ເຄີຍເຕີມກັບ P SHOP' : '— ບໍ່ເຄີຍເຕີມກັບ P SHOP'}`);
-          return i.editReply(`✅ ${old ? 'ແກ້ໄຂຂໍ້ມູນແລ້ວ' : `ລົງທະບຽນແລ້ວ! ເຈົ້າແມ່ນນັກແຂ່ງ #${no}${no > MAX ? ' (ຕົວສຳຮອງ)' : ''}`} — ${msg.url}`);
+          if (!old) {
+            const dm = new EmbedBuilder().setColor(0xFFC400).setTitle('✅ ລົງທະບຽນສຳເລັດ — ຂໍ້ມູນສຳຄັນ').setDescription(infoText(no)).setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
+            i.user.send({ embeds: [dm] }).catch(() => {});
+          }
+          return i.editReply(`✅ ${old ? 'ແກ້ໄຂຂໍ້ມູນແລ້ວ' : `ລົງທະບຽນແລ້ວ! ເຈົ້າແມ່ນນັກແຂ່ງ #${no}${no > MAX ? ' (ຕົວສຳຮອງ)' : ''}`} — ${msg.url}\n\n${infoText(old ? 0 : no)}`);
         }
 
         if (i.isButton() && i.customId === 'tourney:cancel') {
