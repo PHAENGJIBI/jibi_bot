@@ -195,6 +195,12 @@ a{color:var(--y)}
       <div class="row"><button class="btn" id="pReload">โหลดใหม่</button><button class="btn" id="pCsv">⬇️ CSV</button></div></div>
     <div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>#</th><th>ชื่อ</th><th>Riot ID</th><th>แรงค์</th><th>สังกัด</th><th>เคยเติม</th><th>สถานะ</th><th></th></tr></thead><tbody id="pBody"></tbody></table></div>
   </div>
+  <div class="card">
+    <div class="row" style="justify-content:space-between"><h3 style="margin:0">📝 แบบสอบถามนักแข่ง <span class="tag y" id="sCount">0</span></h3>
+      <div class="row"><button class="btn" id="sReload">โหลดใหม่</button><button class="btn" id="sCsv">⬇️ CSV</button></div></div>
+    <div id="sAvg" style="margin-top:10px"></div>
+    <div id="sList" style="margin-top:10px"></div>
+  </div>
 </section>
 
 <!-- ===== แท็กถึง JIBI ===== -->
@@ -334,7 +340,7 @@ $('#tabs').addEventListener('click', (e) => {
   for (const t of ['control', 'tourney', 'inbox', 'lab', 'memory', 'logs']) $(`#tab-${t}`).classList.toggle('hidden', t !== curTab);
   if (curTab === 'memory') loadMemory();
   if (curTab === 'lab') loadLab();
-  if (curTab === 'tourney') loadTourney();
+  if (curTab === 'tourney') { loadTourney(); loadSurvey(); }
   if (curTab === 'inbox') { loadChat(); loadTeach(); loadMentions(); }
   if (curTab === 'logs') loadLogs();
 });
@@ -491,6 +497,43 @@ $('#pCsv').onclick = () => {
   const rows = [['no', 'name', 'riot', 'rank', 'team', 'pshop', 'status', 'discord_id']].concat(lastT.players.map((p) => [p.no, p.name, p.riot, p.rank, p.team || '', p.pshop ? 'yes' : 'no', p.no > lastT.event.max ? 'sub' : 'main', p.uid]));
   const csv = '﻿' + rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
   const a = el('a', { href: URL.createObjectURL(new Blob([csv], { type: 'text/csv' })), download: 'players.csv' }); a.click();
+};
+
+
+/* ---------- survey ---------- */
+let lastS = null;
+async function loadSurvey() {
+  try {
+    const r = lastS = await api('/api/survey');
+    const res = r.responses; $('#sCount').textContent = `${res.length} คน`;
+    const avg = $('#sAvg'); avg.textContent = '';
+    for (const q of r.questions.rate) {
+      const v = res.map((x) => x.answers[q.id]).filter((x) => typeof x === 'number');
+      const a = v.length ? v.reduce((p, c) => p + c, 0) / v.length : 0;
+      avg.append(el('div', { style: 'display:flex;gap:10px;align-items:center;margin:4px 0' },
+        el('span', { textContent: `${q.id.slice(1)}. ${q.q}`, style: 'flex:1;font-size:13px' }),
+        el('span', { style: `display:inline-block;height:10px;width:${Math.round(a * 30)}px;background:#FFC400;border-radius:4px` }),
+        el('b', { textContent: v.length ? a.toFixed(1) : '—', style: 'width:34px;text-align:right' })));
+    }
+    for (const q of r.questions.choice) {
+      const cnt = {}; for (const x of res) for (const o of [].concat(x.answers[q.id] || [])) cnt[o] = (cnt[o] || 0) + 1;
+      avg.append(el('p', { className: 'hint', textContent: `${q.id.slice(1)}. ${q.q} → ${q.opts.map((o) => `${o} ${cnt[o] || 0}`).join(' · ')}` }));
+    }
+    const list = $('#sList'); list.textContent = '';
+    for (const x of res) {
+      const box = el('div', { className: 'card', style: 'margin:8px 0;padding:12px' }, el('b', { textContent: `${x.name} · รวม ${x.answers.q10 || '—'}/5` }));
+      for (const q of r.questions.text) if (x.answers[q.id]) box.append(el('p', { style: 'margin:6px 0;font-size:13px', textContent: `${q.id.slice(1)}. ${q.q}: ${x.answers[q.id]}` }));
+      list.append(box);
+    }
+  } catch (e) { $('#sAvg').textContent = e.message; }
+}
+$('#sReload').onclick = loadSurvey;
+$('#sCsv').onclick = () => {
+  if (!lastS) return;
+  const qs = [...lastS.questions.rate, ...lastS.questions.choice, ...lastS.questions.text];
+  const rows = [['name', 'discord_id', 'at', ...qs.map((q) => `${q.id} ${q.q}`)]].concat(lastS.responses.map((x) => [x.name, x.uid, x.at, ...qs.map((q) => [].concat(x.answers[q.id] ?? '').join(' / '))]));
+  const csv = '\ufeff' + rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const a = el('a', { href: URL.createObjectURL(new Blob([csv], { type: 'text/csv' })), download: 'survey.csv' }); a.click();
 };
 
 /* ---------- mentions ---------- */
