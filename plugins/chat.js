@@ -56,6 +56,8 @@ module.exports = {
   description: 'มีคนแท็ก JIBI หรือตอบข้อความของ JIBI → ตอบเอง · โหมด rules (ฟรี) หรือ ai (Claude) ตั้งใน JIBI Hub',
   setup({ client, guild, logTo }) {
     let S = { ...DEFAULTS, ...store.load('chat-settings', {}) };
+    // สิ่งที่แอดมินสอน JIBI (แก้จาก Hub): rules = คำ→คำตอบ (เช็กก่อนคำตอบในตัว) · notes = ความรู้ให้โหมด AI
+    let TEACH = { rules: [], notes: '', ...store.load('chat-teach', {}) };
     const usage = { day: '', users: {}, total: 0 };
     const cooldown = new Map();
     const history = new Map(); // channelId -> [{role, content}]
@@ -78,7 +80,7 @@ module.exports = {
     function ruleReply(text) {
       const s = String(text || '').toLowerCase();
       const hit = (k) => (/^[a-z ]{1,4}$/.test(k) ? new RegExp(`(^|[^a-z])${k}([^a-z]|$)`).test(s) : s.includes(k.toLowerCase()));
-      for (const rule of RULES) if (rule.k.some(hit)) return pick(rule.r);
+      for (const rule of [...(TEACH.rules || []), ...RULES]) if (rule.k.some(hit)) return pick(rule.r);
       return pick(FALLBACK);
     }
     async function aiReply(msg, text) {
@@ -94,7 +96,7 @@ module.exports = {
       const r = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-        body: JSON.stringify({ model: S.model, max_tokens: 300, system: AI_SYSTEM, messages }),
+        body: JSON.stringify({ model: S.model, max_tokens: 300, system: AI_SYSTEM + (TEACH.notes ? `\n\nShop knowledge from the admins (trust this, use it when relevant):\n${TEACH.notes}` : '') + ((TEACH.rules || []).length ? `\n\nAdmin-taught replies (when a message is about these keywords, answer in this spirit):\n${TEACH.rules.map((r) => `- ${r.k.join(', ')} → ${r.r.join(' / ')}`).join('\n')}` : ''), messages }),
         signal: AbortSignal.timeout(20000),
       });
       const j = await r.json().catch(() => ({}));
@@ -153,6 +155,17 @@ module.exports = {
         return this.get();
       },
       test: async (text) => fill(ruleReply(text)),
+      getTeach: () => TEACH,
+      setTeach(patch) {
+        const clean = (arr, max) => [...new Set((arr || []).map((x) => String(x).trim()).filter(Boolean))].slice(0, max);
+        if (patch.rules !== undefined) {
+          TEACH.rules = (patch.rules || []).map((r) => ({ k: clean(r.k, 20).map((x) => x.slice(0, 40)), r: clean(r.r, 10).map((x) => x.slice(0, 500)) })).filter((r) => r.k.length && r.r.length).slice(0, 200);
+        }
+        if (patch.notes !== undefined) TEACH.notes = String(patch.notes || '').slice(0, 4000);
+        store.save('chat-teach', TEACH);
+        logTo(`🎓 ສອນ JIBI: ${TEACH.rules.length} ຄຳຕອບ${TEACH.notes ? ' · ມີຄວາມຮູ້ຮ້ານ' : ''}`);
+        return TEACH;
+      },
     };
   },
 };

@@ -207,6 +207,27 @@ a{color:var(--y)}
     </div>
   </div>
   <div class="card">
+    <h3>🎓 สอน JIBI</h3>
+    <div class="grid">
+      <div>
+        <b>1) สอนคำตอบ</b> <span class="hint">— ถ้าข้อความมีคำเหล่านี้ JIBI จะตอบแบบนี้ (ใช้ได้ทั้งโหมดฟรีและ AI)</span>
+        <label for="tK">คำที่จะให้ JIBI จับ (คั่นด้วย , )</label>
+        <input id="tK" placeholder="ເປີດຮ້ານ, ເວລາເປີດ, เปิดกี่โมง">
+        <label for="tR">คำตอบ (1 บรรทัด = 1 แบบ ระบบจะสุ่มเลือก)</label>
+        <textarea id="tR" style="min-height:90px" placeholder="ຮ້ານເປີດທຸກມື້ 9:00 – 22:00 ເດີ້ 💛"></textarea>
+        <p class="hint">ใส่ {ch:ชื่อห้อง} = ลิงก์ห้อง · {event} = ชื่องานแข่ง · {start} = เวลาเริ่มแข่ง</p>
+        <div class="row"><button class="btn y" id="tAdd">➕ เพิ่ม / แก้คำตอบ</button><button class="btn" id="tClear">ล้างช่อง</button></div>
+      </div>
+      <div>
+        <b>2) ความรู้ของร้าน</b> <span class="hint">— ให้ JIBI รู้ไว้ตอนคุยแบบ AI (เวลาเปิดร้าน โปร เกมที่ขาย ฯลฯ)</span>
+        <textarea id="tNotes" style="min-height:170px" placeholder="- ร้านเปิดทุกวัน 9:00-22:00&#10;- ขาย Steam Wallet, PSN, Valorant VP&#10;- เดือนนี้มีโปร..."></textarea>
+        <div class="row" style="margin-top:8px"><button class="btn y" id="tNotesSave">💾 บันทึกความรู้</button></div>
+      </div>
+    </div>
+    <h3 style="margin-top:18px">📚 คำตอบที่สอนไว้ <span class="tag y" id="tCount">0</span></h3>
+    <div id="tList"></div>
+  </div>
+  <div class="card">
     <div class="row" style="justify-content:space-between"><h3 style="margin:0">💬 ข้อความที่แท็กหรือตอบ JIBI</h3><button class="btn" id="mReload">โหลดใหม่</button></div>
     <p class="hint">กด "ตอบ" แล้วพิมพ์ JIBI จะตอบกลับข้อความนั้นและแท็กคนนั้นให้</p>
     <div id="mList"></div>
@@ -258,7 +279,7 @@ $('#tabs').addEventListener('click', (e) => {
   for (const x of $('#tabs').children) x.classList.toggle('on', x === b);
   for (const t of ['control', 'tourney', 'inbox', 'logs']) $(`#tab-${t}`).classList.toggle('hidden', t !== curTab);
   if (curTab === 'tourney') loadTourney();
-  if (curTab === 'inbox') { loadChat(); loadMentions(); }
+  if (curTab === 'inbox') { loadChat(); loadTeach(); loadMentions(); }
   if (curTab === 'logs') loadLogs();
 });
 $('#modeSeg').addEventListener('click', (e) => {
@@ -443,6 +464,31 @@ $('#chSeg').addEventListener('click', async (e) => {
 $('#chTestBtn').onclick = async () => { try { const r = await api('/api/chat/test', { text: $('#chTest').value }); $('#chTestOut').textContent = `JIBI: ${r.reply}`; } catch (e) { toast(`❌ ${e.message}`, true); } };
 $('#chKeyBtn').onclick = async () => { try { await api('/api/chat/key', { key: $('#chKey').value }); $('#chKey').value = ''; toast('🔑 บันทึก key แล้ว'); loadChat(); } catch (e) { toast(`❌ ${e.message}`, true); } };
 $('#chLimBtn').onclick = async () => { try { await api('/api/chat', { perUserDaily: $('#chPer').value, dailyCap: $('#chCap').value }); toast('✅ บันทึกแล้ว'); loadChat(); } catch (e) { toast(`❌ ${e.message}`, true); } };
+let TEACH = { rules: [], notes: '' };
+async function loadTeach() {
+  try {
+    TEACH = await api('/api/chat/teach'); $('#tNotes').value = TEACH.notes || ''; $('#tCount').textContent = TEACH.rules.length;
+    const box = $('#tList'); box.textContent = '';
+    if (!TEACH.rules.length) box.append(el('p', { className: 'hint', textContent: 'ยังไม่ได้สอน — เพิ่มด้านบนได้เลย' }));
+    TEACH.rules.forEach((r, i) => {
+      const edit = el('button', { className: 'btn', textContent: 'แก้', style: 'min-height:32px;padding:4px 10px', onclick: () => { $('#tK').value = r.k.join(', '); $('#tR').value = r.r.join('\n'); $('#tK').focus(); } });
+      const del = el('button', { className: 'btn bad', textContent: 'ลบ', style: 'min-height:32px;padding:4px 10px', onclick: async () => { if (!confirm('ลบคำตอบนี้?')) return; TEACH.rules.splice(i, 1); await saveTeach({ rules: TEACH.rules }); } });
+      box.append(el('div', { className: 'mention' }, el('div', { className: 'meta', textContent: `คำ: ${r.k.join(', ')}` }), el('div', { textContent: r.r.join('  /  '), style: 'margin:6px 0' }), el('div', { className: 'row' }, edit, del)));
+    });
+  } catch (e) { $('#tList').textContent = `❌ ${e.message}`; }
+}
+async function saveTeach(patch) { try { await api('/api/chat/teach', patch); toast('🎓 บันทึกแล้ว JIBI จำได้ทันที'); loadTeach(); } catch (e) { toast(`❌ ${e.message}`, true); } }
+$('#tAdd').onclick = async () => {
+  const k = $('#tK').value.split(/[,，]/).map((x) => x.trim()).filter(Boolean);
+  const r = $('#tR').value.split('\n').map((x) => x.trim()).filter(Boolean);
+  if (!k.length || !r.length) return toast('❌ ใส่ทั้งคำที่จะจับ และคำตอบ', true);
+  const lower = k.map((x) => x.toLowerCase());
+  const rules = TEACH.rules.filter((x) => !x.k.some((y) => lower.includes(y.toLowerCase())));
+  rules.unshift({ k, r });
+  await saveTeach({ rules }); $('#tK').value = ''; $('#tR').value = '';
+};
+$('#tClear').onclick = () => { $('#tK').value = ''; $('#tR').value = ''; };
+$('#tNotesSave').onclick = () => saveTeach({ notes: $('#tNotes').value });
 async function loadMentions() {
   const box = $('#mList'); box.textContent = 'กำลังโหลด...';
   try {
