@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "action": "ping",
+  "at": "2026-11-13T08:22:50.226Z",
+  "result": {
+    "wsPing": 218,
+    "restMs": [
+      472,
+      428,
+      358
+    ],
+    "host": "vps",
+    "uptimeSec": 115
+  }
+}
