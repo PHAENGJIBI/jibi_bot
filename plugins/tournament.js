@@ -10,8 +10,12 @@ const fs = require('fs');
 const path = require('path');
 const store = require('../lib/store');
 
-const EVENT = 'VALORANT DEATHMATCH MINI CUP #1';
-const MAX = 10; // จำนวนนักแข่งตัวจริง
+// ข้อมูลงานแข่ง (แก้ได้จาก JIBI Center Hub) — data/tourney-event.json
+const EV_DEFAULT = { name: 'VALORANT DEATHMATCH MINI CUP #1', max: 10, startAt: null, reminders: [60, 30, 5], regOpen: true, sent: {} };
+let EV = { ...EV_DEFAULT, ...store.load('tourney-event', {}) };
+let EVENT = EV.name;
+let MAX = EV.max; // จำนวนนักแข่งตัวจริง
+const unix = (iso) => Math.floor(new Date(iso).getTime() / 1000);
 
 // ช่องในกล่องลงทะเบียน — แก้/เพิ่มได้ตรงนี้ (Discord ให้สูงสุด 5 ช่องต่อกล่อง)
 // type: text = พิมพ์เอง · select = เลือกจากรายการ · checkbox = ติ๊ก
@@ -63,7 +67,7 @@ module.exports = {
       .addStringOption((o) => o.setName('map').setDescription('ແຜນທີ່ ເຊັ່ນ Ascent').setMaxLength(40))
       .addStringOption((o) => o.setName('note').setDescription('ໝາຍເຫດເພີ່ມ').setMaxLength(200)),
   ],
-  setup({ client, guild, logTo }) {
+  setup({ client, guild, cfg, logTo }) {
     const db = store.load('tourney-regs', { panels: {}, players: {} });
     db.panels = db.panels || {}; db.players = db.players || {};
     const save = () => store.save('tourney-regs', db);
@@ -82,8 +86,10 @@ module.exports = {
           `ນັກແຂ່ງຕົວຈິງ ${MAX} ຄົນທຳອິດ — ຄົນທີ ${MAX + 1} ຂຶ້ນໄປ ເປັນ **ຕົວສຳຮອງ**`,
           '',
           `📊 ລົງທະບຽນແລ້ວ: **${Math.min(n, MAX)} / ${MAX}**${n > MAX ? ` · ສຳຮອງ ${n - MAX} ຄົນ` : ''}${n >= MAX ? ' · ຕົວຈິງເຕັມແລ້ວ ✅' : ''}`,
-        ].join('\n'))
-        .setFooter({ text: 'JIBI · P SHOP Gaming Hub' });
+          EV.startAt ? `⏰ ເລີ່ມແຂ່ງ: <t:${unix(EV.startAt)}:F> · **<t:${unix(EV.startAt)}:R>**` : null,
+          EV.regOpen ? null : '🔒 **ປິດຮັບສະໝັກແລ້ວ** — ຄົນທີ່ລົງທະບຽນແລ້ວ ຍັງແກ້ໄຂ/ຍົກເລີກໄດ້',
+        ].filter((x) => x !== null).join('\n'))
+        .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId('tourney:open').setStyle(ButtonStyle.Secondary).setLabel('📝 ລົງທະບຽນ / ແກ້ໄຂ'),
         new ButtonBuilder().setCustomId('tourney:cancel').setStyle(ButtonStyle.Secondary).setLabel('❌ ຍົກເລີກ'),
@@ -195,6 +201,110 @@ module.exports = {
     }
     client.jibiRoomCode = sendRoomCode;
 
+    // ---------- ยศ 🎯 ນັກແຂ່ງ: เห็นห้อง 🔑 ລະຫັດຫ້ອງ ----------
+    const playerRole = () => guild.roles.cache.find((r) => r.name === (cfg.roles.player && cfg.roles.player.name));
+    async function setPlayerRole(uid, on) {
+      const role = playerRole();
+      if (!role) return;
+      const m = await guild.members.fetch(uid).catch(() => null);
+      if (!m) return;
+      if (on && !m.roles.cache.has(role.id)) await m.roles.add(role).catch((e) => console.error('[tournament] role', e.message));
+      if (!on && m.roles.cache.has(role.id)) await m.roles.remove(role).catch((e) => console.error('[tournament] role', e.message));
+    }
+    // ให้ยศคนที่ลงทะเบียนไว้แล้ว (หลังเปิดบอท รอซิงก์สร้างยศก่อน)
+    setTimeout(async () => { await guild.roles.fetch().catch(() => {}); for (const uid of Object.keys(db.players)) await setPlayerRole(uid, true); }, 20000);
+
+    // ---------- แจ้งเตือนก่อนเริ่ม (นับถอยหลังเรียลไทม์ด้วย <t:..:R>) ----------
+    function reminderMessage(minsLeft) {
+      const t = unix(EV.startAt);
+      const n = Object.values(db.players).filter((p) => p.no <= MAX).length;
+      const embed = new EmbedBuilder()
+        .setColor(0xFFC400)
+        .setTitle(minsLeft > 0 ? `⏰ ອີກ ${minsLeft} ນາທີ ເລີ່ມແຂ່ງ!` : '🔥 ເຖິງເວລາແຂ່ງແລ້ວ!')
+        .setDescription([
+          `## ເລີ່ມ <t:${t}:R>`,
+          `🏆 **${EVENT}**`,
+          `🕗 **ເວລາເລີ່ມ:** <t:${t}:t> (<t:${t}:D>)`,
+          `👥 **ນັກແຂ່ງ:** ${box(`${n} | ${MAX} ຄົນ`)}`,
+          '',
+          '✅ ເປີດ Valorant ລໍຖ້າໄວ້ເລີຍ — ລະຫັດຫ້ອງຈະສົ່ງໃນຫ້ອງນີ້ 💛',
+        ].join('\n'))
+        .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
+      const files = [];
+      if (fs.existsSync(RAINBOW)) { embed.setImage('attachment://shine.gif'); files.push({ attachment: RAINBOW, name: 'shine.gif' }); }
+      return { embeds: [embed], files };
+    }
+    async function sendReminder(force) {
+      if (!EV.startAt) throw new Error('ຍັງບໍ່ໄດ້ຕັ້ງເວລາເລີ່ມແຂ່ງ');
+      const ch = guild.channels.cache.find(isCodeChannel);
+      if (!ch) throw new Error('ບໍ່ພົບຫ້ອງ 🔑 ລະຫັດຫ້ອງ');
+      const minsLeft = Math.max(0, Math.round((new Date(EV.startAt).getTime() - Date.now()) / 60000));
+      const ids = Object.keys(db.players);
+      const msg = await ch.send({ content: ids.map((x) => `<@${x}>`).join(' ') || undefined, ...reminderMessage(minsLeft), allowedMentions: { users: ids } });
+      logTo(`⏰ ແຈ້ງເຕືອນນັກແຂ່ງ${force ? ' (ສັ່ງເອງ)' : ''}: ອີກ ${minsLeft} ນາທີ`);
+      return msg;
+    }
+    setInterval(async () => {
+      try {
+        if (!EV.startAt || !Array.isArray(EV.reminders)) return;
+        const start = new Date(EV.startAt).getTime(), now = Date.now();
+        if (now >= start) return;
+        EV.sent = EV.sent || {};
+        const due = EV.reminders.filter((m) => now >= start - m * 60000 && !EV.sent[`${EV.startAt}|${m}`]);
+        if (!due.length) return;
+        for (const m of due) EV.sent[`${EV.startAt}|${m}`] = Date.now();
+        store.save('tourney-event', EV);
+        await sendReminder(false);
+      } catch (e) { console.error('[tournament] reminder', e.message); }
+    }, 20000);
+
+    async function refreshPanels() {
+      for (const ch of guild.channels.cache.filter(isRegChannel).values()) {
+        const id = db.panels[ch.id];
+        const msg = id ? await ch.messages.fetch(id).catch(() => null) : null;
+        if (msg) await msg.edit(panelMessage()).catch(() => {}); else await bumpPanel(ch);
+      }
+    }
+
+    // ---------- API ให้ JIBI Center Hub ----------
+    const api = {
+      getEvent: () => { const { sent, ...e } = EV; return e; },
+      async setEvent(patch) {
+        const next = { ...EV };
+        if (patch.name !== undefined) next.name = String(patch.name).trim().slice(0, 80) || EV_DEFAULT.name;
+        if (patch.max !== undefined) next.max = Math.max(1, Math.min(100, parseInt(patch.max, 10) || 10));
+        if (patch.startAt !== undefined) {
+          const d = patch.startAt ? new Date(patch.startAt) : null;
+          if (d && Number.isNaN(d.getTime())) throw new Error('ເວລາບໍ່ຖືກ');
+          next.startAt = d ? d.toISOString() : null;
+        }
+        if (patch.reminders !== undefined) next.reminders = [...new Set((patch.reminders || []).map((x) => parseInt(x, 10)).filter((x) => x > 0 && x <= 1440))].sort((a, b) => b - a);
+        if (patch.regOpen !== undefined) next.regOpen = !!patch.regOpen;
+        next.sent = EV.sent || {};
+        EV = next; EVENT = EV.name; MAX = EV.max;
+        store.save('tourney-event', EV);
+        await refreshPanels();
+        logTo(`🏆 ອັບເດດງານແຂ່ງ: ${EVENT}${EV.startAt ? ` · ເລີ່ມ <t:${unix(EV.startAt)}:F>` : ''} · ${EV.regOpen ? 'ເປີດຮັບສະໝັກ' : 'ປິດຮັບສະໝັກ'}`);
+        return api.getEvent();
+      },
+      players: () => Object.entries(db.players).map(([uid, p]) => ({ uid, ...p })).sort((a, b) => a.no - b.no),
+      async removePlayer(uid, by) {
+        const p = db.players[uid];
+        if (!p) throw new Error('ບໍ່ພົບນັກແຂ່ງ');
+        const ch = await guild.channels.fetch(p.channelId).catch(() => null);
+        if (ch) { const m = await ch.messages.fetch(p.messageId).catch(() => null); if (m) await m.delete().catch(() => {}); }
+        delete db.players[uid]; save();
+        await setPlayerRole(uid, false);
+        if (ch) await bumpPanel(ch);
+        logTo(`🗑️ **${by || 'Hub'}** ລຶບນັກແຂ່ງ #${p.no} ${p.name}`);
+        return true;
+      },
+      sendCode: (o, by) => sendRoomCode({ username: by || 'Hub' }, o),
+      remindNow: () => sendReminder(true),
+      refreshPanels,
+    };
+    client.jibiTourney = api;
+
     client.on(Events.InteractionCreate, async (i) => {
       try {
         if (i.isButton() && i.customId.startsWith('tourney:copy:')) {
@@ -207,6 +317,7 @@ module.exports = {
           return i.editReply(`✅ ສົ່ງລະຫັດແລ້ວ — ${msg.url}`);
         }
         if (i.isButton() && i.customId === 'tourney:open') {
+          if (!EV.regOpen && !db.players[i.user.id]) return i.reply({ content: '🔒 ປິດຮັບສະໝັກແລ້ວ — ຕິດຕາມງານແຂ່ງຄັ້ງໜ້າເດີ້ 💛', flags: MessageFlags.Ephemeral });
           const cur = db.players[i.user.id] || {};
           const modal = new ModalBuilder().setCustomId('tourney:modal').setTitle('ລົງທະບຽນນັກແຂ່ງ DEATHMATCH');
           modal.addLabelComponents(...FIELDS.map((f) => buildField(f, cur)));
@@ -219,6 +330,7 @@ module.exports = {
           if (!v.riot.includes('#')) return i.editReply('❌ Riot ID ຕ້ອງມີ **#** ເຊັ່ນ `PShop#LAO` — ກົດ 📝 ແລ້ວໃສ່ໃໝ່');
           const ch = i.channel;
           const old = db.players[i.user.id];
+          if (!EV.regOpen && !old) return i.editReply('🔒 ປິດຮັບສະໝັກແລ້ວ');
           const no = old ? old.no : Math.max(0, ...Object.values(db.players).map((x) => x.no)) + 1;
           const p = { ...v, no, at: old ? old.at : Date.now(), channelId: ch.id, messageId: old && old.messageId, style: 4 };
           let msg = null;
@@ -226,6 +338,7 @@ module.exports = {
           if (msg) await msg.edit(cardMessage(i.member, p));
           else { const { attachments, ...m } = cardMessage(i.member, p); msg = await ch.send(m); p.messageId = msg.id; }
           db.players[i.user.id] = p; save();
+          await setPlayerRole(i.user.id, true);
           await bumpPanel(ch);
           logTo(`📝 **${i.user.username}** ${old ? 'ແກ້ໄຂ' : 'ລົງທະບຽນ'}ນັກແຂ່ງ #${no}: ${v.name} · ${v.riot} · ${v.rank}${v.team ? ` · ${v.team}` : ''} · ${v.pshop ? '✅ ເຄີຍເຕີມກັບ P SHOP' : '— ບໍ່ເຄີຍເຕີມກັບ P SHOP'}`);
           return i.editReply(`✅ ${old ? 'ແກ້ໄຂຂໍ້ມູນແລ້ວ' : `ລົງທະບຽນແລ້ວ! ເຈົ້າແມ່ນນັກແຂ່ງ #${no}${no > MAX ? ' (ຕົວສຳຮອງ)' : ''}`} — ${msg.url}`);
@@ -238,6 +351,7 @@ module.exports = {
           const m = await i.channel.messages.fetch(p.messageId).catch(() => null);
           if (m) await m.delete().catch(() => {});
           delete db.players[i.user.id]; save();
+          await setPlayerRole(i.user.id, false);
           await bumpPanel(i.channel);
           logTo(`❌ **${i.user.username}** ຍົກເລີກການລົງທະບຽນ (#${p.no} ${p.name})`);
           return i.editReply('ຍົກເລີກການລົງທະບຽນແລ້ວ');

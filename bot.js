@@ -1,4 +1,4 @@
-// JIBI — บอทประจำ P SHOP Gaming Hub
+// JIBI — บอทประจำ P SHOP GAMERPOWER
 // ความสามารถอยู่ใน plugins/ · lib/bridge.js = ช่องทางที่ Claude ใช้ควบคุม JIBI ผ่านโฟลเดอร์
 require('./lib/env')();
 const fs = require('fs');
@@ -103,7 +103,12 @@ client.once(Events.ClientReady, async () => {
     if (ping > 1500) console.log(`🐢 เน็ตช้า: ping ${ping}ms (ปุ่มอาจกดไม่ติด)`);
   }, 30000);
 
-  try { startBridge({ client, guild, notify: logTo }); } catch (e) { console.error(`⚠️ เริ่มสะพาน Claude ไม่ได้: ${e.message}`); }
+  let bridge = null;
+  try { bridge = startBridge({ client, guild, notify: logTo }); } catch (e) { console.error(`⚠️ เริ่มสะพาน Claude ไม่ได้: ${e.message}`); }
+  // JIBI Center Hub — หน้าเว็บควบคุม JIBI (รันบน VPS)
+  if (process.env.JIBI_HOST === 'vps' || process.env.HUB_PORT) {
+    try { require('./lib/hub').startHub({ client, guild, bridge, logTo }); } catch (e) { console.error(`⚠️ เริ่ม JIBI Hub ไม่ได้: ${e.message}`); }
+  }
   console.log('🟢 JIBI พร้อมใช้งาน');
 });
 

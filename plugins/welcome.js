@@ -16,7 +16,7 @@ module.exports = {
           .setTitle(`👋 ຍິນດີຕ້ອນຮັບ ${m.displayName}!`)
           .setDescription('ເລືອກເກມທີ່ເຈົ້າຫຼິ້ນ ແລ້ວເປີດຫ້ອງ 📖 ຄູ່ມື ໄດ້ເລີຍ\nມີຄຳຖາມ ພິມ `/howto` ຕາມດ້ວຍສິ່ງທີ່ຢາກຮູ້')
           .setThumbnail(m.displayAvatarURL({ size: 256 }))
-          .setFooter({ text: `ສະມາຊິກຄົນທີ ${guild.memberCount} · P SHOP Gaming Hub` });
+          .setFooter({ text: `ສະມາຊິກຄົນທີ ${guild.memberCount} · P SHOP GAMERPOWER` });
         const banner = guild.bannerURL({ size: 1024 }) || guild.splashURL({ size: 1024 });
         if (banner) embed.setImage(banner);
         await ch.send({ content: `<@${m.id}>`, embeds: [embed], allowedMentions: { users: [m.id] } });

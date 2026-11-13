@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JIBI Center Hub · P SHOP GAMERPOWER</title>
+<meta name="robots" content="noindex">
+<style>
+:root{--bg:#0e0f12;--panel:#17181c;--panel2:#1f2126;--line:#2b2d33;--text:#eceef1;--muted:#9aa0a8;--y:#FFC400;--y2:#ffd84d;--ok:#3fcf8e;--bad:#ff5d5d;--r:12px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans Thai","Noto Sans Lao","Segoe UI",system-ui,sans-serif;font-size:15px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:5;background:rgba(14,15,18,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top{max-width:1100px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{width:38px;height:38px;border-radius:10px;background:var(--y);color:#241a00;display:grid;place-items:center;font-weight:800;font-size:18px}
+.brand b{display:block;font-size:16px;letter-spacing:.3px}.brand span{font-size:12px;color:var(--muted)}
+.pill{margin-left:auto;display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--bad);display:inline-block}.dot.on{background:var(--ok)}
+nav{max-width:1100px;margin:0 auto;padding:0 12px;display:flex;gap:4px;overflow-x:auto}
+nav button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 12px;color:var(--muted);cursor:pointer;white-space:nowrap;font-weight:600}
+nav button.on{color:var(--y);border-color:var(--y)}
+main{max-width:1100px;margin:0 auto;padding:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.card h3{margin:0 0 12px;font-size:16px;display:flex;align-items:center;gap:8px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--y)}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px 16px;cursor:pointer;font-weight:600;min-height:44px}
+.btn:hover{border-color:var(--y)}
+.btn.y{background:var(--y);color:#241a00;border-color:var(--y)}.btn.y:hover{background:var(--y2)}
+.btn.bad{color:var(--bad)}
+.seg{display:inline-flex;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{background:none;border:0;padding:8px 14px;border-radius:8px;cursor:pointer;color:var(--muted);font-weight:600}
+.seg button.on{background:var(--y);color:#241a00}
+.hint{font-size:12px;color:var(--muted)}
+.term{background:#08090b;border:1px solid var(--line);border-radius:10px;padding:12px;height:420px;overflow:auto;font-family:ui-monospace,Consolas,monospace;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.term .in{color:var(--y)}.term .ok{color:var(--ok)}.term .err{color:var(--bad)}.term .dim{color:var(--muted)}
+.prompt{display:flex;gap:8px;margin-top:8px}.prompt input{font-family:ui-monospace,Consolas,monospace}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px}
+.tag{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;background:var(--panel2);border:1px solid var(--line)}
+.tag.y{color:#241a00;background:var(--y);border-color:var(--y)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chip{background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:4px 10px;font-size:13px;cursor:pointer}
+.chip.on{border-color:var(--y);color:var(--y)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--y);border-radius:10px;padding:10px 16px;max-width:90vw;z-index:20;display:none}
+.mention{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;background:var(--panel2)}
+.mention .meta{font-size:12px;color:var(--muted)}
+.log{height:520px}
+.login{max-width:380px;margin:12vh auto}
+.big{font-size:28px;font-weight:800;color:var(--y)}
+.hidden{display:none!important}
+a{color:var(--y)}
+@media (max-width:600px){.term{height:340px}.pill{margin-left:0;width:100%}}
+</style>
+</head>
+<body>
+<div id="loginView" class="login hidden">
+  <div class="card">
+    <div class="row" style="margin-bottom:8px"><div class="logo">J</div><div class="brand"><b>JIBI Center Hub</b><span>P SHOP GAMERPOWER</span></div></div>
+    <form id="loginForm">
+      <label for="pw">รหัสผ่าน Hub</label>
+      <input id="pw" type="password" autocomplete="current-password" required>
+      <p id="loginErr" class="hint" style="color:var(--bad)"></p>
+      <button class="btn y" type="submit" style="width:100%">เข้าสู่ระบบ</button>
+    </form>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+<header>
+  <div class="top">
+    <div class="logo">J</div>
+    <div class="brand"><b>JIBI Center Hub</b><span>JIBI · P SHOP GAMERPOWER</span></div>
+    <div class="pill"><span><span id="dot" class="dot"></span> <span id="stText">กำลังเช็ก...</span></span><button class="btn" id="logout" style="min-height:32px;padding:4px 10px">ออก</button></div>
+  </div>
+  <nav id="tabs">
+    <button data-tab="control" class="on">🎛️ ควบคุม JIBI</button>
+    <button data-tab="tourney">🏆 งานแข่ง</button>
+    <button data-tab="inbox">💬 แท็กถึง JIBI</button>
+    <button data-tab="logs">📜 Log</button>
+  </nav>
+</header>
+
+<main>
+<!-- ===== ควบคุม ===== -->
+<section id="tab-control">
+  <div class="row" style="margin-bottom:12px">
+    <div class="seg" id="modeSeg"><button data-mode="form" class="on">🖱️ โหมดปุ่ม</button><button data-mode="cli">⌨️ โหมดพิมพ์คำสั่ง</button></div>
+    <span class="hint">พิมพ์ข้อความได้ทั้งภาษาลาวและไทย · ใส่ {#ห้อง} = ลิงก์ห้อง · {@ชื่อ} = แท็กคน</span>
+  </div>
+
+  <div id="mode-form" class="grid">
+    <div class="card">
+      <h3>📣 ให้ JIBI ส่งข้อความ</h3>
+      <label for="fCh">ห้อง</label>
+      <select id="fCh"></select>
+      <label>แท็กคน (ไม่ใส่ก็ได้)</label>
+      <input id="fMemQ" placeholder="พิมพ์ชื่อเพื่อค้นหา..." autocomplete="off">
+      <div class="chips" id="fMemRes"></div>
+      <div class="chips" id="fMemSel"></div>
+      <label for="fText">ข้อความ</label>
+      <textarea id="fText" placeholder="ສະບາຍດີເດີ້ 💛"></textarea>
+      <div class="row" style="margin-top:10px">
+        <label class="row" style="margin:0;color:var(--text)"><input type="checkbox" id="fEmbed" style="width:auto"> ทำเป็นการ์ดสีเหลือง</label>
+      </div>
+      <div id="fTitleWrap" class="hidden"><label for="fTitle">หัวข้อการ์ด</label><input id="fTitle" placeholder="📢 ປະກາດ"></div>
+      <div class="row" style="margin-top:14px"><button class="btn y" id="fSend">ส่งเลย</button></div>
+    </div>
+    <div class="card">
+      <h3>⚡ คำสั่งด่วน</h3>
+      <div class="row">
+        <button class="btn" data-q="status">📶 เช็กสถานะ</button>
+        <button class="btn" data-q="sync">🔄 ซิงก์โครงสร้างเซิร์ฟ</button>
+        <button class="btn" data-q="refresh">♻️ รีเฟรชแผงลงทะเบียน</button>
+      </div>
+      <p class="hint" style="margin-top:12px">ทุกคำสั่งที่ส่งจาก Hub จะถูกบันทึกในห้อง 🔒 bot-logs ด้วย</p>
+      <h3 style="margin-top:18px">🧠 สรุปตอนนี้</h3>
+      <div id="summary" class="hint">—</div>
+    </div>
+  </div>
+
+  <div id="mode-cli" class="card hidden">
+    <h3>⌨️ คอนโซลหลังบ้าน JIBI</h3>
+    <div class="term" id="term"></div>
+    <form class="prompt" id="cliForm"><input id="cli" autocomplete="off" placeholder="พิมพ์ help เพื่อดูคำสั่งทั้งหมด"><button class="btn y" type="submit">▶</button></form>
+  </div>
+</section>
+
+<!-- ===== งานแข่ง ===== -->
+<section id="tab-tourney" class="hidden">
+  <div class="grid">
+    <div class="card">
+      <h3>⚙️ ตั้งค่างานแข่ง</h3>
+      <label for="eName">ชื่องาน</label><input id="eName">
+      <label for="eStart">วัน-เวลาเริ่ม (เวลาลาว)</label><input id="eStart" type="datetime-local">
+      <label for="eMax">จำนวนตัวจริง</label><input id="eMax" type="number" min="1" max="100">
+      <label>แจ้งเตือนก่อนเริ่ม (นาที)</label>
+      <div class="chips" id="eRem"></div>
+      <div class="row" style="margin-top:12px">
+        <label class="row" style="margin:0;color:var(--text)"><input type="checkbox" id="eOpen" style="width:auto"> เปิดรับสมัคร</label>
+      </div>
+      <div class="row" style="margin-top:14px"><button class="btn y" id="eSave">บันทึก + อัปเดตแผงใน Discord</button></div>
+      <p class="hint" id="eInfo"></p>
+    </div>
+    <div class="card">
+      <h3>🔑 ส่งรหัสห้อง</h3>
+      <label for="cCode">รหัส / Party Code</label><input id="cCode" placeholder="PSHOP2026">
+      <div class="row">
+        <div style="flex:1"><label for="cGame">เกมที่</label><select id="cGame"><option value="">—</option><option>1</option><option>2</option><option>3</option></select></div>
+        <div style="flex:2"><label for="cMap">แผนที่</label><input id="cMap" placeholder="Ascent"></div>
+      </div>
+      <label for="cNote">หมายเหตุ (ไม่ใส่ก็ได้)</label><input id="cNote">
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="cPrev">🧪 ส่งตัวอย่าง (ไม่แท็ก)</button>
+        <button class="btn y" id="cSend">🔑 ส่งจริง + แท็กนักแข่ง</button>
+      </div>
+      <h3 style="margin-top:20px">⏰ แจ้งเตือน</h3>
+      <div class="row"><button class="btn" id="rNow">ส่งแจ้งเตือนตอนนี้เลย</button></div>
+      <p class="hint">ระบบส่งเองอัตโนมัติตามเวลาที่ตั้ง · ในข้อความมีตัวนับถอยหลังที่นับเองใน Discord</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row" style="justify-content:space-between"><h3 style="margin:0">👥 นักแข่ง <span class="tag y" id="pCount">0</span></h3>
+      <div class="row"><button class="btn" id="pReload">โหลดใหม่</button><button class="btn" id="pCsv">⬇️ CSV</button></div></div>
+    <div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>#</th><th>ชื่อ</th><th>Riot ID</th><th>แรงค์</th><th>สังกัด</th><th>เคยเติม</th><th>สถานะ</th><th></th></tr></thead><tbody id="pBody"></tbody></table></div>
+  </div>
+</section>
+
+<!-- ===== แท็กถึง JIBI ===== -->
+<section id="tab-inbox" class="hidden">
+  <div class="card">
+    <div class="row" style="justify-content:space-between"><h3 style="margin:0">💬 ข้อความที่แท็กหรือตอบ JIBI</h3><button class="btn" id="mReload">โหลดใหม่</button></div>
+    <p class="hint">กด "ตอบ" แล้วพิมพ์ JIBI จะตอบกลับข้อความนั้นและแท็กคนนั้นให้</p>
+    <div id="mList"></div>
+  </div>
+</section>
+
+<!-- ===== Log ===== -->
+<section id="tab-logs" class="hidden">
+  <div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">📜 Log ล่าสุด</h3><label class="row" style="margin:0;color:var(--text)"><input type="checkbox" id="lAuto" checked style="width:auto"> อัปเดตอัตโนมัติ</label></div>
+  <div class="term log" id="logBox" style="margin-top:10px"></div></div>
+</section>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const el = (tag, props = {}, ...kids) => { const e = document.createElement(tag); Object.assign(e, props); for (const k of kids) e.append(k); return e; };
+const toast = (t, bad) => { const x = $('#toast'); x.textContent = t; x.style.borderColor = bad ? 'var(--bad)' : 'var(--y)'; x.style.display = 'block'; clearTimeout(x._t); x._t = setTimeout(() => (x.style.display = 'none'), 3500); };
+async function api(path, body) {
+  const r = await fetch(path, body === undefined ? { credentials: 'same-origin' } : { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-Jibi': '1' }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401 && j.error === 'login') { showLogin(); throw new Error('กรุณาเข้าสู่ระบบ'); }
+  if (!r.ok || j.ok === false) throw new Error(j.error || `HTTP ${r.status}`);
+  return j.data;
+}
+const LAO = 'Asia/Vientiane';
+const fmtLao = (iso) => iso ? new Date(iso).toLocaleString('th-TH', { timeZone: LAO, dateStyle: 'medium', timeStyle: 'short' }) : '—';
+const toLocalInput = (iso) => { if (!iso) return ''; const d = new Date(new Date(iso).getTime() + 7 * 3600e3); return d.toISOString().slice(0, 16); };
+const fromLocalInput = (v) => v ? new Date(`${v}:00+07:00`).toISOString() : null;
+
+/* ---------- login ---------- */
+function showLogin() { $('#app').classList.add('hidden'); $('#loginView').classList.remove('hidden'); $('#pw').focus(); }
+function showApp() { $('#loginView').classList.add('hidden'); $('#app').classList.remove('hidden'); boot(); }
+$('#loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault(); $('#loginErr').textContent = '';
+  const r = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: $('#pw').value }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) { $('#loginErr').textContent = j.error || 'เข้าไม่ได้'; return; }
+  $('#pw').value = ''; showApp();
+});
+$('#logout').onclick = async () => { await fetch('/api/logout', { method: 'POST' }); showLogin(); };
+
+/* ---------- tabs ---------- */
+let curTab = 'control';
+$('#tabs').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  curTab = b.dataset.tab;
+  for (const x of $('#tabs').children) x.classList.toggle('on', x === b);
+  for (const t of ['control', 'tourney', 'inbox', 'logs']) $(`#tab-${t}`).classList.toggle('hidden', t !== curTab);
+  if (curTab === 'tourney') loadTourney();
+  if (curTab === 'inbox') loadMentions();
+  if (curTab === 'logs') loadLogs();
+});
+$('#modeSeg').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  for (const x of $('#modeSeg').children) x.classList.toggle('on', x === b);
+  $('#mode-form').classList.toggle('hidden', b.dataset.mode !== 'form');
+  $('#mode-cli').classList.toggle('hidden', b.dataset.mode !== 'cli');
+  if (b.dataset.mode === 'cli') $('#cli').focus();
+});
+
+/* ---------- status ---------- */
+let channels = [];
+async function refreshStatus() {
+  try {
+    const s = await api('/api/status');
+    $('#dot').classList.add('on');
+    $('#stText').textContent = `ออนไลน์ · ping ${s.ping} ms · ${s.members} คน · เปิดมา ${Math.floor(s.uptimeSec / 3600)} ชม. ${Math.floor(s.uptimeSec % 3600 / 60)} น.`;
+    return s;
+  } catch (e) { $('#dot').classList.remove('on'); $('#stText').textContent = 'ติดต่อ JIBI ไม่ได้'; }
+}
+async function loadChannels() {
+  channels = await api('/api/channels');
+  const sel = $('#fCh'); sel.textContent = '';
+  let grp = null, last = null;
+  for (const c of channels) {
+    if (c.category !== last) { grp = el('optgroup', { label: c.category || '—' }); sel.append(grp); last = c.category; }
+    grp.append(el('option', { value: c.id, textContent: `# ${c.name}` }));
+  }
+  const world = channels.find((c) => c.name.includes('ແຊັດໂລກ')); if (world) sel.value = world.id;
+}
+
+/* ---------- form mode ---------- */
+let picked = [];
+const renderPicked = () => { const box = $('#fMemSel'); box.textContent = ''; for (const m of picked) box.append(el('span', { className: 'chip on', textContent: `@${m.name} ✕`, onclick: () => { picked = picked.filter((x) => x.id !== m.id); renderPicked(); } })); };
+let memT;
+$('#fMemQ').addEventListener('input', () => {
+  clearTimeout(memT); const q = $('#fMemQ').value.trim();
+  memT = setTimeout(async () => {
+    const box = $('#fMemRes'); box.textContent = '';
+    if (!q) return;
+    for (const m of await api(`/api/members?q=${encodeURIComponent(q)}`)) box.append(el('span', { className: 'chip', textContent: `@${m.name}`, onclick: () => { if (!picked.find((x) => x.id === m.id)) picked.push(m); renderPicked(); box.textContent = ''; $('#fMemQ').value = ''; } }));
+  }, 250);
+});
+$('#fEmbed').onchange = () => $('#fTitleWrap').classList.toggle('hidden', !$('#fEmbed').checked);
+$('#fSend').onclick = async () => {
+  try {
+    const r = await api('/api/send', { channel: $('#fCh').value, content: $('#fText').value, mentions: picked.map((m) => m.id), embed: $('#fEmbed').checked, title: $('#fTitle').value });
+    toast(`✅ ส่งแล้วใน #${r.channel}`); $('#fText').value = ''; picked = []; renderPicked();
+  } catch (e) { toast(`❌ ${e.message}`, true); }
+};
+document.querySelectorAll('[data-q]').forEach((b) => (b.onclick = () => runCli(b.dataset.q, true)));
+
+/* ---------- CLI mode ---------- */
+const term = $('#term');
+const out = (t, cls = '') => { term.append(el('div', { className: cls, textContent: t })); term.scrollTop = term.scrollHeight; };
+const HELP = `คำสั่งทั้งหมด (ใช้ {#ห้อง} {@ชื่อ} ในข้อความได้)
+  say #ห้อง ข้อความ            ให้ JIBI พิมพ์ข้อความในห้อง
+  card #ห้อง หัวข้อ | เนื้อหา     ส่งเป็นการ์ดสีเหลือง
+  reply @ชื่อ ข้อความ           ตอบข้อความล่าสุดที่คนนี้แท็ก JIBI
+  status                       สถานะ JIBI / ping
+  players                      รายชื่อนักแข่ง
+  open | close                 เปิด / ปิดรับสมัครแข่ง
+  start 2026-11-20 20:00       ตั้งเวลาเริ่มแข่ง (เวลาลาว)
+  remind                       ส่งแจ้งเตือนนักแข่งตอนนี้
+  code รหัส [เกม] [แผนที่]       ส่งรหัสห้อง + แท็กนักแข่ง
+  refresh                      รีเฟรชแผงลงทะเบียน
+  sync                         ซิงก์โครงสร้างเซิร์ฟตาม config
+  report                       ดูโครงสร้างเซิร์ฟ
+  task {"action":"..."}         ส่งคำสั่งดิบให้สะพาน JIBI
+  clear                        ล้างจอ`;
+const hist = []; let hi = 0;
+async function runCli(line, fromBtn) {
+  line = line.trim(); if (!line) return;
+  if (!fromBtn) { hist.push(line); hi = hist.length; }
+  out(`› ${line}`, 'in');
+  const [cmd, ...rest] = line.split(/\s+/); const arg = line.slice(cmd.length).trim();
+  try {
+    switch (cmd.toLowerCase()) {
+      case 'help': out(HELP, 'dim'); break;
+      case 'clear': term.textContent = ''; break;
+      case 'status': case 'ping': { const s = await refreshStatus(); out(s ? `🟢 ${s.bot} · ${s.guild} · ping ${s.ping} ms · สมาชิก ${s.members} · เปิดมา ${Math.round(s.uptimeSec / 60)} นาที · เครื่อง ${s.host}` : 'ติดต่อไม่ได้', s ? 'ok' : 'err'); break; }
+      case 'say': case 'card': {
+        const m = arg.match(/^#?(\S+)\s+([\s\S]+)$/); if (!m) throw new Error(`ใช้: ${cmd} #ห้อง ข้อความ`);
+        let title = '', text = m[2];
+        if (cmd === 'card') { const i = text.indexOf('|'); if (i >= 0) { title = text.slice(0, i).trim(); text = text.slice(i + 1).trim(); } }
+        const r = await api('/api/send', { channel: m[1], content: text, embed: cmd === 'card', title });
+        out(`✅ ส่งแล้วใน #${r.channel}`, 'ok'); break;
+      }
+      case 'reply': {
+        const m = arg.match(/^@?(\S+)\s+([\s\S]+)$/); if (!m) throw new Error('ใช้: reply @ชื่อ ข้อความ');
+        const list = await api('/api/mentions'); const who = m[1].toLowerCase();
+        const hit = list.find((x) => x.author.toLowerCase().includes(who));
+        if (!hit) throw new Error(`ไม่เจอข้อความที่ ${m[1]} แท็ก JIBI`);
+        const r = await api('/api/send', { channel: hit.channelId, replyTo: hit.id, content: `<@${hit.authorId}> ${m[2]}`, mentions: [] });
+        out(`✅ ตอบ ${hit.author} ใน #${r.channel} แล้ว`, 'ok'); break;
+      }
+      case 'players': { const t = await api('/api/tourney'); out(`🏆 ${t.event.name} — ${t.players.length} คน`, 'ok'); for (const p of t.players) out(`#${p.no}  ${p.name}  ${p.riot}  ${p.rank}${p.team ? '  · ' + p.team : ''}${p.no > t.event.max ? '  (สำรอง)' : ''}`); break; }
+      case 'open': case 'close': { await api('/api/tourney/event', { regOpen: cmd === 'open' }); out(cmd === 'open' ? '✅ เปิดรับสมัครแล้ว' : '🔒 ปิดรับสมัครแล้ว', 'ok'); break; }
+      case 'start': { const v = arg.replace(' ', 'T'); if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(v)) throw new Error('ใช้: start 2026-11-20 20:00'); const e = await api('/api/tourney/event', { startAt: fromLocalInput(v) }); out(`⏰ ตั้งเวลาเริ่ม ${fmtLao(e.startAt)} (เวลาลาว)`, 'ok'); break; }
+      case 'remind': { await api('/api/tourney/remind', {}); out('⏰ ส่งแจ้งเตือนแล้ว', 'ok'); break; }
+      case 'code': { if (!rest[0]) throw new Error('ใช้: code รหัส [เกม] [แผนที่]'); const r = await api('/api/tourney/code', { code: rest[0], game: rest[1], map: rest.slice(2).join(' ') }); out(`🔑 ส่งรหัสแล้ว ${r.url}`, 'ok'); break; }
+      case 'refresh': { await api('/api/tourney/refresh', {}); out('♻️ รีเฟรชแผงแล้ว', 'ok'); break; }
+      case 'sync': { await api('/api/task', { action: 'sync' }); out('🔄 ซิงก์แล้ว', 'ok'); break; }
+      case 'report': { const r = await api('/api/task', { action: 'report' }); out(`${r.server} · สมาชิก ${r.members} · บูสต์ ${r.boosts}`, 'ok'); for (const c of r.categories) out(`${c.name}\n${c.channels.map((x) => '   ' + x.name).join('\n')}`, 'dim'); break; }
+      case 'task': { const r = await api('/api/task', JSON.parse(arg)); out(JSON.stringify(r, null, 2), 'ok'); break; }
+      default: throw new Error(`ไม่รู้จักคำสั่ง "${cmd}" — พิมพ์ help`);
+    }
+    if (fromBtn) toast('✅ เรียบร้อย');
+  } catch (e) { out(`❌ ${e.message}`, 'err'); if (fromBtn) toast(`❌ ${e.message}`, true); }
+}
+$('#cliForm').addEventListener('submit', (e) => { e.preventDefault(); const v = $('#cli').value; $('#cli').value = ''; runCli(v); });
+$('#cli').addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowUp' && hi > 0) { hi--; $('#cli').value = hist[hi]; e.preventDefault(); }
+  if (e.key === 'ArrowDown') { hi = Math.min(hist.length, hi + 1); $('#cli').value = hist[hi] || ''; e.preventDefault(); }
+});
+
+/* ---------- tourney ---------- */
+const REM_OPTS = [1440, 120, 60, 30, 15, 10, 5];
+let rems = [];
+const remLabel = (m) => m >= 60 ? `${m / 60} ชม.` : `${m} นาที`;
+function renderRem() { const box = $('#eRem'); box.textContent = ''; for (const m of REM_OPTS) box.append(el('span', { className: `chip${rems.includes(m) ? ' on' : ''}`, textContent: remLabel(m), onclick: () => { rems = rems.includes(m) ? rems.filter((x) => x !== m) : [...rems, m]; renderRem(); } })); }
+let lastT = null;
+async function loadTourney() {
+  try {
+    const t = lastT = await api('/api/tourney');
+    const e = t.event;
+    $('#eName').value = e.name; $('#eMax').value = e.max; $('#eStart').value = toLocalInput(e.startAt); $('#eOpen').checked = !!e.regOpen;
+    rems = e.reminders || []; renderRem();
+    $('#eInfo').textContent = e.startAt ? `เริ่ม ${fmtLao(e.startAt)} (เวลาลาว)` : 'ยังไม่ได้ตั้งเวลาเริ่ม';
+    $('#pCount').textContent = `${Math.min(t.players.length, e.max)} / ${e.max}${t.players.length > e.max ? ` +สำรอง ${t.players.length - e.max}` : ''}`;
+    const body = $('#pBody'); body.textContent = '';
+    for (const p of t.players) {
+      const sub = p.no > e.max;
+      const del = el('button', { className: 'btn bad', textContent: 'ลบ', style: 'min-height:32px;padding:4px 10px', onclick: async () => { if (!confirm(`ลบ #${p.no} ${p.name} ออกจากงานแข่ง?`)) return; try { await api('/api/tourney/remove', { uid: p.uid }); toast('ลบแล้ว'); loadTourney(); } catch (x) { toast(`❌ ${x.message}`, true); } } });
+      body.append(el('tr', {}, el('td', { textContent: p.no }), el('td', { textContent: p.name }), el('td', { textContent: p.riot }), el('td', { textContent: p.rank }), el('td', { textContent: p.team || '—' }), el('td', { textContent: p.pshop ? '✅' : '—' }), el('td', {}, el('span', { className: `tag${sub ? '' : ' y'}`, textContent: sub ? 'สำรอง' : 'ตัวจริง' })), el('td', {}, del)));
+    }
+  } catch (e) { toast(`❌ ${e.message}`, true); }
+}
+$('#eSave').onclick = async () => {
+  try { await api('/api/tourney/event', { name: $('#eName').value, max: $('#eMax').value, startAt: fromLocalInput($('#eStart').value), reminders: rems, regOpen: $('#eOpen').checked }); toast('✅ บันทึกแล้ว แผงใน Discord อัปเดตแล้ว'); loadTourney(); }
+  catch (e) { toast(`❌ ${e.message}`, true); }
+};
+const sendCode = async (preview) => {
+  try { const r = await api('/api/tourney/code', { code: $('#cCode').value, game: $('#cGame').value, map: $('#cMap').value, note: $('#cNote').value, preview }); toast(preview ? '🧪 ส่งตัวอย่างแล้ว' : '🔑 ส่งรหัสแล้ว'); }
+  catch (e) { toast(`❌ ${e.message}`, true); }
+};
+$('#cPrev').onclick = () => sendCode(true);
+$('#cSend').onclick = () => { if (confirm('ส่งรหัสจริงและแท็กนักแข่งทุกคน?')) sendCode(false); };
+$('#rNow').onclick = async () => { if (!confirm('ส่งแจ้งเตือนและแท็กนักแข่งทุกคนตอนนี้?')) return; try { await api('/api/tourney/remind', {}); toast('⏰ ส่งแจ้งเตือนแล้ว'); } catch (e) { toast(`❌ ${e.message}`, true); } };
+$('#pReload').onclick = loadTourney;
+$('#pCsv').onclick = () => {
+  if (!lastT) return;
+  const rows = [['no', 'name', 'riot', 'rank', 'team', 'pshop', 'status', 'discord_id']].concat(lastT.players.map((p) => [p.no, p.name, p.riot, p.rank, p.team || '', p.pshop ? 'yes' : 'no', p.no > lastT.event.max ? 'sub' : 'main', p.uid]));
+  const csv = '﻿' + rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const a = el('a', { href: URL.createObjectURL(new Blob([csv], { type: 'text/csv' })), download: 'players.csv' }); a.click();
+};
+
+/* ---------- mentions ---------- */
+async function loadMentions() {
+  const box = $('#mList'); box.textContent = 'กำลังโหลด...';
+  try {
+    const list = await api('/api/mentions'); box.textContent = '';
+    if (!list.length) box.append(el('p', { className: 'hint', textContent: 'ยังไม่มีใครแท็ก JIBI' }));
+    for (const m of list) {
+      const inp = el('input', { placeholder: 'พิมพ์คำตอบ (JIBI จะแท็กคนนี้ให้)' });
+      const btn = el('button', { className: 'btn y', textContent: 'ตอบ', onclick: async () => { try { await api('/api/send', { channel: m.channelId, replyTo: m.id, content: `<@${m.authorId}> ${inp.value}` }); toast('✅ ตอบแล้ว'); inp.value = ''; } catch (e) { toast(`❌ ${e.message}`, true); } } });
+      box.append(el('div', { className: 'mention' }, el('div', { className: 'meta', textContent: `${m.author} · #${m.channel} · ${new Date(m.at).toLocaleString('th-TH', { timeZone: LAO })}` }), el('div', { textContent: m.content, style: 'margin:6px 0' }), el('div', { className: 'prompt' }, inp, btn)));
+    }
+  } catch (e) { box.textContent = `❌ ${e.message}`; }
+}
+$('#mReload').onclick = loadMentions;
+
+/* ---------- logs ---------- */
+async function loadLogs() {
+  try { const r = await api('/api/logs?n=300'); const b = $('#logBox'); const atBottom = b.scrollTop + b.clientHeight >= b.scrollHeight - 30; b.textContent = r.lines.join('\n'); if (atBottom) b.scrollTop = b.scrollHeight; } catch { /* ignore */ }
+}
+
+/* ---------- boot ---------- */
+let booted = false;
+async function boot() {
+  if (booted) return; booted = true;
+  out('JIBI Center Hub — พิมพ์ help เพื่อดูคำสั่ง', 'dim');
+  await refreshStatus();
+  loadChannels().catch((e) => toast(`❌ ${e.message}`, true));
+  api('/api/tourney').then((t) => { $('#summary').textContent = `🏆 ${t.event.name} · ลงทะเบียน ${t.players.length}/${t.event.max} · ${t.event.regOpen ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร'} · เริ่ม ${fmtLao(t.event.startAt)}`; }).catch(() => {});
+  setInterval(refreshStatus, 15000);
+  setInterval(() => { if (curTab === 'logs' && $('#lAuto').checked) loadLogs(); }, 3000);
+}
+fetch('/api/me').then((r) => r.json()).then((m) => (m.authed ? showApp() : showLogin())).catch(showLogin);
+</script>
+</body>
+</html>

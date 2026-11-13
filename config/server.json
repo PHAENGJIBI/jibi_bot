@@ -45,6 +45,10 @@
       "game": true,
       "icon": "🌸"
     },
+    "player": {
+      "name": "🎯 ນັກແຂ່ງ",
+      "mentionable": false
+    },
     "promo": {
       "name": "🔔 Promo",
       "mentionable": true
@@ -80,14 +84,14 @@
           "name": "📜・ກົດລະບຽບ",
           "type": "text",
           "readOnly": true,
-          "topic": "ກົດລະບຽບຂອງ P SHOP Gaming Hub — ກະລຸນາອ່ານກ່ອນ"
+          "topic": "ກົດລະບຽບຂອງ P SHOP GAMERPOWER — ກະລຸນາອ່ານກ່ອນ"
         },
         {
           "key": "welcome",
           "name": "👋・ຍິນດີຕ້ອນຮັບ",
           "type": "text",
           "readOnly": true,
-          "topic": "ຍິນດີຕ້ອນຮັບສູ່ P SHOP Gaming Hub"
+          "topic": "ຍິນດີຕ້ອນຮັບສູ່ P SHOP GAMERPOWER"
         },
         {
           "name": "🌏・ແຊັດໂລກ",
@@ -177,7 +181,8 @@
           "name": "🔑・ລະຫັດຫ້ອງ",
           "type": "text",
           "readOnly": true,
-          "topic": "ລະຫັດຫ້ອງ Custom ສຳລັບນັກແຂ່ງ — JIBI ຈະສົ່ງພ້ອມເວລາ ເມື່ອແອດມິນສັ່ງ"
+          "topic": "ລະຫັດຫ້ອງ Custom — ເຫັນສະເພາະນັກແຂ່ງທີ່ລົງທະບຽນແລ້ວ · JIBI ແຈ້ງເຕືອນກ່ອນເລີ່ມ ແລະ ສົ່ງລະຫັດໃນຫ້ອງນີ້",
+          "visible": "player"
         }
       ]
     },

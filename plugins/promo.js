@@ -49,7 +49,7 @@ module.exports = {
           const n = ch.name.toLowerCase();
           const color = n.includes('valorant') ? 0xFFC400 : n.includes('steam') ? 0xFFC400 : 0xFFC400;
           const embed = new EmbedBuilder().setColor(color).setAuthor({ name: 'P SHOP GAMERPOWER' })
-            .setTitle(i.fields.getTextInputValue('title')).setFooter({ text: 'JIBI · P SHOP Gaming Hub' }).setTimestamp();
+            .setTitle(i.fields.getTextInputValue('title')).setFooter({ text: 'JIBI · P SHOP GAMERPOWER' }).setTimestamp();
           const desc = i.fields.getTextInputValue('desc');
           if (desc) embed.setDescription(desc);
           if (p.imageUrl) embed.setImage(p.imageUrl);

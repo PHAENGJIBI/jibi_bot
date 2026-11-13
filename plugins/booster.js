@@ -13,9 +13,9 @@ module.exports = {
         const embed = new EmbedBuilder()
           .setColor(0xFFC400)
           .setTitle('💎 ຂອບໃຈທີ່ບູສເຊີບເວີ!')
-          .setDescription(`**${newM.displayName}** ບູສ P SHOP Gaming Hub ແລ້ວ 🎉\nເຊີບເວີມີທັງໝົດ **${guild.premiumSubscriptionCount || 0}** ບູສ`)
+          .setDescription(`**${newM.displayName}** ບູສ P SHOP GAMERPOWER ແລ້ວ 🎉\nເຊີບເວີມີທັງໝົດ **${guild.premiumSubscriptionCount || 0}** ບູສ`)
           .setThumbnail(newM.displayAvatarURL({ size: 256 }))
-          .setFooter({ text: 'JIBI · P SHOP Gaming Hub' });
+          .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
         if (ch) await ch.send({ content: `<@${newM.id}>`, embeds: [embed], allowedMentions: { users: [newM.id] } });
         await logTo(`💎 **${newM.user.username}** ບູສເຊີບເວີ`);
       } catch (e) { console.error('[booster]', e.message); }
