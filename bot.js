@@ -44,8 +44,14 @@ if (!TOKEN || !/^\d{15,22}$/.test(GUILD_ID)) {
   process.exit(2);
 }
 
+// อ่านข้อความในแชท (ให้ JIBI แจมบทสนทนาได้) — ต้องเปิด Message Content Intent ใน Developer Portal ก่อน · เปิดจาก JIBI Hub
+const CHAT_SET = path.join(__dirname, 'data', 'chat-settings.json');
+let readContent = false;
+try { readContent = !!JSON.parse(fs.readFileSync(CHAT_SET, 'utf8')).readContent; } catch {}
+const intents = [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions];
+if (readContent) intents.push(GatewayIntentBits.MessageContent);
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions],
+  intents,
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 let guild = null;
@@ -119,6 +125,12 @@ client.login(TOKEN).catch((e) => {
   let error = 'network';
   if (/TokenInvalid|invalid token|401/i.test(txt)) error = 'token';
   else if (/disallowed intents|4014/i.test(txt)) error = 'intents';
+  // เปิดอ่านแชทจาก Hub แต่ยังไม่ได้เปิด Message Content Intent ใน Portal → ปิดกลับเอง แล้วเปิดบอทใหม่แบบเดิม
+  if (error === 'intents' && readContent) {
+    try { const c = JSON.parse(fs.readFileSync(CHAT_SET, 'utf8')); c.readContent = false; c.readContentError = 'ຍັງບໍ່ໄດ້ເປີດ Message Content Intent ໃນ Developer Portal'; fs.writeFileSync(CHAT_SET, JSON.stringify(c, null, 2)); } catch {}
+    console.error('⚠️ ยังไม่ได้เปิด Message Content Intent ใน Developer Portal — ปิดการอ่านแชทกลับแล้ว กำลังเปิด JIBI ใหม่');
+    process.exit(1);
+  }
   const msg = {
     token: '❌ รหัสบอทไม่ถูกต้อง — ไปที่ Developer Portal > บอท > รีเซ็ตโทเค็น แล้ววางรหัสใหม่ในแท็บ "ตั้งค่า"',
     intents: '❌ ยังไม่ได้เปิด "Server Members Intent" — Developer Portal > บอท > เปิด "สิทธิ์ในการเข้าถึงข้อมูลสมาชิกของเซิร์ฟเวอร์" > บันทึก',

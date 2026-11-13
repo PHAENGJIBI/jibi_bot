@@ -1,7 +1,0 @@
-{
-  "mode": "ai",
-  "lastMode": "ai",
-  "perUserDaily": 20,
-  "dailyCap": 300,
-  "model": "claude-haiku-5-5"
-}

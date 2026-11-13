@@ -2,6 +2,7 @@
 // โหมด (ตั้งใน JIBI Center Hub): off = ไม่ตอบ · rules = ตอบจากคำที่ตั้งไว้ (ฟรี) · ai = คุยด้วย Claude (ต้องใส่ API key)
 // ตั้งค่า: data/chat-settings.json · API key: data/ai-key.json (ไม่ขึ้น GitHub)
 const { Events } = require('discord.js');
+const P_DEF = { welcome: true, revive: true, quietHours: 3, chime: false, chimeRate: 5 };
 const fs = require('fs');
 const path = require('path');
 const store = require('../lib/store');
@@ -39,6 +40,19 @@ const RULES = [
   { k: ['ສະບາຍດີ', 'ດີຈ້າ', 'ຫວັດດີ', 'ຮາຍ', 'สวัสดี', 'หวัดดี', 'ดีจ้า', 'hello', 'hi', 'hey'],
     r: ['ສະບາຍດີເດີ້ 💛 ມີຫຍັງໃຫ້ JIBI ຊ່ວຍບໍ່?', 'ດີຈ້າ 👋💛', 'ສະບາຍດີ ມື້ນີ້ຫຼິ້ນເກມຫຍັງດີ? 🎮💛'] },
 ];
+const GREET = [
+  '{u} ຍິນດີຕ້ອນຮັບເຂົ້າ P SHOP GAMERPOWER ເດີ້ 🎉💛 ຫຼິ້ນເກມຫຍັງຢູ່? ບອກ JIBI ແດ່',
+  'ໂອ້ {u} ມາແລ້ວ! ຍິນດີຕ້ອນຮັບເດີ້ 💛 ຢາກຫາໝູ່ຫຼິ້ນ ໄປຫ້ອງ 🤝・ຫາປາຕີ້ ໄດ້ເລີຍ',
+  'ສະບາຍດີ {u} 👋 ໝູ່ໃໝ່ຂອງ P SHOP 💛 ມີຫຍັງສົງໄສ ແທັກ @JIBI ຖາມໄດ້ເລີຍ',
+  'ຍິນດີຕ້ອນຮັບ {u} ເດີ້ 🥳💛 ຢ່າລືມເບິ່ງຫ້ອງ 📖・ຄູ່ມື ຂອງເກມທີ່ເລືອກ',
+];
+const TOPICS = [
+  'ມື້ນີ້ທຸກຄົນຫຼິ້ນເກມຫຍັງຢູ່ເອີ່? 🎮💛', 'Valorant ທຸກຄົນມັກຫຼິ້ນ Agent ໃຜຫຼາຍທີ່ສຸດ? 🎯', 'ແຣງຕອນນີ້ຢູ່ໃສກັນແດ່? JIBI ເອົາໃຈຊ່ວຍໃຫ້ຂຶ້ນແຣງ 💛',
+  'ໃຜມີເກມ Steam ດີໆ ແນະນຳ JIBI ແດ່? 👀', 'ຖ້າໄດ້ເກມໃດກໍໄດ້ຟຣີ 1 ເກມ ຈະເອົາເກມຫຍັງ? 🎁', 'ທຸກຄົນມັກຫຼິ້ນເກມຕອນເຊົ້າ ຫຼື ຕອນເດິກ? 🌙',
+  'ແຜນທີ່ Valorant ທີ່ມັກທີ່ສຸດແມ່ນອັນໃດ? 🗺️', 'ໃຜຫາໝູ່ຫຼິ້ນຢູ່ ໄປກົດ 🎮 ສ້າງປາຕີ້ ໃນຫ້ອງ 🤝・ຫາປາຕີ້ ໄດ້ເລີຍເດີ້ 💛',
+  'ມື້ນີ້ກິນຫຍັງກັນແດ່? JIBI ຢາກຮູ້ 🍜', 'ເກມທຳອິດທີ່ທຸກຄົນເຄີຍຫຼິ້ນແມ່ນເກມຫຍັງ? 🕹️', 'Heartopia ກັບ Delta Force ໃຜຫຼິ້ນຢູ່ແດ່? ມາລົມກັນ 💛',
+  'ຖ້າມີງານແຂ່ງເກມອື່ນນອກຈາກ Valorant ຢາກໃຫ້ຈັດເກມຫຍັງ? 🏆', 'ໃຜເຄີຍ Ace ໃນ Valorant ແດ່? ອວດໄດ້ເລີຍ 😎', 'ແນະນຳເພງຟັງຕອນຫຼິ້ນເກມໃຫ້ JIBI ແດ່ 🎧',
+];
 const FALLBACK = ['JIBI ຍັງບໍ່ເຂົ້າໃຈ 🥺 ລອງຖາມເລື່ອງ ງານແຂ່ງ, ຫາປາຕີ້, ຄູ່ມື ຫຼື ສັ່ງຊື້ ເບິ່ງເດີ້ 💛', 'ອືມມ... JIBI ຈະໄປຖາມແອດມິນໃຫ້ເດີ້ 💛', 'JIBI ຢູ່ນີ້ເດີ້ 💛 ມີຫຍັງໃຫ້ຊ່ວຍບໍ່?'];
 
 const AI_SYSTEM = `You are JIBI (ຈີບີ), the cute, friendly bot of the Discord server "P SHOP GAMERPOWER" — a game top-up shop in Laos (Steam, PSN, Valorant VP and more).
@@ -54,8 +68,10 @@ module.exports = {
   id: 'chat',
   name: 'JIBI คุยตอบเอง (แท็ก @JIBI)',
   description: 'มีคนแท็ก JIBI หรือตอบข้อความของ JIBI → ตอบเอง · โหมด rules (ฟรี) หรือ ai (Claude) ตั้งใน JIBI Hub',
-  setup({ client, guild, logTo }) {
+  setup({ client, guild, cfg, logTo }) {
     let S = { ...DEFAULTS, ...store.load('chat-settings', {}) };
+    S.proactive = { ...P_DEF, ...(S.proactive || {}) };
+    const readContent = !!S.readContent;
     // สิ่งที่แอดมินสอน JIBI (แก้จาก Hub): rules = คำ→คำตอบ (เช็กก่อนคำตอบในตัว) · notes = ความรู้ให้โหมด AI
     let TEACH = { rules: [], notes: '', ...store.load('chat-teach', {}) };
     const usage = { day: '', users: {}, total: 0 };
@@ -77,11 +93,11 @@ module.exports = {
       out = out.replace('{start}', t && t * 1000 > Date.now() ? `\n⏰ ເລີ່ມ <t:${t}:F> (<t:${t}:R>)` : '');
       return out;
     }
-    function ruleReply(text) {
+    function ruleReply(text, fallback = true) {
       const s = String(text || '').toLowerCase();
       const hit = (k) => (/^[a-z ]{1,4}$/.test(k) ? new RegExp(`(^|[^a-z])${k}([^a-z]|$)`).test(s) : s.includes(k.toLowerCase()));
       for (const rule of [...(TEACH.rules || []), ...RULES]) if (rule.k.some(hit)) return pick(rule.r);
-      return pick(FALLBACK);
+      return fallback ? pick(FALLBACK) : null;
     }
     async function aiReply(msg, text) {
       const key = readKey();
@@ -132,9 +148,83 @@ module.exports = {
       } catch (e) { console.error('[chat]', e.message); }
     });
 
+    // ---------- JIBI ทักเอง ----------
+    const isChatRoom = (c) => c && (c.name.includes('ແຊັດໂລກ') || c.name.includes('ຫ້ອງແຊັດ'));
+    const worldCh = () => guild.channels.cache.find((c) => c.name.includes('ແຊັດໂລກ'));
+    const laoHour = () => parseInt(new Date().toLocaleString('en-GB', { timeZone: 'Asia/Vientiane', hour: '2-digit', hour12: false }), 10);
+    async function callAI(system, messages, maxTokens = 200) {
+      const key = readKey();
+      if (!key || S.mode !== 'ai') return null;
+      if (usage.day !== today()) { usage.day = today(); usage.users = {}; usage.total = 0; }
+      if (usage.total >= S.dailyCap) return null;
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST', headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+        body: JSON.stringify({ model: S.model, max_tokens: maxTokens, system, messages }), signal: AbortSignal.timeout(20000),
+      }).catch(() => null);
+      if (!r || !r.ok) return null;
+      const j = await r.json().catch(() => ({}));
+      const out = (j.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('').trim();
+      if (out) usage.total += 1;
+      return out || null;
+    }
+    const sys = () => AI_SYSTEM + (TEACH.notes ? `\n\nShop knowledge from the admins:\n${TEACH.notes}` : '');
+
+    // 1) ทักคนใหม่ในห้องแชทโลก (เมื่อได้ยศลูกค้าหลังเลือกเกม)
+    const greeted = new Set(store.load('chat-greeted', []));
+    client.on(Events.GuildMemberUpdate, async (oldM, newM) => {
+      try {
+        if (!S.proactive.welcome || newM.user.bot || greeted.has(newM.id)) return;
+        const role = guild.roles.cache.find((r) => r.name === cfg.roles.customer.name);
+        if (!role || oldM.roles.cache.has(role.id) || !newM.roles.cache.has(role.id)) return;
+        greeted.add(newM.id); store.save('chat-greeted', [...greeted].slice(-3000));
+        const ch = worldCh(); if (!ch) return;
+        setTimeout(() => ch.send({ content: pick(GREET).replace('{u}', `<@${newM.id}>`), allowedMentions: { users: [newM.id] } }).catch(() => {}), 8000);
+      } catch (e) { console.error('[chat] greet', e.message); }
+    });
+
+    // 2) ห้องเงียบนาน → ชวนคุย (10:00–22:00 เวลาลาว)
+    setInterval(async () => {
+      try {
+        if (!S.proactive.revive || S.mode === 'off') return;
+        const h = laoHour(); if (h < 10 || h >= 22) return;
+        const ch = worldCh(); if (!ch) return;
+        const last = (await ch.messages.fetch({ limit: 1 }).catch(() => null) || new Map()).values().next().value;
+        if (last && (last.author.id === client.user.id || Date.now() - last.createdTimestamp < S.proactive.quietHours * 3600000)) return;
+        let topic = await callAI(sys(), [{ role: 'user', content: 'The chat has been quiet. Write ONE short, fun question in Lao to get the gamers talking (games, Valorant, Steam, daily life). Output only the message.' }], 120).catch(() => null);
+        if (!topic) topic = pick(TOPICS);
+        await ch.send({ content: topic.slice(0, 500), allowedMentions: { parse: [] } });
+      } catch (e) { console.error('[chat] revive', e.message); }
+    }, 10 * 60000);
+
+    // 3) แจมบทสนทนาเองบ้าง (ต้องเปิดอ่านแชท)
+    const chimeCd = new Map();
+    const recent = new Map(); // channelId -> [{name, text}]
+    client.on(Events.MessageCreate, async (msg) => {
+      try {
+        if (!readContent || !msg.guild || msg.author.bot || !isChatRoom(msg.channel)) return;
+        const text = (msg.content || '').trim(); if (!text) return;
+        const name = msg.member ? msg.member.displayName : msg.author.username;
+        recent.set(msg.channelId, [...(recent.get(msg.channelId) || []), { name, text: text.slice(0, 300) }].slice(-10));
+        if (!S.proactive.chime || S.mode === 'off' || msg.mentions.users.has(client.user.id) || msg.reference) return;
+        if (text.length < 6 || Math.random() * 100 >= S.proactive.chimeRate) return;
+        if (Date.now() - (chimeCd.get(msg.channelId) || 0) < 20 * 60000) return;
+        chimeCd.set(msg.channelId, Date.now());
+        let out = null;
+        if (S.mode === 'ai') {
+          const ctx = (recent.get(msg.channelId) || []).map((m) => `${m.name}: ${m.text}`).join('\n');
+          out = await callAI(sys(), [{ role: 'user', content: `Recent chat in the Discord room:\n${ctx}\n\nJoin the conversation naturally with ONE short, friendly message as JIBI (same language as the chat). Don't greet everyone, don't advertise. If there's nothing natural to add, reply exactly SKIP.` }], 150).catch(() => null);
+          if (out && /^SKIP\b/i.test(out)) out = null;
+        } else out = ruleReply(text, false);
+        if (!out) return;
+        await msg.channel.sendTyping().catch(() => {});
+        out = await fill(out);
+        setTimeout(() => msg.channel.send({ content: out.slice(0, 1500), allowedMentions: { parse: [] } }).catch(() => {}), 2500);
+      } catch (e) { console.error('[chat] chime', e.message); }
+    });
+
     // ---------- API ให้ JIBI Center Hub ----------
     client.jibiChat = {
-      get: () => ({ ...S, hasKey: !!readKey(), usedToday: usage.day === today() ? usage.total : 0 }),
+      get: () => ({ ...S, readContentActive: readContent, hasKey: !!readKey(), usedToday: usage.day === today() ? usage.total : 0 }),
       set(patch) {
         if (patch.mode && ['off', 'rules', 'ai'].includes(patch.mode)) S.mode = patch.mode;
         if (patch.enabled !== undefined) S.mode = patch.enabled ? (S.lastMode || 'rules') : 'off';
@@ -142,8 +232,17 @@ module.exports = {
         if (S.mode !== 'off') S.lastMode = S.mode;
         if (patch.perUserDaily) S.perUserDaily = Math.max(1, Math.min(500, parseInt(patch.perUserDaily, 10) || 20));
         if (patch.dailyCap) S.dailyCap = Math.max(1, Math.min(5000, parseInt(patch.dailyCap, 10) || 300));
+        if (patch.proactive) {
+          const q = patch.proactive;
+          for (const k of ['welcome', 'revive', 'chime']) if (q[k] !== undefined) S.proactive[k] = !!q[k];
+          if (q.quietHours !== undefined) S.proactive.quietHours = Math.max(1, Math.min(48, parseFloat(q.quietHours) || 3));
+          if (q.chimeRate !== undefined) S.proactive.chimeRate = Math.max(1, Math.min(50, parseInt(q.chimeRate, 10) || 5));
+        }
+        let restart = false;
+        if (patch.readContent !== undefined && !!patch.readContent !== readContent) { S.readContent = !!patch.readContent; delete S.readContentError; restart = true; }
         store.save('chat-settings', S);
-        logTo(`💬 ຕັ້ງຄ່າ JIBI ລົມຕອບ: ${S.mode}`);
+        logTo(`💬 ຕັ້ງຄ່າ JIBI ລົມ: ${S.mode} · ທັກຄົນໃໝ່ ${S.proactive.welcome ? 'ເປີດ' : 'ປິດ'} · ຊວນລົມ ${S.proactive.revive ? 'ເປີດ' : 'ປິດ'} · ແຈມ ${S.proactive.chime ? 'ເປີດ' : 'ປິດ'}`);
+        if (restart) { logTo('🔁 JIBI ກຳລັງເປີດໃໝ່ ເພື່ອປ່ຽນການອ່ານແຊັດ'); setTimeout(() => process.exit(0), 1500); }
         return this.get();
       },
       setKey(key) {

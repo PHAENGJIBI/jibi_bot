@@ -207,6 +207,16 @@ a{color:var(--y)}
     </div>
   </div>
   <div class="card">
+    <h3>🗣️ JIBI ทักคนเองใน Discord</h3>
+    <div class="grid">
+      <div class="autobox"><label class="sw"><input type="checkbox" id="pWel"><span></span></label><div><b>ทักคนเข้าใหม่</b><span class="hint">คนเลือกเกมเสร็จ → JIBI ทักในห้อง 🌏 ແຊັດໂລກ</span></div></div>
+      <div class="autobox"><label class="sw"><input type="checkbox" id="pRev"><span></span></label><div><b>ห้องเงียบ → ชวนคุย</b><span class="hint">ห้องแชทโลกเงียบเกิน <input id="pQuiet" type="number" min="1" max="48" style="width:64px;padding:4px 6px"> ชม. (ช่วง 10:00–22:00)</span></div></div>
+      <div class="autobox"><label class="sw"><input type="checkbox" id="pChime"><span></span></label><div><b>แจมบทสนทนาเอง</b><span class="hint">โอกาส <input id="pRate" type="number" min="1" max="50" style="width:64px;padding:4px 6px"> % ต่อข้อความ · ห้องละไม่เกิน 1 ครั้ง / 20 นาที · โหมด AI จะคุยได้เป็นธรรมชาติที่สุด</span></div></div>
+      <div class="autobox"><label class="sw"><input type="checkbox" id="pRead"><span></span></label><div><b>ให้ JIBI อ่านแชท</b><span class="hint" id="pReadHint">จำเป็นสำหรับ "แจมบทสนทนา" · ต้องเปิด Message Content Intent ใน Developer Portal ก่อน · เปลี่ยนแล้ว JIBI รีสตาร์ท ~10 วิ</span></div></div>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn y" id="pSave">💾 บันทึก</button></div>
+  </div>
+  <div class="card">
     <h3>🎓 สอน JIBI</h3>
     <div class="grid">
       <div>
@@ -447,11 +457,28 @@ document.querySelectorAll('.autoSw').forEach((sw) => sw.addEventListener('change
   try { const c = await api('/api/chat', { enabled: sw.checked }); paintAuto(c); toast(sw.checked ? '🤖 เปิดตอบอัตโนมัติแล้ว' : '⏸️ ปิดตอบอัตโนมัติแล้ว'); loadChat(); }
   catch (e) { toast(`❌ ${e.message}`, true); sw.checked = !sw.checked; }
 }));
+let chatCache = null;
+function paintProactive(c) {
+  const p = c.proactive || {};
+  $('#pWel').checked = !!p.welcome; $('#pRev').checked = !!p.revive; $('#pChime').checked = !!p.chime;
+  $('#pQuiet').value = p.quietHours || 3; $('#pRate').value = p.chimeRate || 5; $('#pRead').checked = !!c.readContent;
+  $('#pReadHint').textContent = c.readContentError ? `⚠️ ${c.readContentError} — เปิดใน Portal แล้วลองใหม่` : (c.readContentActive ? '✅ JIBI อ่านแชทได้แล้ว' : 'จำเป็นสำหรับ "แจมบทสนทนา" · ต้องเปิด Message Content Intent ใน Developer Portal ก่อน · เปลี่ยนแล้ว JIBI รีสตาร์ท ~10 วิ');
+}
+$('#pSave').onclick = async () => {
+  try {
+    const body = { proactive: { welcome: $('#pWel').checked, revive: $('#pRev').checked, chime: $('#pChime').checked, quietHours: $('#pQuiet').value, chimeRate: $('#pRate').value } };
+    if (chatCache && $('#pRead').checked !== !!chatCache.readContent) body.readContent = $('#pRead').checked;
+    if ($('#pChime').checked && !$('#pRead').checked) toast('ℹ️ แจมบทสนทนาต้องเปิด "ให้ JIBI อ่านแชท" ด้วย');
+    await api('/api/chat', body);
+    toast(body.readContent !== undefined ? '💾 บันทึกแล้ว · JIBI กำลังรีสตาร์ท รอ 15 วิ' : '💾 บันทึกแล้ว');
+    setTimeout(loadChat, body.readContent !== undefined ? 15000 : 300);
+  } catch (e) { toast(`❌ ${e.message}`, true); }
+};
 async function loadChat() {
   try {
     const c = await api('/api/chat');
     $('#chMode').textContent = { off: 'ปิด', rules: 'คำที่ตั้งไว้', ai: 'AI' }[c.mode];
-    paintAuto(c);
+    paintAuto(c); chatCache = c; paintProactive(c);
     for (const x of $('#chSeg').children) x.classList.toggle('on', x.dataset.m === (c.mode === 'off' ? c.lastMode : c.mode));
     $('#chUsed').textContent = c.usedToday; $('#chPer').value = c.perUserDaily; $('#chCap').value = c.dailyCap;
     $('#chKeyState').textContent = c.hasKey ? 'ใส่แล้ว ✅' : 'ยังไม่ใส่'; $('#chKeyState').className = c.hasKey ? 'tag y' : 'tag';
