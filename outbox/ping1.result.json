@@ -1,0 +1,6 @@
+{
+  "ok": false,
+  "action": "ping",
+  "at": "2026-11-13T07:53:19.802Z",
+  "error": "ไม่รู้จักคำสั่ง \"ping\" (มี: sync, report, post, howto, edit-message, create-event, archive-channel, delete-event)"
+}
