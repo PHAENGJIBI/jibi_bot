@@ -8,3 +8,4 @@ env-template.txt
 _to_delete/
 HOSTED_ON_VPS
 data/hub-auth.json
+data/ai-key.json
