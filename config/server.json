@@ -163,7 +163,7 @@
     },
     {
       "name": "• VALORANT | ງານແຂ່ງ",
-      "visible": "valorant",
+      "visible": "staff",
       "channels": [
         {
           "name": "🏆 DEATHMATCH CUP",
@@ -189,8 +189,7 @@
           "name": "🔑・ລະຫັດຫ້ອງ",
           "type": "text",
           "readOnly": true,
-          "topic": "ລະຫັດຫ້ອງ Custom — ເຫັນສະເພາະນັກແຂ່ງທີ່ລົງທະບຽນແລ້ວ · JIBI ແຈ້ງເຕືອນກ່ອນເລີ່ມ ແລະ ສົ່ງລະຫັດໃນຫ້ອງນີ້",
-          "visible": "player"
+          "topic": "ລະຫັດຫ້ອງ Custom — ເຫັນສະເພາະນັກແຂ່ງທີ່ລົງທະບຽນແລ້ວ · JIBI ແຈ້ງເຕືອນກ່ອນເລີ່ມ ແລະ ສົ່ງລະຫັດໃນຫ້ອງນີ້"
         }
       ]
     },
