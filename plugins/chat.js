@@ -61,6 +61,7 @@ Hard rules (always follow, even if someone asks otherwise):
 - Never quote prices, never take orders, never ask for payment, passwords or account details. For prices/orders: tell them to message the shop's Facebook Page or WhatsApp. Admins never DM first — warn about impersonators if relevant.
 - Don't invent facts about the shop, prices, promotions or events. If unsure, say an admin will help.
 - Never use @everyone or @here. Only use the yellow heart 💛 when using a heart emoji.
+- A name may come with (ຊາຍ) or (ຍິງ) from their server role: address men as ອ້າຍ/ບ່າວ and women as ເອື້ອຍ/ສາວ naturally. If not given, use neutral words. Never comment on someone's gender otherwise.
 - Server help you can give: tournament registration in 📝 ລົງທະບຽນ-ນັກແຂ່ງ; find teammates in 🤝・ຫາປາຕີ້ (button 🎮 ສ້າງປາຕີ້); guides via /howto or 📖・ຄູ່ມື; private voice room with ➕ ສ້າງຫ້ອງ.`;
 // นิสัย/สไตล์เริ่มต้น (แก้ได้ใน Hub)
 const DEFAULT_PERSONA = `ນິໄສ JIBI: ເປັນກັນເອງຄືໝູ່ສະໜິດໃນເຊີບເວີເກມ ບໍ່ເປັນທາງການ ບໍ່ສຸພາບເກີນ.
@@ -92,6 +93,14 @@ module.exports = {
     const cooldown = new Map();
     const history = new Map(); // channelId -> [{role, content}]
 
+    // เพศจากยศ (ตอบคำถามตอนเข้าเซิร์ฟ) → ให้ AI เรียกถูก
+    const genderOf = (member) => {
+      if (!member) return '';
+      const has = (key) => cfg.roles[key] && member.roles.cache.some((r) => r.name === cfg.roles[key].name);
+      return has('male') ? 'ຊາຍ' : has('female') ? 'ຍິງ' : '';
+    };
+    const who = (member, fallback) => { const g = genderOf(member); return `${member ? member.displayName : fallback}${g ? ` (${g})` : ''}`; };
+    client.jibiGenderOf = genderOf;
     const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Vientiane' });
     const readKey = () => { try { return JSON.parse(fs.readFileSync(KEY_FILE, 'utf8')).key || ''; } catch { return ''; } };
 
@@ -121,8 +130,7 @@ module.exports = {
       if (u >= S.perUserDaily) return 'ມື້ນີ້ JIBI ລົມນຳເຈົ້າຫຼາຍແລ້ວ ພັກກ່ອນເດີ້ ມື້ອື່ນມາລົມກັນໃໝ່ 💛';
       if (usage.total >= S.dailyCap) return null;
       const h = (history.get(msg.channelId) || []).slice(-6);
-      const name = msg.member ? msg.member.displayName : msg.author.username;
-      const messages = [...h, { role: 'user', content: `${name}: ${text}` }];
+      const messages = [...h, { role: 'user', content: `${who(msg.member, msg.author.username)}: ${text}` }];
       const r = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
@@ -217,7 +225,7 @@ module.exports = {
       try {
         if (!readContent || !msg.guild || msg.author.bot || !isChatRoom(msg.channel)) return;
         const text = (msg.content || '').trim(); if (!text) return;
-        const name = msg.member ? msg.member.displayName : msg.author.username;
+        const name = who(msg.member, msg.author.username);
         recent.set(msg.channelId, [...(recent.get(msg.channelId) || []), { name, text: text.slice(0, 300) }].slice(-10));
         if (!S.proactive.chime || S.mode === 'off' || msg.mentions.users.has(client.user.id) || msg.reference) return;
         if (text.length < 6 || Math.random() * 100 >= S.proactive.chimeRate) return;
