@@ -66,6 +66,10 @@ th{color:var(--muted);font-weight:600;font-size:12px}
 .bub.ji{align-self:flex-start;background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:4px}
 .bub .acts{display:flex;gap:6px;margin-top:6px}.bub .acts button{font-size:12px;padding:3px 8px;border-radius:6px;border:1px solid var(--line);background:var(--panel);cursor:pointer}
 .bub.sys{align-self:center;background:none;color:var(--muted);font-size:12px}
+.bub.edit{width:82%;max-width:82%;border-color:var(--y)}
+.bub.edit textarea{min-height:80px;margin-top:4px;background:#0e0f12}
+.bub .acts button.y{background:var(--y);color:#241a00;border-color:var(--y);font-weight:600}
+.exedit textarea{min-height:60px}
 .sw{position:relative;display:inline-block;width:58px;height:32px;flex:none}.sw input{opacity:0;width:0;height:0}
 .sw span{position:absolute;inset:0;background:#3a3c42;border-radius:99px;transition:.2s;cursor:pointer}
 .sw span:before{content:"";position:absolute;width:24px;height:24px;left:4px;top:4px;background:#fff;border-radius:50%;transition:.2s}
@@ -566,7 +570,20 @@ function labBubble(role, text, idx) {
   if (role === 'assistant' && idx > 0) {
     const q = labHist[idx - 1] && labHist[idx - 1].content;
     const good = el('button', { textContent: '👍 จำสไตล์นี้', onclick: async () => { await api('/api/chat/teach', { addExample: { q, a: text } }); toast('👍 JIBI จำสไตล์นี้แล้ว'); loadLabSide(); } });
-    const fix = el('button', { textContent: '✏️ ควรตอบแบบนี้', onclick: async () => { const a = prompt('JIBI ควรตอบว่าอะไร?', text); if (!a) return; await api('/api/chat/teach', { addExample: { q, a } }); labHist[idx].content = a; renderLab(); toast('✏️ สอนแล้ว ครั้งหน้า JIBI จะตอบสไตล์นี้'); loadLabSide(); } });
+    const fix = el('button', { textContent: '✏️ ควรตอบแบบนี้', onclick: () => {
+      // แก้ในกล่องข้อความเลย (ไม่ต้องใช้หน้าต่างเด้ง)
+      const ta = el('textarea', { value: text });
+      const save = async () => {
+        const a = ta.value.trim(); if (!a) return;
+        try { await api('/api/chat/teach', { addExample: { q, a } }); labHist[idx].content = a; renderLab(); toast('✏️ สอนแล้ว ครั้งหน้า JIBI จะตอบสไตล์นี้'); loadLabSide(); }
+        catch (x) { toast(`❌ ${x.message}`, true); }
+      };
+      ta.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); save(); } if (ev.key === 'Escape') renderLab(); });
+      b.textContent = ''; b.classList.add('edit');
+      b.append(el('div', { className: 'hint', textContent: 'แก้ให้เป็นคำตอบที่อยากได้ แล้วกดบันทึก (Ctrl+Enter)' }), ta,
+        el('div', { className: 'acts' }, el('button', { className: 'y', textContent: '💾 บันทึก + สอน JIBI', onclick: save }), el('button', { textContent: 'ยกเลิก', onclick: () => renderLab() })));
+      ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); labWin().scrollTop = labWin().scrollHeight;
+    } });
     b.append(el('div', { className: 'acts' }, good, fix));
   }
   return b;
@@ -580,7 +597,22 @@ async function loadLabSide() {
   if (!ex.length) box.append(el('p', { className: 'hint', textContent: 'ยังไม่มี — คุยทางซ้ายแล้วกด 👍 หรือ ✏️' }));
   ex.slice().reverse().forEach((e) => {
     const del = el('button', { className: 'btn bad', textContent: 'ลบ', style: 'min-height:30px;padding:2px 10px', onclick: async () => { await api('/api/chat/teach', { examples: labTeach.examples.filter((x) => !(x.q === e.q && x.a === e.a)) }); loadLabSide(); } });
-    box.append(el('div', { className: 'mention' }, el('div', { className: 'meta', textContent: `คน: ${e.q}` }), el('div', { textContent: `JIBI: ${e.a}`, style: 'margin:4px 0' }), del));
+    const card = el('div', { className: 'mention' });
+    const view = () => {
+      card.textContent = '';
+      const edit = el('button', { className: 'btn', textContent: 'แก้', style: 'min-height:30px;padding:2px 10px', onclick: () => {
+        card.textContent = ''; card.classList.add('exedit');
+        const qi = el('input', { value: e.q }); const ai = el('textarea', { value: e.a });
+        const save = el('button', { className: 'btn y', textContent: '💾 บันทึก', style: 'min-height:30px;padding:2px 10px', onclick: async () => {
+          const list = labTeach.examples.map((x) => (x.q === e.q && x.a === e.a ? { q: qi.value.trim(), a: ai.value.trim() } : x));
+          try { await api('/api/chat/teach', { examples: list }); toast('💾 แก้แล้ว'); loadLabSide(); } catch (x) { toast(`❌ ${x.message}`, true); }
+        } });
+        card.append(el('label', { textContent: 'คนพิมพ์ว่า' }), qi, el('label', { textContent: 'JIBI ควรตอบ' }), ai, el('div', { className: 'row', style: 'margin-top:6px' }, save, el('button', { className: 'btn', textContent: 'ยกเลิก', style: 'min-height:30px;padding:2px 10px', onclick: view })));
+        ai.focus();
+      } });
+      card.append(el('div', { className: 'meta', textContent: `คน: ${e.q}` }), el('div', { textContent: `JIBI: ${e.a}`, style: 'margin:4px 0' }), el('div', { className: 'row' }, edit, del));
+    };
+    view(); box.append(card);
   });
 }
 async function loadLab() {
