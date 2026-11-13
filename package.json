@@ -1,0 +1,15 @@
+{
+  "name": "jibi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "JIBI — บอทประจำ P SHOP Gaming Hub",
+  "main": "bot.js",
+  "scripts": {
+    "setup": "node setup-server.js",
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.28.1",
+    "dotenv": "^16.4.5"
+  }
+}

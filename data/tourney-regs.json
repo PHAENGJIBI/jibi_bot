@@ -1,0 +1,55 @@
+{
+  "panels": {
+    "1570434615057977385": "1570671479904010291"
+  },
+  "players": {
+    "424942885478072338": {
+      "name": "phaeng",
+      "riot": "phhaengshiba#qwq",
+      "rank": "Iron",
+      "team": "",
+      "pshop": true,
+      "no": 1,
+      "at": 1794536961093,
+      "channelId": "1570434615057977385",
+      "messageId": "1570626594941308989",
+      "style": 4
+    },
+    "1479742337633488896": {
+      "name": "thejuice J",
+      "riot": "theJu1c3tz#aax10",
+      "rank": "Diamond",
+      "team": "ຫາທີມ/ສັງກັດ(ຕອນນີ້ບໍ່ທີມ/ສັງກັດ)",
+      "pshop": true,
+      "no": 2,
+      "at": 1794545525766,
+      "channelId": "1570434615057977385",
+      "messageId": "1570662521415798836",
+      "style": 4
+    },
+    "1555854288746455040": {
+      "name": "ເມສາ",
+      "riot": "N0N4M3#CH1LL",
+      "rank": "Silver",
+      "team": "",
+      "pshop": true,
+      "no": 3,
+      "at": 1794545948200,
+      "channelId": "1570434615057977385",
+      "messageId": "1570664291600957442",
+      "style": 4
+    },
+    "446988988222275584": {
+      "name": "atylor",
+      "riot": "STARBOYYY#11011",
+      "rank": "Diamond",
+      "team": "333.com",
+      "pshop": true,
+      "no": 4,
+      "at": 1794546370242,
+      "channelId": "1570434615057977385",
+      "messageId": "1570666062696030271",
+      "style": 4
+    }
+  }
+}

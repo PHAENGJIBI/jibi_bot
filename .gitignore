@@ -1,0 +1,8 @@
+node_modules/
+data/settings.json
+data/bot.pid
+data/status.json
+data/app.log
+.env
+env-template.txt
+_to_delete/

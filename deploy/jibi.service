@@ -1,0 +1,17 @@
+[Unit]
+Description=JIBI Discord bot (P SHOP)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=jibi
+WorkingDirectory=/opt/jibi
+Environment=NODE_ENV=production JIBI_HOST=vps
+ExecStart=/usr/bin/node bot.js
+Restart=always
+RestartSec=3
+StandardOutput=append:/opt/jibi/data/app.log
+StandardError=append:/opt/jibi/data/app.log
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,505 @@
+{
+  "_note": "โครงสร้างเซิร์ฟที่ setup-server.js จะสร้าง — แก้ชื่อห้อง/ยศที่นี่แล้วรันใหม่ได้",
+  "keepLayout": true,
+  "roles": {
+    "admin": {
+      "name": "Admin",
+      "color": "#F0B232",
+      "hoist": true,
+      "admin": true,
+      "icon": "👑"
+    },
+    "staff": {
+      "name": "Staff",
+      "color": "#E67E22",
+      "hoist": true,
+      "icon": "🧰"
+    },
+    "customer": {
+      "name": "ລູກຄ້າ",
+      "color": "#99AAB5",
+      "hoist": true,
+      "icon": "👤"
+    },
+    "valorant": {
+      "name": "Valorant",
+      "color": "#FF4655",
+      "game": true,
+      "icon": "🎯"
+    },
+    "general": {
+      "name": "General",
+      "color": "#B5BAC1",
+      "game": true,
+      "icon": "🎮"
+    },
+    "delta": {
+      "name": "Delta Force",
+      "color": "#3FB27F",
+      "game": true,
+      "icon": "🔫"
+    },
+    "heartopia": {
+      "name": "Heartopia",
+      "color": "#FF8FC7",
+      "game": true,
+      "icon": "🌸"
+    },
+    "promo": {
+      "name": "🔔 Promo",
+      "mentionable": true
+    },
+    "news": {
+      "name": "🔔 Game News",
+      "mentionable": true
+    },
+    "lv5": {
+      "name": "⭐ Lv.5",
+      "color": "#9AD0F5",
+      "level": 5
+    },
+    "lv10": {
+      "name": "🌟 Lv.10",
+      "color": "#7B6CFF",
+      "level": 10
+    },
+    "lv20": {
+      "name": "💫 Lv.20",
+      "color": "#F5B83D",
+      "hoist": true,
+      "level": 20
+    }
+  },
+  "categories": [
+    {
+      "name": "• Start",
+      "visible": "everyone",
+      "channels": [
+        {
+          "key": "rules",
+          "name": "📜・ກົດລະບຽບ",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ກົດລະບຽບຂອງ P SHOP Gaming Hub — ກະລຸນາອ່ານກ່ອນ"
+        },
+        {
+          "key": "welcome",
+          "name": "👋・ຍິນດີຕ້ອນຮັບ",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ຍິນດີຕ້ອນຮັບສູ່ P SHOP Gaming Hub"
+        },
+        {
+          "name": "🌏・ແຊັດໂລກ",
+          "type": "text",
+          "topic": "ແຊັດລວມຂອງທຸກຄົນ — ລົມກັນໄດ້ທຸກເລື່ອງ ທຸກເກມ 🌏"
+        }
+      ]
+    },
+    {
+      "name": "• Announce",
+      "visible": "customer",
+      "channels": [
+        {
+          "key": "announce",
+          "name": "📢・ປະກາດສຳຄັນ",
+          "type": "announcement",
+          "readOnly": true,
+          "topic": "ປະກາດສຳຄັນຈາກ P SHOP"
+        },
+        {
+          "name": "⭐・highlight",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ໂພສທີ່ໄດ້ ⭐ ຄົບ 5 ດວງ — ກົດ ⭐ ໃຫ້ໂພສທີ່ມັກ"
+        }
+      ]
+    },
+    {
+      "name": "• VALORANT | ແຊັດ",
+      "was": [
+        "• VALORANT"
+      ],
+      "visible": "valorant",
+      "channels": [
+        {
+          "name": "📖・ຄູ່ມື-Valorant",
+          "type": "forum",
+          "readOnly": true,
+          "topic": "ຄູ່ມືການໃຊ້ງານ ແລະ ວິທີແກ້ບັນຫາ Valorant"
+        },
+        {
+          "name": "🎯・Valorant-ອັບເດດ",
+          "type": "announcement",
+          "readOnly": true,
+          "topic": "ຂ່າວ ແລະ ໂປຣເຕີມ Valorant ຈາກ P SHOP"
+        },
+        {
+          "name": "💬・ຫ້ອງແຊັດ（valorant）",
+          "type": "text",
+          "topic": "ແຊັດກັນເລື່ອງ Valorant",
+          "was": [
+            "💬・VALORANT"
+          ]
+        },
+        {
+          "name": "🤝・ຫາປາຕີ້（valorant）",
+          "type": "text",
+          "topic": "ຫາທີມ / ຫາປາຕີ້ຫຼິ້ນ Valorant ນຳກັນ"
+        }
+      ]
+    },
+    {
+      "name": "• VALORANT | ງານແຂ່ງ",
+      "visible": "valorant",
+      "channels": [
+        {
+          "name": "🏆 DEATHMATCH CUP",
+          "type": "voice",
+          "userLimit": 20
+        },
+        {
+          "name": "🏆・deathmatch-ງານແຂ່ງ",
+          "type": "text",
+          "readOnly": true,
+          "was": [
+            "🏆・ງານແຂ່ງ-Valorant"
+          ],
+          "topic": "ຂໍ້ມູນທັງໝົດຂອງງານແຂ່ງ VALORANT DEATHMATCH MINI CUP — ລາງວັນ, ກົດກະຕິກາ, ກຳນົດການ ແລະ ຜົນການແຂ່ງ"
+        },
+        {
+          "name": "📝・ລົງທະບຽນ-ນັກແຂ່ງ",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ກົດປຸ່ມ 📝 ລົງທະບຽນ ເພື່ອໃສ່ຂໍ້ມູນນັກແຂ່ງ: ຊື່, Riot ID, ແຣງ, ສັງກັດ"
+        },
+        {
+          "name": "🔑・ລະຫັດຫ້ອງ",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ລະຫັດຫ້ອງ Custom ສຳລັບນັກແຂ່ງ — JIBI ຈະສົ່ງພ້ອມເວລາ ເມື່ອແອດມິນສັ່ງ"
+        }
+      ]
+    },
+    {
+      "name": "• VALORANT | ຫ້ອງລົມ",
+      "visible": "valorant",
+      "channels": [
+        {
+          "name": "➕ ສ້າງຫ້ອງ VALORANT",
+          "type": "voice"
+        },
+        {
+          "name": "VALORANT | 1",
+          "type": "voice"
+        },
+        {
+          "name": "VALORANT | 2",
+          "type": "voice"
+        },
+        {
+          "name": "VALORANT | 3",
+          "type": "voice"
+        },
+        {
+          "name": "VALORANT | 4",
+          "type": "voice"
+        },
+        {
+          "name": "VALORANT SQUAD | 1",
+          "type": "voice",
+          "userLimit": 5,
+          "was": [
+            "🔊 Val Squad 1"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "• ເກມໃນ STEAM | ແຊັດ",
+      "was": [
+        "• ເກມໃນ STEAM",
+        "• GENERAL"
+      ],
+      "visible": "general",
+      "channels": [
+        {
+          "name": "📖・ຄູ່ມື-General",
+          "type": "forum",
+          "readOnly": true,
+          "topic": "ຄູ່ມືການໃຊ້ງານທົ່ວໄປ, Steam ແລະ ອື່ນໆ"
+        },
+        {
+          "name": "🎮・Steam-ລົດລາຄາ",
+          "type": "announcement",
+          "readOnly": true,
+          "topic": "Steam Sale ແລະ ເກມລົດລາຄາ"
+        },
+        {
+          "name": "💬・ຫ້ອງແຊັດ（steam-ເກມທົ່ວໄປ）",
+          "type": "text",
+          "topic": "ລົມກັນເລື່ອງເກມ Steam ແລະ ເກມທົ່ວໄປ",
+          "was": [
+            "💬・steam-ເກມທົ່ວໄປ",
+            "💬・ເກມທົ່ວໄປ"
+          ]
+        },
+        {
+          "name": "🤝・ຫາປາຕີ້（steam）",
+          "type": "text",
+          "topic": "ຫາທີມ / ຫາປາຕີ້ຫຼິ້ນ ເກມໃນ STEAM ນຳກັນ"
+        }
+      ]
+    },
+    {
+      "name": "• ເກມໃນ STEAM | ຫ້ອງລົມ",
+      "visible": "general",
+      "channels": [
+        {
+          "name": "➕ ສ້າງຫ້ອງ ເກມ STEAM",
+          "type": "voice"
+        },
+        {
+          "name": "ເກມ | 1",
+          "type": "voice",
+          "was": [
+            "GENERAL | 1"
+          ]
+        },
+        {
+          "name": "ເກມ | 2",
+          "type": "voice",
+          "was": [
+            "GENERAL | 2"
+          ]
+        },
+        {
+          "name": "ເກມ | 3",
+          "type": "voice",
+          "was": [
+            "GENERAL | 3"
+          ]
+        },
+        {
+          "name": "ເກມ | 4",
+          "type": "voice",
+          "was": [
+            "GENERAL | 4"
+          ]
+        },
+        {
+          "name": "ເກມ | 5",
+          "type": "voice"
+        }
+      ]
+    },
+    {
+      "name": "• DELTA FORCE | ແຊັດ",
+      "was": [
+        "• DELTA FORCE"
+      ],
+      "visible": "delta",
+      "channels": [
+        {
+          "name": "📖・ຄູ່ມື-Delta Force",
+          "type": "forum",
+          "readOnly": true,
+          "topic": "ຄູ່ມື Delta Force"
+        },
+        {
+          "name": "📰・Delta Force-ອັບເດດ",
+          "type": "announcement",
+          "readOnly": true,
+          "topic": "ຂ່າວ Delta Force"
+        },
+        {
+          "name": "💬・ຫ້ອງແຊັດ（delta-force）",
+          "type": "text",
+          "topic": "ລົມກັນເລື່ອງ Delta Force",
+          "was": [
+            "💬・DELTA FORCE"
+          ]
+        },
+        {
+          "name": "🤝・ຫາປາຕີ້（delta-force）",
+          "type": "text",
+          "topic": "ຫາທີມ / ຫາປາຕີ້ຫຼິ້ນ DELTA FORCE ນຳກັນ"
+        }
+      ]
+    },
+    {
+      "name": "• DELTA FORCE | ຫ້ອງລົມ",
+      "visible": "delta",
+      "channels": [
+        {
+          "name": "➕ ສ້າງຫ້ອງ DELTA FORCE",
+          "type": "voice"
+        },
+        {
+          "name": "DELTA FORCE | 1",
+          "type": "voice"
+        },
+        {
+          "name": "DELTA FORCE | 2",
+          "type": "voice"
+        },
+        {
+          "name": "DELTA FORCE | 3",
+          "type": "voice"
+        },
+        {
+          "name": "DELTA FORCE | 4",
+          "type": "voice"
+        }
+      ]
+    },
+    {
+      "name": "• HEARTOPIA | ແຊັດ",
+      "was": [
+        "• HEARTOPIA"
+      ],
+      "visible": "heartopia",
+      "channels": [
+        {
+          "name": "📖・ຄູ່ມື-Heartopia",
+          "type": "forum",
+          "readOnly": true,
+          "topic": "ຄູ່ມື Heartopia"
+        },
+        {
+          "name": "📰・Heartopia-ອັບເດດ",
+          "type": "announcement",
+          "readOnly": true,
+          "topic": "ຂ່າວ Heartopia"
+        },
+        {
+          "name": "💬・ຫ້ອງແຊັດ（heartopia）",
+          "type": "text",
+          "topic": "ລົມກັນເລື່ອງ Heartopia",
+          "was": [
+            "💬・HEARTOPIA"
+          ]
+        },
+        {
+          "name": "🤝・ຫາປາຕີ້（heartopia）",
+          "type": "text",
+          "topic": "ຫາທີມ / ຫາປາຕີ້ຫຼິ້ນ HEARTOPIA ນຳກັນ"
+        }
+      ]
+    },
+    {
+      "name": "• HEARTOPIA | ຫ້ອງລົມ",
+      "visible": "heartopia",
+      "channels": [
+        {
+          "name": "➕ ສ້າງຫ້ອງ HEARTOPIA",
+          "type": "voice"
+        },
+        {
+          "name": "HEARTOPIA | 1",
+          "type": "voice"
+        },
+        {
+          "name": "HEARTOPIA | 2",
+          "type": "voice"
+        },
+        {
+          "name": "HEARTOPIA | 3",
+          "type": "voice"
+        }
+      ]
+    },
+    {
+      "name": "💎 BOOSTER",
+      "visible": "booster",
+      "channels": [
+        {
+          "name": "💎・booster-lounge",
+          "type": "text",
+          "topic": "ຫ້ອງລັບສຳລັບຄົນບູສເຊີບເວີ — ຂອບໃຈທີ່ຊ່ວຍ P SHOP 💎"
+        },
+        {
+          "name": "💎 BOOSTER LOUNGE",
+          "type": "voice"
+        }
+      ]
+    },
+    {
+      "name": "🔒 STAFF",
+      "visible": "staff",
+      "channels": [
+        {
+          "key": "staffchat",
+          "name": "ແອດມິນ-ລົມກັນ",
+          "type": "text"
+        },
+        {
+          "key": "drafts",
+          "name": "ໂພສຮ່າງ",
+          "type": "text"
+        },
+        {
+          "key": "logs",
+          "name": "bot-logs",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "forumTags": [
+    "💳 ເຕີມເງິນ",
+    "🛠️ ແກ້ບັນຫາ",
+    "👤 ບັນຊີ"
+  ],
+  "onboarding": [
+    {
+      "title": "ເຈົ້າຫຼິ້ນເກມຫຍັງແດ່?",
+      "required": true,
+      "giveCustomer": true,
+      "options": [
+        {
+          "emoji": "🎮",
+          "title": "General · ເກມທົ່ວໄປ",
+          "description": "ລົມກັນທຸກເກມ, Steam ລົດລາຄາ",
+          "role": "general"
+        },
+        {
+          "emoji": "🔫",
+          "title": "Delta Force",
+          "description": "ຂ່າວ, ຄູ່ມື ແລະ ຫ້ອງລົມກັນ",
+          "role": "delta"
+        },
+        {
+          "emoji": "🎯",
+          "title": "Valorant",
+          "description": "ຂ່າວ, ຄູ່ມືເຕີມ VP ແລະ ຫ້ອງລົມກັນ",
+          "role": "valorant"
+        },
+        {
+          "emoji": "🌸",
+          "title": "Heartopia",
+          "description": "ໂຊວ໌ເຮືອນ, ຂ່າວ ແລະ ຄູ່ມື",
+          "role": "heartopia"
+        }
+      ]
+    },
+    {
+      "title": "ຢາກໃຫ້ແຈ້ງເຕືອນຫຍັງແດ່?",
+      "required": false,
+      "options": [
+        {
+          "emoji": "🔥",
+          "title": "ໂປຣໂມຊັ່ນ ແລະ ສ່ວນຫຼຸດ",
+          "description": "ໂປຣເຕີມ Valorant, Steam ລົດລາຄາ",
+          "role": "promo"
+        },
+        {
+          "emoji": "📰",
+          "title": "ຂ່າວອັບເດດເກມ",
+          "description": "Patch ໃໝ່, ອີເວັນ",
+          "role": "news"
+        }
+      ]
+    }
+  ]
+}

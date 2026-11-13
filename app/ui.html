@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JIBI Control Center</title>
+<style>
+  :root{--bg:#0F1016;--panel:#171922;--panel2:#1E2130;--line:#2A2E40;--text:#ECEAF4;--muted:#A7ABC0;--accent:#7B6CFF;--accent-d:#5B4BE0;--ok:#3FCB7E;--bad:#FF5C6C;--warn:#F5B83D}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI","Leelawadee UI","Noto Sans Thai",Tahoma,sans-serif;font-size:15px}
+  .app{display:flex;min-height:100vh}
+  nav{width:230px;background:var(--panel);border-right:1px solid var(--line);padding:24px 14px;display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+  .brand{display:flex;align-items:center;gap:12px;padding:0 8px 22px}
+  .logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#F0913A,#E8642A);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff}
+  .brand b{display:block;font-size:17px}.brand small{color:var(--muted);font-size:12px}
+  nav button{all:unset;cursor:pointer;padding:11px 14px;border-radius:10px;color:var(--muted);display:flex;align-items:center;gap:10px}
+  nav button:hover{background:var(--panel2);color:var(--text)}
+  nav button.active{background:var(--accent-d);color:#fff}
+  nav .spacer{flex:1}
+  nav .shadow{font-size:12px;color:var(--muted);padding:10px;border:1px dashed var(--line);border-radius:10px;line-height:1.5}
+  main{flex:1;padding:32px 40px;max-width:1000px}
+  h1{margin:0 0 6px;font-size:26px}
+  .sub{color:var(--muted);margin:0 0 24px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .muted{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.6}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .btn{border-radius:10px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer;background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+  .btn:hover{filter:brightness(1.15)}
+  .btn.primary{background:var(--accent-d);border-color:var(--accent-d);color:#fff}
+  .btn.danger{background:#3A1E26;border-color:#5A2A36;color:#FFB3BC}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  label{display:block;font-weight:600;margin:18px 0 6px}
+  .hint{color:var(--muted);font-size:13px;margin-top:5px;line-height:1.6}
+  input[type=text],input[type=password]{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:#0B0C11;color:var(--text);font:inherit}
+  input:focus{outline:2px solid var(--accent);border-color:transparent}
+  .pw{display:flex;gap:8px}.pw input{flex:1}
+  .check{display:flex;gap:10px;align-items:center;margin-top:12px;font-weight:400}
+  .steps{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+  .step{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+  .step.current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;background:var(--panel2);color:var(--muted)}
+  .step.done .num{background:var(--ok);color:#0F1016}
+  .step.current .num{background:var(--accent-d);color:#fff}
+  .step.fail .num{background:var(--bad);color:#fff}
+  .step .body{flex:1}.step b{font-size:16px}
+  .step .act{margin-top:10px}
+  .state{font-size:13px;font-weight:700;margin-left:8px}
+  .ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+  .ready{background:#12301F;border:1px solid #2C6B47;border-radius:16px;padding:18px 20px;margin-bottom:24px;line-height:1.7}
+  .log{background:#0B0C11;border:1px solid var(--line);border-radius:14px;padding:14px;font-family:Consolas,"Leelawadee UI",monospace;font-size:13px;line-height:1.6;height:540px;overflow:auto;white-space:pre-wrap}
+  .log.small{height:200px}
+  .log .bot{color:#C9CCDA}.log .app{color:#A99DFF}.log .setup{color:#8FD3F8}
+  .log .t{color:#5D6175;margin-right:8px}
+  .plugin{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:12px}
+  .plugin .info{flex:1}.plugin b{font-size:16px}
+  .tag{display:inline-block;font-size:12px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin:6px 6px 0 0;color:var(--muted)}
+  .switch{position:relative;width:48px;height:28px;flex-shrink:0}
+  .switch input{opacity:0;width:0;height:0}
+  .switch span{position:absolute;inset:0;background:#3A3D4D;border-radius:14px;cursor:pointer;transition:.2s}
+  .switch span:before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+  .switch input:checked+span{background:var(--ok)}.switch input:checked+span:before{transform:translateX(20px)}
+  .soon{opacity:.6}
+  .hidden{display:none}
+  ol{margin:8px 0 0;padding-left:20px;line-height:1.8;color:var(--muted)}
+  .toast{position:fixed;right:24px;bottom:24px;background:var(--accent-d);color:#fff;padding:12px 18px;border-radius:10px;opacity:0;transition:.25s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav>
+    <div class="brand"><div class="logo">J</div><div><b>JIBI</b><small>Control Center</small></div></div>
+    <button data-tab="home" class="active">🏠 หน้าหลัก</button>
+    <button data-tab="settings">⚙️ ตั้งค่า</button>
+    <button data-tab="plugins">🧩 ปลั๊กอิน</button>
+    <button data-tab="logs">📜 Log</button>
+    <div class="spacer"></div>
+    <div class="shadow">🕶️ <b>Claude</b> คุมอยู่เบื้องหลัง<br><span id="shadowText">รอบอทออนไลน์</span></div>
+  </nav>
+
+  <main>
+    <!-- ===== หน้าหลัก ===== -->
+    <section id="tab-home">
+      <h1>หน้าหลัก</h1>
+      <p class="sub">ทำตามขั้นตอนด้านล่างทีละข้อ — ข้อที่ต้องทำตอนนี้จะมีกรอบสีม่วง</p>
+
+      <div id="readyBox" class="ready hidden">
+        ✅ <b>JIBI พร้อมใช้งานแล้ว</b> — เปิดแอปนี้ค้างไว้ บอทจะออนไลน์ตลอด<br>
+        อยากเปลี่ยนอะไร พิมพ์บอก Claude ในแชทได้เลย Claude จะแก้ให้ผ่านโฟลเดอร์ แล้ว JIBI ทำต่อเอง
+      </div>
+
+      <div class="steps">
+        <div class="step" id="s1"><div class="num">1</div><div class="body">
+          <b>ใส่รหัสบอทและ ID เซิร์ฟ</b><span class="state" id="s1state"></span>
+          <div class="muted">ทำครั้งเดียว รหัสจะเก็บในคอมเครื่องนี้</div>
+          <div class="act"><button class="btn" data-go="settings">⚙️ ไปหน้าตั้งค่า</button></div>
+        </div></div>
+
+        <div class="step" id="s2"><div class="num">2</div><div class="body">
+          <b>เปิดบอทให้ออนไลน์</b><span class="state" id="s2state"></span>
+          <div class="muted" id="s2msg">กดปุ่มแล้วรอประมาณ 10 วินาที</div>
+          <div class="act row">
+            <button class="btn primary" id="btnStart">▶️ เปิดบอท</button>
+            <button class="btn" id="btnRestart">🔁 เช็กใหม่ / รีสตาร์ท</button>
+            <button class="btn danger" id="btnStop">⏹ ปิดบอท</button>
+          </div>
+        </div></div>
+
+        <div class="step" id="s3"><div class="num">3</div><div class="body">
+          <b>ให้สิทธิ์ Administrator กับบอท</b><span class="state" id="s3state"></span>
+          <div class="muted" id="s3msg">แอปจะเช็กให้อัตโนมัติเมื่อบอทออนไลน์</div>
+          <div id="s3how" class="hidden">
+            <ol>
+              <li>ในแอป Discord: <b>คลิกขวาไอคอนเซิร์ฟ</b> → <b>การตั้งค่าเซิร์ฟเวอร์</b> → <b>บทบาท</b></li>
+              <li>กดบทบาท <b>JIBI</b> → แท็บ <b>สิทธิ์</b> → เปิด <b>ผู้ดูแล (Administrator)</b> → บันทึก</li>
+              <li>กลับมากด <b>🔁 เช็กใหม่</b> ที่ขั้นที่ 2</li>
+            </ol>
+          </div>
+        </div></div>
+
+        <div class="step" id="s4"><div class="num">4</div><div class="body">
+          <b>สร้างเซิร์ฟตามแบบ</b><span class="state" id="s4state"></span>
+          <div class="muted" id="s4msg">สร้างยศ หมวด ห้อง ห้องคู่มือ กติกา และคำถามตอนเข้าเซิร์ฟ (ทำครั้งเดียว ใช้เวลาประมาณ 1 นาที)</div>
+          <label class="check"><input type="checkbox" id="archive" checked> ย้ายห้องเก่าไปหมวด 📦 ARCHIVE ที่ซ่อนไว้ (ไม่ลบ)</label>
+          <div class="act"><button class="btn primary" id="btnSetup">🏗️ สร้างเซิร์ฟ</button></div>
+        </div></div>
+      </div>
+
+      <div class="card"><div class="row" style="justify-content:space-between"><b>ล่าสุด</b><button class="btn" id="btnFolder">📁 เปิดโฟลเดอร์</button></div><div class="log small" id="logSmall" style="margin-top:12px"></div></div>
+    </section>
+
+    <!-- ===== ตั้งค่า ===== -->
+    <section id="tab-settings" class="hidden">
+      <h1>ตั้งค่า</h1>
+      <p class="sub">ใส่ครั้งเดียว เก็บไว้ในคอมเครื่องนี้ (data/settings.json) — <b>ไม่ต้องรีเซ็ตรหัสใหม่ทุกครั้ง</b> รีเซ็ตเฉพาะตอนรหัสหลุด</p>
+      <div class="card">
+        <label for="token">รหัสบอท (Bot Token)</label>
+        <div class="pw"><input type="password" id="token" autocomplete="off" placeholder="วางรหัสบอทที่นี่"><button class="btn" id="eye" type="button" aria-label="แสดง/ซ่อนรหัส">👁</button></div>
+        <div class="hint">Developer Portal → JIBI → <b>บอท</b> → <b>รีเซ็ตโทเค็น</b> → คัดลอกมาวาง · ⚠️ ห้ามถ่ายรูปช่องนี้ตอนกด 👁</div>
+
+        <label for="guildId">ID เซิร์ฟ (Server ID)</label>
+        <input type="text" id="guildId" placeholder="ตัวเลข 17–20 หลัก">
+        <div class="hint">Discord → ตั้งค่าผู้ใช้ → ขั้นสูง → เปิด <b>โหมดผู้พัฒนา</b> → คลิกขวาไอคอนเซิร์ฟ → <b>คัดลอก ID เซิร์ฟเวอร์</b></div>
+
+        <label for="fb">ลิงก์ Facebook Page (ปุ่มสั่งซื้อในโพสต์โปร)</label>
+        <input type="text" id="fb" placeholder="https://facebook.com/... (เว้นว่างได้)">
+        <label for="wa">ลิงก์ WhatsApp (ปุ่มสั่งซื้อในโพสต์โปร)</label>
+        <input type="text" id="wa" placeholder="https://wa.me/856... (เว้นว่างได้)">
+
+        <label class="check"><input type="checkbox" id="autoStart"> เปิดบอทอัตโนมัติเมื่อเปิดแอป</label>
+        <div class="row" style="margin-top:22px"><button class="btn primary" id="btnSave">💾 บันทึก</button><span class="muted" id="savedMsg"></span></div>
+      </div>
+    </section>
+
+    <!-- ===== ปลั๊กอิน ===== -->
+    <section id="tab-plugins" class="hidden">
+      <h1>ปลั๊กอิน</h1>
+      <p class="sub">ความสามารถของ JIBI — เปิด/ปิดได้ทันที · Claude เพิ่มตัวใหม่ให้ได้เรื่อยๆ</p>
+      <div id="pluginList"></div>
+      <h3 style="margin:28px 0 12px;color:var(--muted)">กำลังจะมา</h3>
+      <div class="plugin soon"><div class="info"><b>📰 ข่าว Steam ลดราคาอัตโนมัติ</b><div class="muted">โพสต์เข้า 🎮・Steam-ລົດລາຄາ เอง</div></div></div>
+      <div class="plugin soon"><div class="info"><b>🤖 AI ตอบคำถามลูกค้า</b><div class="muted">JIBI ตอบเป็นภาษาลาวจากคู่มือของร้าน</div></div></div>
+      <div class="plugin soon"><div class="info"><b>🏆 ระบบงานแข่ง</b><div class="muted">สมัคร · เช็กอิน · ตัวสำรอง · คิดคะแนน Valorant DM</div></div></div>
+    </section>
+
+    <!-- ===== Log ===== -->
+    <section id="tab-logs" class="hidden">
+      <h1>Log</h1>
+      <p class="sub">ทุกอย่างที่เกิดขึ้น (บันทึกที่ data/app.log ด้วย — Claude อ่านเองได้)</p>
+      <div class="log" id="logFull"></div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const api = (url, data) => fetch(url, data ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) } : {}).then((r) => r.json());
+function toast(t) { const el = $('toast'); el.textContent = t; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 2400); }
+function go(tab) {
+  document.querySelectorAll('nav button[data-tab]').forEach((x) => x.classList.toggle('active', x.dataset.tab === tab));
+  document.querySelectorAll('main section').forEach((s) => s.classList.toggle('hidden', s.id !== `tab-${tab}`));
+  if (tab === 'plugins') loadPlugins();
+  if (tab === 'settings') loadSettings();
+}
+document.querySelectorAll('[data-tab]').forEach((b) => b.onclick = () => go(b.dataset.tab));
+document.querySelectorAll('[data-go]').forEach((b) => b.onclick = () => go(b.dataset.go));
+
+function setStep(n, cls, stateText, stateCls) {
+  const el = $(`s${n}`); el.className = `step ${cls}`;
+  const st = $(`s${n}state`); st.textContent = stateText || ''; st.className = `state ${stateCls || ''}`;
+}
+
+const ERR = {
+  token: '❌ รหัสบอทไม่ถูกต้อง — รีเซ็ตโทเค็นใน Developer Portal แล้ววางใหม่ในหน้าตั้งค่า',
+  intents: '❌ ยังไม่ได้เปิด Server Members Intent — Developer Portal → บอท → เปิด "สิทธิ์ในการเข้าถึงข้อมูลสมาชิกของเซิร์ฟเวอร์" → บันทึกการเปลี่ยนแปลง แล้วกด 🔁',
+  network: '⚠️ ต่ออินเทอร์เน็ต/Discord ไม่ได้ — กำลังลองใหม่อัตโนมัติ',
+  crash: '❌ บอทล้ม — ดูรายละเอียดในแท็บ Log แล้วบอก Claude',
+};
+
+async function refresh() {
+  let s; try { s = await api('/api/status'); } catch { $('s2msg').textContent = 'แอปปิดอยู่ — เปิด JIBI.bat ใหม่'; return; }
+  const c = s.checks || {};
+  // 1
+  setStep(1, s.configured ? 'done' : 'current', s.configured ? '✓ เรียบร้อย' : 'ยังไม่ได้ทำ', s.configured ? 'ok' : 'warn');
+  // 2
+  let s2 = 'กดปุ่มแล้วรอประมาณ 10 วินาที';
+  if (!s.configured) setStep(2, '', '');
+  else if (s.online && c.guild === false) { setStep(2, 'fail', '✗ หาเซิร์ฟไม่เจอ', 'bad'); s2 = `ID เซิร์ฟผิด หรือบอทยังไม่ได้อยู่ในเซิร์ฟนี้ · บอทอยู่ใน: ${(s.guilds || []).map((g) => `${g.name} (${g.id})`).join(', ') || 'ไม่มีเซิร์ฟไหนเลย — เชิญบอทก่อน'}`; }
+  else if (s.online) { setStep(2, 'done', `✓ ออนไลน์ (${s.bot || 'JIBI'})`, 'ok'); s2 = s.guild ? `เซิร์ฟ: ${s.guild} · สมาชิก ${s.members ?? '-'} คน` : 'กำลังโหลดเซิร์ฟ...'; }
+  else if (s.running) { setStep(2, 'current', 'กำลังเชื่อมต่อ...', 'warn'); }
+  else { setStep(2, s.error && s.error !== 'network' ? 'fail' : 'current', s.error ? '✗ ออฟไลน์' : 'ปิดอยู่', 'bad'); if (s.error && ERR[s.error]) s2 = ERR[s.error]; }
+  $('s2msg').textContent = s2;
+  $('btnStart').disabled = s.running || !s.configured; $('btnStop').disabled = !s.running; $('btnRestart').disabled = !s.configured;
+  // 3
+  $('s3how').classList.add('hidden');
+  if (!s.online || c.guild !== true) { setStep(3, '', ''); $('s3msg').textContent = 'แอปจะเช็กให้อัตโนมัติเมื่อบอทออนไลน์'; }
+  else if (c.admin) { setStep(3, 'done', '✓ มีสิทธิ์แล้ว', 'ok'); $('s3msg').textContent = 'บอทจัดการเซิร์ฟได้'; }
+  else { setStep(3, 'current', '✗ ยังไม่มีสิทธิ์', 'bad'); $('s3msg').textContent = 'บอทเข้าเซิร์ฟแล้วแต่ยังไม่มีสิทธิ์ — ทำตามนี้:'; $('s3how').classList.remove('hidden'); }
+  // 4
+  const canSetup = s.online && c.admin && !s.setupRunning;
+  $('btnSetup').disabled = !canSetup;
+  let s4 = 'สร้างยศ หมวด ห้อง ห้องคู่มือ กติกา และคำถามตอนเข้าเซิร์ฟ (ทำครั้งเดียว ใช้เวลาประมาณ 1 นาที)';
+  if (s.setupRunning) { setStep(4, 'current', 'กำลังสร้าง...', 'warn'); s4 = 'กำลังสร้าง ดูความคืบหน้าในกล่อง "ล่าสุด" ด้านล่าง'; }
+  else if (c.built) { setStep(4, 'done', '✓ สร้างแล้ว', 'ok'); $('btnSetup').textContent = '🏗️ สร้าง/ซิงก์อีกครั้ง'; }
+  else if (canSetup) setStep(4, 'current', 'พร้อมแล้ว กดได้เลย', 'warn');
+  else setStep(4, '', '');
+  if (s.setupResult) s4 += ` · ครั้งล่าสุด: ${s.setupResult.ok ? '✅' : '❌'} ${s.setupResult.summary}${s.setupResult.warnings ? ` (มี ⚠️ ${s.setupResult.warnings} รายการ ดูใน Log)` : ''}`;
+  $('s4msg').textContent = s4;
+  // ready
+  const ready = s.online && c.guild && c.admin && c.built;
+  $('readyBox').classList.toggle('hidden', !ready);
+  $('shadowText').textContent = s.online && s.bridge ? 'เชื่อมต่อแล้ว · พร้อมรับคำสั่งจากแชท' : 'รอบอทออนไลน์';
+}
+setInterval(refresh, 2500); refresh();
+
+$('btnStart').onclick = () => api('/api/bot', { action: 'start' }).then(refresh);
+$('btnStop').onclick = () => api('/api/bot', { action: 'stop' }).then(refresh);
+$('btnRestart').onclick = () => { api('/api/bot', { action: 'restart' }).then(refresh); toast('🔁 กำลังเช็กใหม่...'); };
+$('btnFolder').onclick = () => api('/api/open-folder', {});
+$('btnSetup').onclick = async () => {
+  const msg = $('archive').checked ? 'เริ่มสร้างเซิร์ฟ?\n\nห้องเก่าจะถูกย้ายไปหมวด ARCHIVE ที่ซ่อนไว้ (ไม่ลบ)' : 'เริ่มสร้างเซิร์ฟ?\n\nไม่แตะห้องเก่า';
+  if (!confirm(msg)) return;
+  const r = await api('/api/setup', { archive: $('archive').checked });
+  toast(r.ok ? '🏗️ เริ่มสร้างแล้ว' : '❌ เริ่มไม่ได้'); refresh();
+};
+
+// settings
+async function loadSettings() {
+  const s = await api('/api/settings');
+  $('token').value = s.token; $('guildId').value = s.guildId; $('fb').value = s.facebookUrl; $('wa').value = s.whatsappUrl; $('autoStart').checked = s.autoStart;
+}
+$('eye').onclick = () => { $('token').type = $('token').type === 'password' ? 'text' : 'password'; };
+$('btnSave').onclick = async () => {
+  const r = await api('/api/settings', { token: $('token').value, guildId: $('guildId').value, facebookUrl: $('fb').value, whatsappUrl: $('wa').value, autoStart: $('autoStart').checked });
+  if (r.error) { toast('❌ ' + r.error); return; }
+  $('token').type = 'password'; $('savedMsg').textContent = '✓ บันทึกแล้ว ' + new Date().toLocaleTimeString('th-TH');
+  toast('💾 บันทึกแล้ว'); refresh();
+};
+
+// plugins
+async function loadPlugins() {
+  const list = await api('/api/plugins');
+  $('pluginList').innerHTML = '';
+  for (const p of list) {
+    const el = document.createElement('div'); el.className = 'plugin';
+    const info = document.createElement('div'); info.className = 'info';
+    const b = document.createElement('b'); b.textContent = p.name;
+    const d = document.createElement('div'); d.className = 'muted'; d.textContent = p.description || '';
+    info.append(b, d);
+    for (const c of p.commands) { const t = document.createElement('span'); t.className = 'tag'; t.textContent = c; info.append(t); }
+    const sw = document.createElement('label'); sw.className = 'switch';
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = p.enabled; cb.disabled = p.broken;
+    cb.setAttribute('aria-label', `เปิด/ปิด ${p.name}`);
+    cb.onchange = () => api('/api/plugins', { id: p.id, enabled: cb.checked }).then(() => toast(cb.checked ? '✅ เปิดแล้ว' : '⏸ ปิดแล้ว'));
+    sw.append(cb, document.createElement('span'));
+    el.append(info, sw); $('pluginList').append(el);
+  }
+}
+
+// logs
+function connectLogs() {
+  const es = new EventSource('/api/logs');
+  es.onmessage = (ev) => {
+    const e = JSON.parse(ev.data);
+    for (const box of [$('logFull'), $('logSmall')]) {
+      const line = document.createElement('div'); line.className = e.src;
+      const t = document.createElement('span'); t.className = 't'; t.textContent = new Date(e.t).toLocaleTimeString('th-TH');
+      line.append(t, document.createTextNode(e.line)); box.append(line);
+      while (box.childElementCount > (box.id === 'logSmall' ? 60 : 800)) box.firstChild.remove();
+      box.scrollTop = box.scrollHeight;
+    }
+  };
+  es.onerror = () => { es.close(); $('logFull').innerHTML = ''; $('logSmall').innerHTML = ''; setTimeout(connectLogs, 3000); };
+}
+connectLogs();
+</script>
+</body>
+</html>

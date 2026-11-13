@@ -1,0 +1,8 @@
+[Unit]
+Description=JIBI sync with GitHub
+
+[Service]
+Type=oneshot
+User=jibi
+WorkingDirectory=/opt/jibi
+ExecStart=/opt/jibi/deploy/sync.sh
