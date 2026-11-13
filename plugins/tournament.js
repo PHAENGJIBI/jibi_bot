@@ -86,6 +86,14 @@ module.exports = {
     }
     function panelMessage() {
       const n = count();
+      if (EV.ended) {
+        const done = new EmbedBuilder()
+          .setColor(0xFFC400)
+          .setTitle(`🏁 ສິ້ນສຸດແລ້ວ — ${EVENT}`)
+          .setDescription(EV.summary || '🏁 ງານແຂ່ງຈົບລົງແລ້ວ — ຂອບໃຈທຸກຄົນທີ່ມາຮ່ວມ 💛')
+          .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
+        return { embeds: [done], components: [] };
+      }
       const embed = new EmbedBuilder()
         .setColor(0xFFC400)
         .setTitle(`📝 ລົງທະບຽນນັກແຂ່ງ — ${EVENT}`)
@@ -252,6 +260,7 @@ module.exports = {
       return { embeds: [embed], files };
     }
     async function sendReminder(force) {
+      if (EV.ended) return null;
       if (!EV.startAt) throw new Error('ຍັງບໍ່ໄດ້ຕັ້ງເວລາເລີ່ມແຂ່ງ');
       const ch = guild.channels.cache.find(isCodeChannel);
       if (!ch) throw new Error('ບໍ່ພົບຫ້ອງ 🔑 ລະຫັດຫ້ອງ');
@@ -297,6 +306,8 @@ module.exports = {
         }
         if (patch.reminders !== undefined) next.reminders = [...new Set((patch.reminders || []).map((x) => parseInt(x, 10)).filter((x) => x > 0 && x <= 1440))].sort((a, b) => b - a);
         if (patch.regOpen !== undefined) next.regOpen = !!patch.regOpen;
+        if (patch.ended !== undefined) { next.ended = patch.ended ? (EV.ended || new Date().toISOString()) : null; if (patch.ended) next.regOpen = false; }
+        if (patch.summary !== undefined) next.summary = String(patch.summary || '').slice(0, 3800) || null;
         next.sent = EV.sent || {};
         EV = next; EVENT = EV.name; MAX = EV.max;
         store.save('tourney-event', EV);
@@ -333,6 +344,7 @@ module.exports = {
           const msg = await sendRoomCode(i.user, { code: i.options.getString('code').trim(), game: i.options.getInteger('game'), map: i.options.getString('map'), note: i.options.getString('note') });
           return i.editReply(`✅ ສົ່ງລະຫັດແລ້ວ — ${msg.url}`);
         }
+        if (EV.ended && i.isButton() && (i.customId === 'tourney:open' || i.customId === 'tourney:cancel')) return i.reply({ content: '🏁 ງານແຂ່ງນີ້ສິ້ນສຸດແລ້ວ — ຕິດຕາມງານແຂ່ງຄັ້ງໜ້າເດີ້ 💛', flags: MessageFlags.Ephemeral });
         if (i.isButton() && i.customId === 'tourney:open') {
           if (!EV.regOpen && !db.players[i.user.id]) return i.reply({ content: '🔒 ປິດຮັບສະໝັກແລ້ວ — ຕິດຕາມງານແຂ່ງຄັ້ງໜ້າເດີ້ 💛', flags: MessageFlags.Ephemeral });
           const cur = db.players[i.user.id] || {};
