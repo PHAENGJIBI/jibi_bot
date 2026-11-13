@@ -1,0 +1,517 @@
+{
+  "ok": true,
+  "action": "report",
+  "at": "2026-11-13T07:49:34.739Z",
+  "result": {
+    "server": "P SHOP GAMERPOWER",
+    "members": 48,
+    "tier": 3,
+    "boosts": 24,
+    "features": [
+      "STAGE_CHANNEL_VIEWERS_50",
+      "BANNER",
+      "VANITY_URL",
+      "VIDEO_QUALITY_1080_60FPS",
+      "GUILD_ONBOARDING_EVER_ENABLED",
+      "STAGE_CHANNEL_VIEWERS_150",
+      "STAGE_CHANNEL_VIEWERS_300",
+      "ENHANCED_ROLE_COLORS",
+      "ROLE_ICONS",
+      "GUILD_ONBOARDING_HAS_PROMPTS",
+      "AUDIO_BITRATE_128_KBPS",
+      "SOUNDBOARD",
+      "GUILD_ONBOARDING",
+      "NEWS",
+      "INVITE_SPLASH",
+      "PIN_PERMISSION_MIGRATION_COMPLETE",
+      "MAX_FILE_SIZE_50_MB",
+      "AUDIO_BITRATE_384_KBPS",
+      "VIDEO_BITRATE_ENHANCED",
+      "BYPASS_SLOWMODE_PERMISSION_MIGRATION_COMPLETE",
+      "TIERLESS_BOOSTING",
+      "VIDEO_QUALITY_720_60FPS",
+      "COMMUNITY",
+      "ANIMATED_BANNER",
+      "ANIMATED_ICON",
+      "AUDIO_BITRATE_256_KBPS",
+      "MAX_FILE_SIZE_100_MB",
+      "GUILD_TAGS"
+    ],
+    "vanity": null,
+    "maxBitrate": 384000,
+    "roles": [
+      {
+        "name": "ADMIN",
+        "members": 1
+      },
+      {
+        "name": "ການຕະຫຼາດ",
+        "members": 1
+      },
+      {
+        "name": "Staff",
+        "members": 1
+      },
+      {
+        "name": "🤖 JIBI",
+        "members": 1
+      },
+      {
+        "name": "STEAM",
+        "members": 13
+      },
+      {
+        "name": "heartopia",
+        "members": 12
+      },
+      {
+        "name": "valorant",
+        "members": 4
+      },
+      {
+        "name": "DELTA FORCE",
+        "members": 2
+      },
+      {
+        "name": "BOT🤖",
+        "members": 1
+      },
+      {
+        "name": "Jockie Music",
+        "members": 1
+      },
+      {
+        "name": "ตำแหน่งใหม่",
+        "members": 0
+      },
+      {
+        "name": "JIBI",
+        "members": 1
+      },
+      {
+        "name": "Admin",
+        "members": 0
+      },
+      {
+        "name": "ລູກຄ້າ",
+        "members": 46
+      },
+      {
+        "name": "Valorant",
+        "members": 10
+      },
+      {
+        "name": "General",
+        "members": 17
+      },
+      {
+        "name": "Delta Force",
+        "members": 3
+      },
+      {
+        "name": "Heartopia",
+        "members": 13
+      },
+      {
+        "name": "🔔 Promo",
+        "members": 2
+      },
+      {
+        "name": "🔔 Game News",
+        "members": 3
+      },
+      {
+        "name": "Server Booster",
+        "members": 12
+      },
+      {
+        "name": "⭐ Lv.5",
+        "members": 0
+      },
+      {
+        "name": "🌟 Lv.10",
+        "members": 0
+      },
+      {
+        "name": "💫 Lv.20",
+        "members": 0
+      },
+      {
+        "name": "@everyone",
+        "members": 48
+      }
+    ],
+    "categories": [
+      {
+        "name": "• Start",
+        "channels": [
+          {
+            "name": "📜・ກົດລະບຽບ",
+            "type": "GuildText"
+          },
+          {
+            "name": "👋・ຍິນດີຕ້ອນຮັບ",
+            "type": "GuildText"
+          },
+          {
+            "name": "🌏・ແຊັດໂລກ",
+            "type": "GuildText"
+          }
+        ]
+      },
+      {
+        "name": "• Announce",
+        "channels": [
+          {
+            "name": "📢・ປະກາດສຳຄັນ",
+            "type": "GuildNews"
+          },
+          {
+            "name": "⭐・highlight",
+            "type": "GuildText"
+          }
+        ]
+      },
+      {
+        "name": "• VALORANT | ແຊັດ",
+        "channels": [
+          {
+            "name": "📖・ຄູ່ມື-valorant",
+            "type": "GuildForum"
+          },
+          {
+            "name": "🎯・valorant-ອັບເດດ",
+            "type": "GuildNews"
+          },
+          {
+            "name": "💬・ຫ້ອງແຊັດ（valorant）",
+            "type": "GuildText"
+          },
+          {
+            "name": "🤝・ຫາປາຕີ້（valorant）",
+            "type": "GuildText"
+          }
+        ]
+      },
+      {
+        "name": "• VALORANT | ງານແຂ່ງ",
+        "channels": [
+          {
+            "name": "🏆 DEATHMATCH CUP",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "🏆・deathmatch-ງານແຂ່ງ",
+            "type": "GuildText"
+          },
+          {
+            "name": "📝・ລົງທະບຽນ-ນັກແຂ່ງ",
+            "type": "GuildText"
+          },
+          {
+            "name": "🔑・ລະຫັດຫ້ອງ",
+            "type": "GuildText"
+          }
+        ]
+      },
+      {
+        "name": "• VALORANT | ຫ້ອງລົມ",
+        "channels": [
+          {
+            "name": "➕ ສ້າງຫ້ອງ VALORANT",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "VALORANT | 1",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "VALORANT | 2",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "VALORANT | 3",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "VALORANT | 4",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "VALORANT SQUAD | 1",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "🎮 ປາຕີ້ phaeng_shiba",
+            "type": "GuildVoice"
+          }
+        ]
+      },
+      {
+        "name": "• ເກມໃນ STEAM | ແຊັດ",
+        "channels": [
+          {
+            "name": "📖・ຄູ່ມື-general",
+            "type": "GuildForum"
+          },
+          {
+            "name": "🎮・steam-ລົດລາຄາ",
+            "type": "GuildNews"
+          },
+          {
+            "name": "💬・ຫ້ອງແຊັດ（steam-ເກມທົ່ວໄປ）",
+            "type": "GuildText"
+          },
+          {
+            "name": "🤝・ຫາປາຕີ້（steam）",
+            "type": "GuildText"
+          }
+        ]
+      },
+      {
+        "name": "• ເກມໃນ STEAM | ຫ້ອງລົມ",
+        "channels": [
+          {
+            "name": "➕ ສ້າງຫ້ອງ ເກມ STEAM",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "ເກມ | 1",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "ເກມ | 2",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "ເກມ | 3",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "ເກມ | 4",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "ເກມ | 5",
+            "type": "GuildVoice"
+          }
+        ]
+      },
+      {
+        "name": "• DELTA FORCE | ແຊັດ",
+        "channels": [
+          {
+            "name": "📖・ຄູ່ມື-delta-force",
+            "type": "GuildForum"
+          },
+          {
+            "name": "📰・delta-force-ອັບເດດ",
+            "type": "GuildNews"
+          },
+          {
+            "name": "💬・ຫ້ອງແຊັດ（delta-force）",
+            "type": "GuildText"
+          },
+          {
+            "name": "🤝・ຫາປາຕີ້（delta-force）",
+            "type": "GuildText"
+          }
+        ]
+      },
+      {
+        "name": "• DELTA FORCE | ຫ້ອງລົມ",
+        "channels": [
+          {
+            "name": "➕ ສ້າງຫ້ອງ DELTA FORCE",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "DELTA FORCE | 1",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "DELTA FORCE | 2",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "DELTA FORCE | 3",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "DELTA FORCE | 4",
+            "type": "GuildVoice"
+          }
+        ]
+      },
+      {
+        "name": "• HEARTOPIA | ແຊັດ",
+        "channels": [
+          {
+            "name": "📖・ຄູ່ມື-heartopia",
+            "type": "GuildForum"
+          },
+          {
+            "name": "📰・heartopia-ອັບເດດ",
+            "type": "GuildNews"
+          },
+          {
+            "name": "💬・ຫ້ອງແຊັດ（heartopia）",
+            "type": "GuildText"
+          },
+          {
+            "name": "🤝・ຫາປາຕີ້（heartopia）",
+            "type": "GuildText"
+          }
+        ]
+      },
+      {
+        "name": "• HEARTOPIA | ຫ້ອງລົມ",
+        "channels": [
+          {
+            "name": "➕ ສ້າງຫ້ອງ HEARTOPIA",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "HEARTOPIA | 1",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "HEARTOPIA | 2",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "HEARTOPIA | 3",
+            "type": "GuildVoice"
+          }
+        ]
+      },
+      {
+        "name": "📦 ARCHIVE 1",
+        "channels": [
+          {
+            "name": "ຫ້ອງຮັບແຂກ",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "ປະກາດຂ່າວສານ",
+            "type": "GuildText"
+          },
+          {
+            "name": "ຫ້ອງລົມກັນຫຼີ້ນ",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "welcome",
+            "type": "GuildText"
+          },
+          {
+            "name": "heartopia // 1",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "ຫ້ອງແຊັດ-all",
+            "type": "GuildText"
+          },
+          {
+            "name": "open-music",
+            "type": "GuildText"
+          },
+          {
+            "name": "heartopia // 2",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "welcome-for-valorant",
+            "type": "GuildText"
+          },
+          {
+            "name": "warfare // 1",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "ຫ້ອງແຊັດທົ່ວໄປ",
+            "type": "GuildText"
+          },
+          {
+            "name": "operators // 1",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "ຫ້ອງແຊັດຫາທີມ",
+            "type": "GuildText"
+          },
+          {
+            "name": "GAME // 1",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "GAME // 2",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "ວິທີເຕີມເກມ-valorant",
+            "type": "GuildText"
+          },
+          {
+            "name": "ຮ້ານຄ້າ-valorant-ສະກິນທີ່ເຂົ້າໃໜ່",
+            "type": "GuildText"
+          },
+          {
+            "name": "VALORANT // 1",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "VALORANT // 2",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "heartopia_chat",
+            "type": "GuildText"
+          },
+          {
+            "name": "VALORANT // 3",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "VALORANT // 4",
+            "type": "GuildVoice"
+          },
+          {
+            "name": "VALORANT // 5",
+            "type": "GuildVoice"
+          }
+        ]
+      },
+      {
+        "name": "💎 BOOSTER",
+        "channels": [
+          {
+            "name": "💎・booster-lounge",
+            "type": "GuildText"
+          },
+          {
+            "name": "💎 BOOSTER LOUNGE",
+            "type": "GuildVoice"
+          }
+        ]
+      },
+      {
+        "name": "🔒 STAFF",
+        "channels": [
+          {
+            "name": "ແອດມິນ-ລົມກັນ",
+            "type": "GuildText"
+          },
+          {
+            "name": "ໂພສຮ່າງ",
+            "type": "GuildText"
+          },
+          {
+            "name": "bot-logs",
+            "type": "GuildText"
+          }
+        ]
+      }
+    ]
+  }
+}
