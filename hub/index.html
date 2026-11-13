@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>JIBI Center Hub · P SHOP GAMERPOWER</title>
 <meta name="robots" content="noindex">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0e0f12">
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="JIBI Hub">
 <style>
 :root{--bg:#0e0f12;--panel:#17181c;--panel2:#1f2126;--line:#2b2d33;--text:#eceef1;--muted:#9aa0a8;--y:#FFC400;--y2:#ffd84d;--ok:#3fcf8e;--bad:#ff5d5d;--r:12px}
 *{box-sizing:border-box}
@@ -414,6 +420,7 @@ async function boot() {
   setInterval(refreshStatus, 15000);
   setInterval(() => { if (curTab === 'logs' && $('#lAuto').checked) loadLogs(); }, 3000);
 }
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 fetch('/api/me').then((r) => r.json()).then((m) => (m.authed ? showApp() : showLogin())).catch(showLogin);
 </script>
 </body>
