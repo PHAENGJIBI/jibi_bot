@@ -212,7 +212,9 @@ module.exports = {
       if (!on && m.roles.cache.has(role.id)) await m.roles.remove(role).catch((e) => console.error('[tournament] role', e.message));
     }
     // ให้ยศคนที่ลงทะเบียนไว้แล้ว (หลังเปิดบอท รอซิงก์สร้างยศก่อน)
-    setTimeout(async () => { await guild.roles.fetch().catch(() => {}); for (const uid of Object.keys(db.players)) await setPlayerRole(uid, true); }, 20000);
+    const ensureRoles = async () => { await guild.roles.fetch().catch(() => {}); for (const uid of Object.keys(db.players)) await setPlayerRole(uid, true); };
+    setTimeout(ensureRoles, 20000);
+    setInterval(ensureRoles, 5 * 60000);
 
     // ---------- แจ้งเตือนก่อนเริ่ม (นับถอยหลังเรียลไทม์ด้วย <t:..:R>) ----------
     function reminderMessage(minsLeft) {
