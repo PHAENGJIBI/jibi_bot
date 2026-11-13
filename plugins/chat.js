@@ -7,7 +7,7 @@ const path = require('path');
 const store = require('../lib/store');
 
 const KEY_FILE = path.join(__dirname, '..', 'data', 'ai-key.json');
-const DEFAULTS = { mode: 'rules', perUserDaily: 20, dailyCap: 300, model: 'claude-haiku-5-5' };
+const DEFAULTS = { mode: 'rules', lastMode: 'rules', perUserDaily: 20, dailyCap: 300, model: 'claude-haiku-5-5' };
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
 
 // ---------- คำตอบแบบตั้งไว้ (ลาว + ไทย) ----------
@@ -135,6 +135,9 @@ module.exports = {
       get: () => ({ ...S, hasKey: !!readKey(), usedToday: usage.day === today() ? usage.total : 0 }),
       set(patch) {
         if (patch.mode && ['off', 'rules', 'ai'].includes(patch.mode)) S.mode = patch.mode;
+        if (patch.enabled !== undefined) S.mode = patch.enabled ? (S.lastMode || 'rules') : 'off';
+        if (S.mode === 'ai' && !readKey()) { S.mode = 'rules'; if (patch.mode === 'ai') throw new Error('ໃສ່ API key ກ່ອນ ຈຶ່ງເປີດໂໝດ AI ໄດ້'); }
+        if (S.mode !== 'off') S.lastMode = S.mode;
         if (patch.perUserDaily) S.perUserDaily = Math.max(1, Math.min(500, parseInt(patch.perUserDaily, 10) || 20));
         if (patch.dailyCap) S.dailyCap = Math.max(1, Math.min(5000, parseInt(patch.dailyCap, 10) || 300));
         store.save('chat-settings', S);

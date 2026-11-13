@@ -60,6 +60,12 @@ th{color:var(--muted);font-weight:600;font-size:12px}
 .login{max-width:380px;margin:12vh auto}
 .big{font-size:28px;font-weight:800;color:var(--y)}
 .hidden{display:none!important}
+.sw{position:relative;display:inline-block;width:58px;height:32px;flex:none}.sw input{opacity:0;width:0;height:0}
+.sw span{position:absolute;inset:0;background:#3a3c42;border-radius:99px;transition:.2s;cursor:pointer}
+.sw span:before{content:"";position:absolute;width:24px;height:24px;left:4px;top:4px;background:#fff;border-radius:50%;transition:.2s}
+.sw input:checked+span{background:var(--y)}.sw input:checked+span:before{transform:translateX(26px);background:#241a00}
+.autobox{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
+.autobox b{display:block}
 a{color:var(--y)}
 @media (max-width:600px){.term{height:340px}.pill{margin-left:0;width:100%}}
 </style>
@@ -118,7 +124,9 @@ a{color:var(--y)}
       <div class="row" style="margin-top:14px"><button class="btn y" id="fSend">ส่งเลย</button></div>
     </div>
     <div class="card">
-      <h3>⚡ คำสั่งด่วน</h3>
+      <h3>🤖 JIBI ตอบแชทอัตโนมัติ</h3>
+      <div class="autobox"><label class="sw"><input type="checkbox" class="autoSw"><span></span></label><div><b class="autoTxt">—</b><span class="hint">เปิด = มีคนแท็ก @JIBI แล้ว JIBI ตอบเอง</span></div></div>
+      <h3 style="margin-top:18px">⚡ คำสั่งด่วน</h3>
       <div class="row">
         <button class="btn" data-q="status">📶 เช็กสถานะ</button>
         <button class="btn" data-q="sync">🔄 ซิงก์โครงสร้างเซิร์ฟ</button>
@@ -181,8 +189,9 @@ a{color:var(--y)}
 <section id="tab-inbox" class="hidden">
   <div class="card">
     <h3>🤖 JIBI ตอบเอง</h3>
+    <div class="autobox" style="margin-bottom:10px"><label class="sw"><input type="checkbox" class="autoSw"><span></span></label><div><b class="autoTxt">—</b><span class="hint">เลือกแบบการตอบด้านล่าง</span></div></div>
     <p class="hint">เมื่อมีคนแท็ก @JIBI หรือตอบกลับข้อความของ JIBI · ตอนนี้: <b id="chMode">—</b> · AI ใช้วันนี้ <span id="chUsed">0</span> ครั้ง</p>
-    <div class="seg" id="chSeg"><button data-m="off">ปิด</button><button data-m="rules">💬 คำที่ตั้งไว้ (ฟรี)</button><button data-m="ai">✨ AI (Claude)</button></div>
+    <div class="seg" id="chSeg"><button data-m="rules">💬 คำที่ตั้งไว้ (ฟรี)</button><button data-m="ai">✨ AI (Claude)</button></div>
     <div class="grid" style="margin-top:12px">
       <div>
         <label for="chTest">ลองพิมพ์ทดสอบ (แบบคำที่ตั้งไว้)</label>
@@ -408,11 +417,21 @@ $('#pCsv').onclick = () => {
 };
 
 /* ---------- mentions ---------- */
+function paintAuto(c) {
+  const on = c.mode !== 'off';
+  document.querySelectorAll('.autoSw').forEach((x) => (x.checked = on));
+  document.querySelectorAll('.autoTxt').forEach((x) => (x.textContent = on ? `เปิดอยู่ · ${c.mode === 'ai' ? '✨ AI' : '💬 คำที่ตั้งไว้'}` : 'ปิดอยู่ · JIBI ไม่ตอบเอง'));
+}
+document.querySelectorAll('.autoSw').forEach((sw) => sw.addEventListener('change', async () => {
+  try { const c = await api('/api/chat', { enabled: sw.checked }); paintAuto(c); toast(sw.checked ? '🤖 เปิดตอบอัตโนมัติแล้ว' : '⏸️ ปิดตอบอัตโนมัติแล้ว'); loadChat(); }
+  catch (e) { toast(`❌ ${e.message}`, true); sw.checked = !sw.checked; }
+}));
 async function loadChat() {
   try {
     const c = await api('/api/chat');
     $('#chMode').textContent = { off: 'ปิด', rules: 'คำที่ตั้งไว้', ai: 'AI' }[c.mode];
-    for (const x of $('#chSeg').children) x.classList.toggle('on', x.dataset.m === c.mode);
+    paintAuto(c);
+    for (const x of $('#chSeg').children) x.classList.toggle('on', x.dataset.m === (c.mode === 'off' ? c.lastMode : c.mode));
     $('#chUsed').textContent = c.usedToday; $('#chPer').value = c.perUserDaily; $('#chCap').value = c.dailyCap;
     $('#chKeyState').textContent = c.hasKey ? 'ใส่แล้ว ✅' : 'ยังไม่ใส่'; $('#chKeyState').className = c.hasKey ? 'tag y' : 'tag';
   } catch (e) { $('#chMode').textContent = e.message; }
@@ -451,6 +470,7 @@ async function boot() {
   await refreshStatus();
   loadChannels().catch((e) => toast(`❌ ${e.message}`, true));
   api('/api/tourney').then((t) => { $('#summary').textContent = `🏆 ${t.event.name} · ลงทะเบียน ${t.players.length}/${t.event.max} · ${t.event.regOpen ? 'เปิดรับสมัคร' : 'ปิดรับสมัคร'} · เริ่ม ${fmtLao(t.event.startAt)}`; }).catch(() => {});
+  loadChat();
   setInterval(refreshStatus, 15000);
   setInterval(() => { if (curTab === 'logs' && $('#lAuto').checked) loadLogs(); }, 3000);
 }
