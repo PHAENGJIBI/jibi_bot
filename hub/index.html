@@ -105,6 +105,7 @@ a{color:var(--y)}
     <button data-tab="tourney">🏆 งานแข่ง</button>
     <button data-tab="inbox">💬 JIBI คุย / แท็กถึง JIBI</button>
     <button data-tab="lab">🧪 คุยกับ JIBI</button>
+    <button data-tab="memory">🧠 ความจำของน้อง</button>
     <button data-tab="logs">📜 Log</button>
   </nav>
 </header>
@@ -275,6 +276,18 @@ a{color:var(--y)}
   </div>
 </section>
 
+<!-- ===== ความจำของน้อง ===== -->
+<section id="tab-memory" class="hidden">
+  <div class="grid" style="grid-template-columns:minmax(0,2fr) minmax(0,3fr)">
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h3 style="margin:0">🧠 น้องคุยกับใครไปบ้าง <span class="tag y" id="memCount">0</span></h3><button class="btn" id="memReload">โหลดใหม่</button></div>
+      <input id="memQ" placeholder="ค้นหาชื่อ..." style="margin-top:10px">
+      <div id="memList" style="margin-top:10px;max-height:560px;overflow:auto"></div>
+    </div>
+    <div class="card" id="memDetail"><p class="hint">เลือกคนทางซ้ายเพื่อดูว่าคุยอะไรกับน้องไปบ้าง</p></div>
+  </div>
+</section>
+
 <!-- ===== Log ===== -->
 <section id="tab-logs" class="hidden">
   <div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">📜 Log ล่าสุด</h3><label class="row" style="margin:0;color:var(--text)"><input type="checkbox" id="lAuto" checked style="width:auto"> อัปเดตอัตโนมัติ</label></div>
@@ -318,7 +331,8 @@ $('#tabs').addEventListener('click', (e) => {
   const b = e.target.closest('button'); if (!b) return;
   curTab = b.dataset.tab;
   for (const x of $('#tabs').children) x.classList.toggle('on', x === b);
-  for (const t of ['control', 'tourney', 'inbox', 'lab', 'logs']) $(`#tab-${t}`).classList.toggle('hidden', t !== curTab);
+  for (const t of ['control', 'tourney', 'inbox', 'lab', 'memory', 'logs']) $(`#tab-${t}`).classList.toggle('hidden', t !== curTab);
+  if (curTab === 'memory') loadMemory();
   if (curTab === 'lab') loadLab();
   if (curTab === 'tourney') loadTourney();
   if (curTab === 'inbox') { loadChat(); loadTeach(); loadMentions(); }
@@ -633,6 +647,50 @@ $('#labForm').addEventListener('submit', async (e) => {
 $('#labReset').onclick = () => { labHist = []; renderLab(); };
 $('#labPersonaSave').onclick = async () => { await api('/api/chat/teach', { persona: $('#labPersona').value }); toast('🎭 บันทึกนิสัยแล้ว'); loadLabSide(); };
 $('#labPersonaDef').onclick = async () => { $('#labPersona').value = ''; await api('/api/chat/teach', { persona: '' }); toast('ใช้นิสัยค่าเริ่มต้นแล้ว'); loadLabSide(); };
+
+/* ---------- memory ---------- */
+let memAll = []; let memSel = null;
+const ago = (t) => { if (!t) return '—'; const m = Math.round((Date.now() - t) / 60000); return m < 60 ? `${m} นาทีก่อน` : m < 1440 ? `${Math.round(m / 60)} ชม.ก่อน` : `${Math.round(m / 1440)} วันก่อน`; };
+const gTag = (g) => g === 'ຊາຍ' ? '👦 ອ້າຍ' : g === 'ຍິງ' ? '👧 ເອື້ອຍ' : '❔';
+function renderMemList() {
+  const q = $('#memQ').value.trim().toLowerCase(); const box = $('#memList'); box.textContent = '';
+  const list = memAll.filter((m) => !q || `${m.name} ${m.username}`.toLowerCase().includes(q));
+  if (!list.length) box.append(el('p', { className: 'hint', textContent: memAll.length ? 'ไม่เจอ' : 'ยังไม่มีใครคุยกับน้อง — ลองแท็ก @JIBI ใน Discord' }));
+  for (const m of list) {
+    const row = el('div', { className: 'mention', style: `cursor:pointer;${memSel === m.id ? 'border-color:var(--y)' : ''}`, onclick: () => openMem(m.id) },
+      el('div', { className: 'row', style: 'justify-content:space-between' }, el('b', { textContent: m.name || m.username }), el('span', { className: 'tag', textContent: gTag(m.gender) })),
+      el('div', { className: 'meta', textContent: `คุย ${m.count} ครั้ง · ล่าสุด ${ago(m.last)}` }),
+      m.summary ? el('div', { className: 'hint', textContent: m.summary.split('\n')[0].slice(0, 90), style: 'margin-top:4px' }) : '');
+    box.append(row);
+  }
+}
+async function loadMemory() { try { memAll = await api('/api/memory'); $('#memCount').textContent = memAll.length; renderMemList(); if (memSel) openMem(memSel); } catch (e) { toast(`❌ ${e.message}`, true); } }
+async function openMem(id) {
+  memSel = id; renderMemList();
+  const box = $('#memDetail'); box.textContent = 'กำลังโหลด...';
+  try {
+    const m = await api(`/api/memory/one?id=${encodeURIComponent(id)}`); box.textContent = '';
+    const sum = el('textarea', { value: m.summary || '', placeholder: 'ยังไม่มีบันทึก — น้องจะสรุปเองทุก ๆ 8 ข้อความ (ต้องมี API key) หรือพิมพ์เองก็ได้', style: 'min-height:120px' });
+    const save = el('button', { className: 'btn y', textContent: '💾 บันทึก', onclick: async () => { await api('/api/memory/set', { id, summary: sum.value }); toast('💾 บันทึกแล้ว'); loadMemory(); } });
+    const resum = el('button', { className: 'btn', textContent: '✨ ให้ AI สรุปใหม่', onclick: async () => { try { const r = await api('/api/memory/summarize', { id }); sum.value = r.summary || ''; toast('✨ สรุปแล้ว'); loadMemory(); } catch (e) { toast(`❌ ${e.message}`, true); } } });
+    const forget = el('button', { className: 'btn bad', textContent: '🧹 ให้น้องลืมคนนี้', onclick: async () => { if (!confirm(`ลบทุกอย่างที่น้องจำเกี่ยวกับ ${m.name}?`)) return; await api('/api/memory/forget', { id }); memSel = null; $('#memDetail').textContent = ''; toast('🧹 ลืมแล้ว'); loadMemory(); } });
+    const win = el('div', { className: 'chatwin', style: 'height:380px;margin-top:10px' });
+    for (const x of m.log || []) {
+      win.append(el('div', { className: 'bub sys', textContent: `#${x.ch} · ${new Date(x.t).toLocaleString('th-TH', { timeZone: LAO })}` }));
+      win.append(el('div', { className: 'bub me', textContent: x.u || '(แท็กเฉยๆ)' }));
+      win.append(el('div', { className: 'bub ji', textContent: x.j }));
+    }
+    box.append(
+      el('div', { className: 'row', style: 'justify-content:space-between' }, el('h3', { style: 'margin:0', textContent: `${m.name} (@${m.username || ''})` }), el('span', { className: 'tag y', textContent: gTag(m.gender) })),
+      el('p', { className: 'hint', textContent: `คุยครั้งแรก ${new Date(m.first).toLocaleDateString('th-TH', { timeZone: LAO })} · ทั้งหมด ${m.count} ครั้ง · ล่าสุด ${ago(m.last)}` }),
+      el('label', { textContent: '📝 สิ่งที่น้องจำเกี่ยวกับคนนี้ (น้องใช้ตอนคุยครั้งต่อไป)' }), sum,
+      el('div', { className: 'row', style: 'margin-top:8px' }, save, resum, forget),
+      el('label', { textContent: '💬 ประวัติที่คุยกัน' }), win);
+    win.scrollTop = win.scrollHeight;
+  } catch (e) { box.textContent = `❌ ${e.message}`; }
+}
+$('#memQ').addEventListener('input', renderMemList);
+$('#memReload').onclick = loadMemory;
 
 /* ---------- logs ---------- */
 async function loadLogs() {

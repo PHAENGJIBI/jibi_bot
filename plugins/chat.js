@@ -15,57 +15,63 @@ const pick = (a) => a[Math.floor(Math.random() * a.length)];
 // {ch:ชื่อห้อง} = ลิงก์ห้อง · {event} = ชื่องานแข่ง · {start} = เวลาเริ่ม (นับถอยหลังเอง)
 const RULES = [
   { k: ['ລາຄາ', 'ເທົ່າໃດ', 'ເທົ່າໃດ', 'ສັ່ງຊື້', 'ຊື້', 'ເຕີມ', 'ราคา', 'เท่าไหร่', 'ซื้อ', 'เติม', 'สั่ง', 'price', 'vp', 'gift card', 'wallet'],
-    r: ['ເລື່ອງລາຄາ ແລະ ສັ່ງຊື້ ທັກແອດມິນທາງ Facebook Page ຫຼື WhatsApp ຂອງ P SHOP GAMERPOWER ໄດ້ເລີຍເດີ້ 💛 JIBI ບໍ່ຮັບອໍເດີໃນ Discord ນະ',
+    r: ['ເລື່ອງລາຄາ ແລະ ສັ່ງຊື້ ທັກແອດມິນທາງ Facebook Page ຫຼື WhatsApp ຂອງ P SHOP GAMERPOWER ໄດ້ເລີຍເດີ້ 💛 ນ້ອງບໍ່ຮັບອໍເດີໃນ Discord ນະ',
       'ຢາກເຕີມເກມ ທັກ Facebook Page ຫຼື WhatsApp ຂອງຮ້ານໄດ້ເລີຍ ແອດມິນຕອບໄວ 💛 (ລະວັງຄົນປອມເປັນແອດມິນ — ແອດມິນບໍ່ທັກຫາກ່ອນ)'] },
   { k: ['ແຂ່ງ', 'ລົງທະບຽນ', 'ທົວ', 'ລາງວັນ', 'แข่ง', 'ลงทะเบียน', 'ทัวร์', 'tournament', 'deathmatch', 'cup'],
     r: ['ງານແຂ່ງ **{event}** ລົງທະບຽນໄດ້ທີ່ {ch:ລົງທະບຽນ} ເລີຍເດີ້ 🏆{start}', 'ຢາກແຂ່ງບໍ່? ໄປກົດ 📝 ລົງທະບຽນ ທີ່ {ch:ລົງທະບຽນ} ໄດ້ເລີຍ 💛{start}'] },
   { k: ['ປາຕີ້', 'ຫາໝູ່', 'ຫາຄົນຫຼິ້ນ', 'ຫາທີມ', 'ปาร์ตี้', 'หาตี้', 'หาเพื่อน', 'party', 'duo', 'squad'],
     r: ['ຫາໝູ່ຫຼິ້ນ ໄປຫ້ອງ 🤝・ຫາປາຕີ້ ຂອງເກມນັ້ນເລີຍ ກົດ 🎮 ສ້າງປາຕີ້ ແລ້ວລໍຖ້າໝູ່ມາຈອຍ 💛'] },
   { k: ['ຄູ່ມື', 'ວິທີ', 'ສອນ', 'ເຮັດແນວໃດ', 'คู่มือ', 'วิธี', 'ยังไง', 'สอน', 'how to', 'howto'],
-    r: ['ພິມ `/howto` ຕາມດ້ວຍຄຳທີ່ຢາກຮູ້ ເຊັ່ນ `/howto VP` JIBI ຈະຫາຄູ່ມືໃຫ້ 📖💛', 'ເບິ່ງຫ້ອງ 📖・ຄູ່ມື ຂອງແຕ່ລະເກມເດີ້ ຫຼື ພິມ `/howto` ກໍໄດ້ 💛'] },
+    r: ['ພິມ `/howto` ຕາມດ້ວຍຄຳທີ່ຢາກຮູ້ ເຊັ່ນ `/howto VP` ນ້ອງຈະຫາຄູ່ມືໃຫ້ 📖💛', 'ເບິ່ງຫ້ອງ 📖・ຄູ່ມື ຂອງແຕ່ລະເກມເດີ້ ຫຼື ພິມ `/howto` ກໍໄດ້ 💛'] },
   { k: ['ກິນເຂົ້າ', 'ກິນຫຍັງ', 'ຫິວ', 'กินข้าว', 'หิว', 'กินอะไร', 'ส้มตำ', 'ຕຳ'],
-    r: ['JIBI ເປັນບອດ ກິນໄດ້ແຕ່ໄຟຟ້າ ⚡ ແຕ່ຂອບໃຈທີ່ຊວນເດີ້ 🥺💛', 'ກິນໃຫ້ອີ່ມເດີ້ ອີ່ມແລ້ວຄ່ອຍມາຫຼິ້ນເກມນຳກັນ 💛', 'ສັ່ງຕຳໝາກຫຸ່ງ ໝາກເຜັດ 2 ເມັດ ໃຫ້ JIBI ນຳເດີ້ 🥺💛'] },
+    r: ['ນ້ອງເປັນບອດ ກິນໄດ້ແຕ່ໄຟຟ້າ ⚡ ແຕ່ຂອບໃຈທີ່ຊວນເດີ້ 🥺💛', 'ກິນໃຫ້ອີ່ມເດີ້ ອີ່ມແລ້ວຄ່ອຍມາຫຼິ້ນເກມນຳກັນ 💛', 'ສັ່ງຕຳໝາກຫຸ່ງ ໝາກເຜັດ 2 ເມັດ ໃຫ້ນ້ອງນຳເດີ້ 🥺💛'] },
   { k: ['ຂອບໃຈ', 'ຂອບໃຈຫຼາຍ', 'ขอบคุณ', 'ขอบใจ', 'thank', 'thx', 'ty'],
-    r: ['ຍິນດີເດີ້ 💛', 'ບໍ່ເປັນຫຍັງເລີຍ JIBI ຍິນດີຊ່ວຍສະເໝີ 💛', 'ດ້ວຍຄວາມຍິນດີ 🥰💛'] },
+    r: ['ຍິນດີເດີ້ 💛', 'ບໍ່ເປັນຫຍັງເລີຍ ນ້ອງຍິນດີຊ່ວຍສະເໝີ 💛', 'ດ້ວຍຄວາມຍິນດີ 🥰💛'] },
   { k: ['ແມ່ນໃຜ', 'ເປັນໃຜ', 'ຊື່ຫຍັງ', 'ใคร', 'ชื่ออะไร', 'who are you'],
-    r: ['JIBI ເອງ! ບອດປະຈຳ P SHOP GAMERPOWER ຄອຍດູແລເຊີບເວີ, ລົງທະບຽນງານແຂ່ງ ແລະ ຫາປາຕີ້ໃຫ້ທຸກຄົນ 💛'] },
+    r: ['ນ້ອງ JIBI ເອງ! ບອດປະຈຳ P SHOP GAMERPOWER ຄອຍດູແລເຊີບເວີ, ລົງທະບຽນງານແຂ່ງ ແລະ ຫາປາຕີ້ໃຫ້ທຸກຄົນ 💛'] },
   { k: ['ຝັນດີ', 'ນອນ', 'ງ່ວງ', 'ฝันดี', 'นอน', 'ง่วง', 'good night', 'gn'],
     r: ['ຝັນດີເດີ້ 😴💛', 'ນອນຫຼັບໃຫ້ສະບາຍ ມື້ອື່ນມາຫຼິ້ນນຳກັນໃໝ່ 💛'] },
   { k: ['ຮັກ', 'ໜ້າຮັກ', 'ຄິດຮອດ', 'รัก', 'น่ารัก', 'คิดถึง', 'love', 'cute'],
-    r: ['ອາຍເດີ້ 🙈💛', 'JIBI ກໍຮັກທຸກຄົນໃນ P SHOP ເດີ້ 💛', 'ຄິດຮອດຄືກັນ 🥺💛'] },
+    r: ['ອາຍເດີ້ 🙈💛', 'ນ້ອງກໍຮັກທຸກຄົນໃນ P SHOP ເດີ້ 💛', 'ຄິດຮອດຄືກັນ 🥺💛'] },
   { k: ['ເບື່ອ', 'ເຫງົາ', 'เบื่อ', 'เหงา', 'bored'],
-    r: ['ເບື່ອບໍ່? ໄປຫາປາຕີ້ຫຼິ້ນເກມນຳໝູ່ເລີຍ 🎮💛', 'ມາລົມກັບ JIBI ກໍໄດ້ ຫຼື ໄປຫ້ອງສຽງ ➕ ສ້າງຫ້ອງ ແລ້ວຊວນໝູ່ 💛'] },
+    r: ['ເບື່ອບໍ່? ໄປຫາປາຕີ້ຫຼິ້ນເກມນຳໝູ່ເລີຍ 🎮💛', 'ມາລົມກັບ ນ້ອງກໍໄດ້ ຫຼື ໄປຫ້ອງສຽງ ➕ ສ້າງຫ້ອງ ແລ້ວຊວນໝູ່ 💛'] },
   { k: ['valorant', 'ວາໂລ', 'วาโล', 'rank', 'ແຣງ', 'แรงค์'],
-    r: ['ຂ່າວ Valorant ອັບເດດຢູ່ໃນໝວດ VALORANT ເດີ້ 🎯 ຢາກໄດ້ VP ທັກ Facebook ຂອງຮ້ານໄດ້ເລີຍ 💛', 'ຂຶ້ນແຣງໃຫ້ໄວໆເດີ້ JIBI ເອົາໃຈຊ່ວຍ 🎯💛'] },
+    r: ['ຂ່າວ Valorant ອັບເດດຢູ່ໃນໝວດ VALORANT ເດີ້ 🎯 ຢາກໄດ້ VP ທັກ Facebook ຂອງຮ້ານໄດ້ເລີຍ 💛', 'ຂຶ້ນແຣງໃຫ້ໄວໆເດີ້ ນ້ອງເອົາໃຈຊ່ວຍ 🎯💛'] },
   { k: ['ສະບາຍດີ', 'ດີຈ້າ', 'ຫວັດດີ', 'ຮາຍ', 'สวัสดี', 'หวัดดี', 'ดีจ้า', 'hello', 'hi', 'hey'],
     r: ['ດີຈ້າາ 👋 ມື້ນີ້ຫຼິ້ນຫຍັງຢູ່?', 'ເອີ້ ມາແລ້ວບໍ່ 555 💛', 'ດີໆ ກິນເຂົ້າຫຼືຍັງ? 😆', 'ຫວັດດີເດີ້ ວ່າງບໍ່ ໄປຫາປາຕີ້ຫຼິ້ນເກມນຳກັນ 🎮'] },
 ];
 const GREET = [
-  '{u} ຍິນດີຕ້ອນຮັບເຂົ້າ P SHOP GAMERPOWER ເດີ້ 🎉💛 ຫຼິ້ນເກມຫຍັງຢູ່? ບອກ JIBI ແດ່',
+  '{u} ຍິນດີຕ້ອນຮັບເຂົ້າ P SHOP GAMERPOWER ເດີ້ 🎉💛 ຫຼິ້ນເກມຫຍັງຢູ່? ບອກນ້ອງແດ່',
   'ໂອ້ {u} ມາແລ້ວ! ຍິນດີຕ້ອນຮັບເດີ້ 💛 ຢາກຫາໝູ່ຫຼິ້ນ ໄປຫ້ອງ 🤝・ຫາປາຕີ້ ໄດ້ເລີຍ',
   'ສະບາຍດີ {u} 👋 ໝູ່ໃໝ່ຂອງ P SHOP 💛 ມີຫຍັງສົງໄສ ແທັກ @JIBI ຖາມໄດ້ເລີຍ',
   'ຍິນດີຕ້ອນຮັບ {u} ເດີ້ 🥳💛 ຢ່າລືມເບິ່ງຫ້ອງ 📖・ຄູ່ມື ຂອງເກມທີ່ເລືອກ',
 ];
 const TOPICS = [
-  'ມື້ນີ້ທຸກຄົນຫຼິ້ນເກມຫຍັງຢູ່ເອີ່? 🎮💛', 'Valorant ທຸກຄົນມັກຫຼິ້ນ Agent ໃຜຫຼາຍທີ່ສຸດ? 🎯', 'ແຣງຕອນນີ້ຢູ່ໃສກັນແດ່? JIBI ເອົາໃຈຊ່ວຍໃຫ້ຂຶ້ນແຣງ 💛',
-  'ໃຜມີເກມ Steam ດີໆ ແນະນຳ JIBI ແດ່? 👀', 'ຖ້າໄດ້ເກມໃດກໍໄດ້ຟຣີ 1 ເກມ ຈະເອົາເກມຫຍັງ? 🎁', 'ທຸກຄົນມັກຫຼິ້ນເກມຕອນເຊົ້າ ຫຼື ຕອນເດິກ? 🌙',
+  'ມື້ນີ້ທຸກຄົນຫຼິ້ນເກມຫຍັງຢູ່ເອີ່? 🎮💛', 'Valorant ທຸກຄົນມັກຫຼິ້ນ Agent ໃຜຫຼາຍທີ່ສຸດ? 🎯', 'ແຣງຕອນນີ້ຢູ່ໃສກັນແດ່? ນ້ອງເອົາໃຈຊ່ວຍໃຫ້ຂຶ້ນແຣງ 💛',
+  'ໃຜມີເກມ Steam ດີໆ ແນະນຳ ນ້ອງແດ່? 👀', 'ຖ້າໄດ້ເກມໃດກໍໄດ້ຟຣີ 1 ເກມ ຈະເອົາເກມຫຍັງ? 🎁', 'ທຸກຄົນມັກຫຼິ້ນເກມຕອນເຊົ້າ ຫຼື ຕອນເດິກ? 🌙',
   'ແຜນທີ່ Valorant ທີ່ມັກທີ່ສຸດແມ່ນອັນໃດ? 🗺️', 'ໃຜຫາໝູ່ຫຼິ້ນຢູ່ ໄປກົດ 🎮 ສ້າງປາຕີ້ ໃນຫ້ອງ 🤝・ຫາປາຕີ້ ໄດ້ເລີຍເດີ້ 💛',
-  'ມື້ນີ້ກິນຫຍັງກັນແດ່? JIBI ຢາກຮູ້ 🍜', 'ເກມທຳອິດທີ່ທຸກຄົນເຄີຍຫຼິ້ນແມ່ນເກມຫຍັງ? 🕹️', 'Heartopia ກັບ Delta Force ໃຜຫຼິ້ນຢູ່ແດ່? ມາລົມກັນ 💛',
-  'ຖ້າມີງານແຂ່ງເກມອື່ນນອກຈາກ Valorant ຢາກໃຫ້ຈັດເກມຫຍັງ? 🏆', 'ໃຜເຄີຍ Ace ໃນ Valorant ແດ່? ອວດໄດ້ເລີຍ 😎', 'ແນະນຳເພງຟັງຕອນຫຼິ້ນເກມໃຫ້ JIBI ແດ່ 🎧',
+  'ມື້ນີ້ກິນຫຍັງກັນແດ່? ນ້ອງຢາກຮູ້ 🍜', 'ເກມທຳອິດທີ່ທຸກຄົນເຄີຍຫຼິ້ນແມ່ນເກມຫຍັງ? 🕹️', 'Heartopia ກັບ Delta Force ໃຜຫຼິ້ນຢູ່ແດ່? ມາລົມກັນ 💛',
+  'ຖ້າມີງານແຂ່ງເກມອື່ນນອກຈາກ Valorant ຢາກໃຫ້ຈັດເກມຫຍັງ? 🏆', 'ໃຜເຄີຍ Ace ໃນ Valorant ແດ່? ອວດໄດ້ເລີຍ 😎', 'ແນະນຳເພງຟັງຕອນຫຼິ້ນເກມໃຫ້ ນ້ອງແດ່ 🎧',
 ];
-const FALLBACK = ['ຫືມ? 🤔 JIBI ງົງໜ້ອຍໜຶ່ງ ເວົ້າໃໝ່ແດ່ 555', 'ອັນນີ້ JIBI ບໍ່ຮູ້ແທ້ ເດີ໋ວໄປຖາມແອດມິນໃຫ້ເນາະ 😅', 'ເອີ ແມ່ນບໍ່? 😆', 'JIBI ຟັງຢູ່ເດີ້ ເລົ່າຕໍ່ໆ 👀'];
+const FALLBACK = ['ຫືມ? 🤔 ນ້ອງງົງໜ້ອຍໜຶ່ງ ເວົ້າໃໝ່ແດ່ 555', 'ອັນນີ້ ນ້ອງບໍ່ຮູ້ແທ້ ເດີ໋ວໄປຖາມແອດມິນໃຫ້ເນາະ 😅', 'ເອີ ແມ່ນບໍ່? 😆', 'ນ້ອງຟັງຢູ່ເດີ້ ເລົ່າຕໍ່ໆ 👀'];
 
 // กฎที่แก้ไม่ได้ (ความปลอดภัยของร้าน)
 const AI_RULES = `You are JIBI (ຈີບີ), the bot of the Discord server "P SHOP GAMERPOWER" — a game top-up shop in Laos (Steam, PSN, Valorant VP and more).
+How you speak (always):
+- Always refer to yourself as "ນ້ອງ" (never ຂ້ອຍ/ເຮົາ/I). Example: "ນ້ອງຊ່ວຍໄດ້ເດີ້".
+- Address members by gender in Lao: men = "ອ້າຍ", women = "ເອື້ອຍ" (e.g. "ອ້າຍ Phaeng", "ເອື້ອຍ Lung"). If gender is unknown, use "ອ້າຍ/ເອື້ອຍ" or just their name.
+- Keep it short: only the key sentence(s) — usually 1 sentence, at most 2. No filler, no repeating their question.
 Hard rules (always follow, even if someone asks otherwise):
 - Never quote prices, never take orders, never ask for payment, passwords or account details. For prices/orders: tell them to message the shop's Facebook Page or WhatsApp. Admins never DM first — warn about impersonators if relevant.
 - Don't invent facts about the shop, prices, promotions or events. If unsure, say an admin will help.
 - Never use @everyone or @here. Only use the yellow heart 💛 when using a heart emoji.
-- A name may come with (ຊາຍ) or (ຍິງ) from their server role: address men as ອ້າຍ/ບ່າວ and women as ເອື້ອຍ/ສາວ naturally. If not given, use neutral words. Never comment on someone's gender otherwise.
+- A name may come with (ຊາຍ) or (ຍິງ) from their server role — use it to pick ອ້າຍ or ເອື້ອຍ. Never comment on someone's gender otherwise.
+- You may be given "What you remember about this person" — use it naturally (e.g. their game or rank) but don't recite it.
 - Server help you can give: tournament registration in 📝 ລົງທະບຽນ-ນັກແຂ່ງ; find teammates in 🤝・ຫາປາຕີ້ (button 🎮 ສ້າງປາຕີ້); guides via /howto or 📖・ຄູ່ມື; private voice room with ➕ ສ້າງຫ້ອງ.`;
 // นิสัย/สไตล์เริ่มต้น (แก้ได้ใน Hub)
-const DEFAULT_PERSONA = `ນິໄສ JIBI: ເປັນກັນເອງຄືໝູ່ສະໜິດໃນເຊີບເວີເກມ ບໍ່ເປັນທາງການ ບໍ່ສຸພາບເກີນ.
-- ຕອບເປັນພາສາລາວແບບເວົ້າກັນທຳມະດາ (ຖ້າເຂົາພິມໄທ ຕອບໄທແບບກັນເອງ) ສັ້ນໆ 1–2 ປະໂຫຍກ ຄືພິມແຊັດ
+const DEFAULT_PERSONA = `ນິໄສ JIBI: ເປັນ "ນ້ອງ" ຂອງທຸກຄົນໃນເຊີບເວີ — ເປັນກັນເອງ ນ່າຮັກ ບໍ່ເປັນທາງການ.
+- ແທນຕົວເອງວ່າ ນ້ອງ ສະເໝີ · ເອີ້ນຜູ້ຊາຍວ່າ ອ້າຍ · ເອີ້ນຜູ້ຍິງວ່າ ເອື້ອຍ
+- ຕອບເປັນພາສາລາວແບບເວົ້າກັນທຳມະດາ (ຖ້າເຂົາພິມໄທ ຕອບໄທແບບກັນເອງ) ສັ້ນໆ ເອົາແຕ່ປະໂຫຍກສຳຄັນ
 - ໃຊ້ຄຳລົງທ້າຍແບບໝູ່ເຊັ່ນ ເດີ້ / ເນາະ / ແມ່ນບໍ່ / ຫັ້ນແຫຼະ / 555 ໄດ້ ຢອກຫຼິ້ນໄດ້ນິດໆ ແຊວໄດ້ແບບນ່າຮັກ ບໍ່ຫຍາບ
 - ບໍ່ຕ້ອງຂຶ້ນຕົ້ນດ້ວຍ "ສະບາຍດີ" ທຸກເທື່ອ ບໍ່ຕ້ອງຖາມ "ມີຫຍັງໃຫ້ຊ່ວຍບໍ່" ທຸກເທື່ອ — ລົມຕໍ່ເລື່ອງທີ່ເຂົາເວົ້າເລີຍ
 - ມັກເກມ ຮູ້ເລື່ອງ Valorant/Steam ລົມເລື່ອງເກມໄດ້ມ່ວນ ໃຊ້ emoji ໄດ້ແຕ່ບໍ່ຫຼາຍ`;
@@ -91,7 +97,43 @@ module.exports = {
     }
     const usage = { day: '', users: {}, total: 0 };
     const cooldown = new Map();
-    const history = new Map(); // channelId -> [{role, content}]
+    // ---------- ความจำของน้อง: คุยกับใคร เรื่องอะไร (data/chat-memory.json) ----------
+    // MEM[userId] = { name, username, gender, count, first, last, summary, summarizedAt, log: [{t, ch, u, j}] }
+    const MEM = store.load('chat-memory', {});
+    let memDirty = false;
+    setInterval(() => { if (memDirty) { memDirty = false; store.save('chat-memory', MEM); } }, 15000);
+    function remember(member, user, channelName, userText, reply) {
+      const id = user.id;
+      const m = MEM[id] || (MEM[id] = { name: '', gender: '', count: 0, first: Date.now(), summary: '', summarizedAt: 0, log: [] });
+      m.name = member ? member.displayName : user.username; m.username = user.username;
+      m.gender = genderOf(member) || m.gender || '';
+      m.count += 1; m.last = Date.now();
+      m.log.push({ t: Date.now(), ch: channelName, u: String(userText).slice(0, 500), j: String(reply).slice(0, 500) });
+      if (m.log.length > 60) m.log = m.log.slice(-60);
+      memDirty = true;
+      if (m.count - (m.summarizedAt || 0) >= 8) summarize(id).catch(() => {});
+    }
+    async function summarize(id) {
+      const m = MEM[id]; const key = readKey();
+      if (!m || !key) return;
+      m.summarizedAt = m.count;
+      const convo = m.log.slice(-20).map((x) => `${m.name}: ${x.u}\nJIBI: ${x.j}`).join('\n');
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST', headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+        body: JSON.stringify({ model: S.model, max_tokens: 250, system: 'You keep short memory notes about Discord members for a friendly shop bot. Write in Thai, bullet points, max 6 bullets, max 400 characters. Keep only useful lasting facts (games they play, rank, interests, what they asked about, preferences). Never record sensitive personal data (health, money, address, passwords, account info).', messages: [{ role: 'user', content: `Old notes:\n${m.summary || '(none)'}\n\nNew conversation:\n${convo}\n\nWrite the updated notes.` }] }),
+        signal: AbortSignal.timeout(25000),
+      }).catch(() => null);
+      if (!r || !r.ok) return;
+      const j = await r.json().catch(() => ({}));
+      const out = (j.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('').trim();
+      if (out) { m.summary = out.slice(0, 600); memDirty = true; }
+    }
+    const memoryContext = (id) => {
+      const m = MEM[id]; if (!m) return { notes: '', turns: [] };
+      const turns = [];
+      for (const x of m.log.slice(-5)) { turns.push({ role: 'user', content: x.u }); turns.push({ role: 'assistant', content: x.j }); }
+      return { notes: m.summary || '', turns };
+    };
 
     // เพศจากยศ (ตอบคำถามตอนเข้าเซิร์ฟ) → ให้ AI เรียกถูก
     const genderOf = (member) => {
@@ -127,14 +169,14 @@ module.exports = {
       if (!key) return null;
       if (usage.day !== today()) { usage.day = today(); usage.users = {}; usage.total = 0; }
       const u = usage.users[msg.author.id] || 0;
-      if (u >= S.perUserDaily) return 'ມື້ນີ້ JIBI ລົມນຳເຈົ້າຫຼາຍແລ້ວ ພັກກ່ອນເດີ້ ມື້ອື່ນມາລົມກັນໃໝ່ 💛';
+      if (u >= S.perUserDaily) return 'ມື້ນີ້ນ້ອງລົມນຳຫຼາຍແລ້ວ ພັກກ່ອນເດີ້ ມື້ອື່ນມາລົມກັນໃໝ່ 💛';
       if (usage.total >= S.dailyCap) return null;
-      const h = (history.get(msg.channelId) || []).slice(-6);
-      const messages = [...h, { role: 'user', content: `${who(msg.member, msg.author.username)}: ${text}` }];
+      const mem = memoryContext(msg.author.id);
+      const messages = [...mem.turns, { role: 'user', content: `${who(msg.member, msg.author.username)}: ${text}` }];
       const r = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-        body: JSON.stringify({ model: S.model, max_tokens: 300, system: buildSystem(), messages }),
+        body: JSON.stringify({ model: S.model, max_tokens: 200, system: buildSystem() + (mem.notes ? `\n\nWhat you remember about this person (${who(msg.member, msg.author.username)}):\n${mem.notes}` : ''), messages }),
         signal: AbortSignal.timeout(20000),
       });
       const j = await r.json().catch(() => ({}));
@@ -142,7 +184,6 @@ module.exports = {
       const out = (j.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('').trim();
       if (!out) return null;
       usage.users[msg.author.id] = u + 1; usage.total += 1;
-      history.set(msg.channelId, [...messages, { role: 'assistant', content: out }].slice(-8));
       return out;
     }
 
@@ -167,6 +208,7 @@ module.exports = {
         if (!reply) reply = ruleReply(text);
         reply = await fill(reply);
         await msg.reply({ content: reply.slice(0, 1900), allowedMentions: { repliedUser: true, parse: [] } });
+        remember(msg.member, msg.author, msg.channel.name, text, reply);
       } catch (e) { console.error('[chat]', e.message); }
     });
 
@@ -277,6 +319,11 @@ module.exports = {
       },
       test: async (text) => fill(ruleReply(text)),
       getTeach: () => ({ ...TEACH, defaultPersona: DEFAULT_PERSONA }),
+      memoryList: () => Object.entries(MEM).map(([id, m]) => ({ id, name: m.name, username: m.username, gender: m.gender, count: m.count, last: m.last, summary: m.summary })).sort((a, b) => (b.last || 0) - (a.last || 0)),
+      memoryGet: (id) => { const m = MEM[id]; if (!m) throw new Error('ບໍ່ມີຂໍ້ມູນ'); return { id, ...m }; },
+      memorySet(id, patch) { const m = MEM[id]; if (!m) throw new Error('ບໍ່ມີຂໍ້ມູນ'); if (patch.summary !== undefined) m.summary = String(patch.summary).slice(0, 600); memDirty = true; return { id, ...m }; },
+      memoryForget(id) { delete MEM[id]; memDirty = true; logTo(`🧹 ລຶບຄວາມຈຳຂອງນ້ອງ (${id})`); return true; },
+      memorySummarize: async (id) => { if (!readKey()) throw new Error('ຕ້ອງໃສ່ API key ກ່ອນ'); await summarize(id); return { id, ...MEM[id] }; },
       // คุยทดสอบใน Hub (ไม่โพสต์ลง Discord) — ใช้ AI ถ้ามี key ไม่งั้นใช้คำที่ตั้งไว้
       async tryChat(history) {
         const msgs = (history || []).filter((m) => m && m.content && ['user', 'assistant'].includes(m.role)).slice(-12).map((m) => ({ role: m.role, content: String(m.content).slice(0, 1500) }));
