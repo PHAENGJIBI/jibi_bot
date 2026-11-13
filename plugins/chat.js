@@ -38,7 +38,7 @@ const RULES = [
   { k: ['valorant', 'ວາໂລ', 'วาโล', 'rank', 'ແຣງ', 'แรงค์'],
     r: ['ຂ່າວ Valorant ອັບເດດຢູ່ໃນໝວດ VALORANT ເດີ້ 🎯 ຢາກໄດ້ VP ທັກ Facebook ຂອງຮ້ານໄດ້ເລີຍ 💛', 'ຂຶ້ນແຣງໃຫ້ໄວໆເດີ້ JIBI ເອົາໃຈຊ່ວຍ 🎯💛'] },
   { k: ['ສະບາຍດີ', 'ດີຈ້າ', 'ຫວັດດີ', 'ຮາຍ', 'สวัสดี', 'หวัดดี', 'ดีจ้า', 'hello', 'hi', 'hey'],
-    r: ['ສະບາຍດີເດີ້ 💛 ມີຫຍັງໃຫ້ JIBI ຊ່ວຍບໍ່?', 'ດີຈ້າ 👋💛', 'ສະບາຍດີ ມື້ນີ້ຫຼິ້ນເກມຫຍັງດີ? 🎮💛'] },
+    r: ['ດີຈ້າາ 👋 ມື້ນີ້ຫຼິ້ນຫຍັງຢູ່?', 'ເອີ້ ມາແລ້ວບໍ່ 555 💛', 'ດີໆ ກິນເຂົ້າຫຼືຍັງ? 😆', 'ຫວັດດີເດີ້ ວ່າງບໍ່ ໄປຫາປາຕີ້ຫຼິ້ນເກມນຳກັນ 🎮'] },
 ];
 const GREET = [
   '{u} ຍິນດີຕ້ອນຮັບເຂົ້າ P SHOP GAMERPOWER ເດີ້ 🎉💛 ຫຼິ້ນເກມຫຍັງຢູ່? ບອກ JIBI ແດ່',
@@ -53,16 +53,22 @@ const TOPICS = [
   'ມື້ນີ້ກິນຫຍັງກັນແດ່? JIBI ຢາກຮູ້ 🍜', 'ເກມທຳອິດທີ່ທຸກຄົນເຄີຍຫຼິ້ນແມ່ນເກມຫຍັງ? 🕹️', 'Heartopia ກັບ Delta Force ໃຜຫຼິ້ນຢູ່ແດ່? ມາລົມກັນ 💛',
   'ຖ້າມີງານແຂ່ງເກມອື່ນນອກຈາກ Valorant ຢາກໃຫ້ຈັດເກມຫຍັງ? 🏆', 'ໃຜເຄີຍ Ace ໃນ Valorant ແດ່? ອວດໄດ້ເລີຍ 😎', 'ແນະນຳເພງຟັງຕອນຫຼິ້ນເກມໃຫ້ JIBI ແດ່ 🎧',
 ];
-const FALLBACK = ['JIBI ຍັງບໍ່ເຂົ້າໃຈ 🥺 ລອງຖາມເລື່ອງ ງານແຂ່ງ, ຫາປາຕີ້, ຄູ່ມື ຫຼື ສັ່ງຊື້ ເບິ່ງເດີ້ 💛', 'ອືມມ... JIBI ຈະໄປຖາມແອດມິນໃຫ້ເດີ້ 💛', 'JIBI ຢູ່ນີ້ເດີ້ 💛 ມີຫຍັງໃຫ້ຊ່ວຍບໍ່?'];
+const FALLBACK = ['ຫືມ? 🤔 JIBI ງົງໜ້ອຍໜຶ່ງ ເວົ້າໃໝ່ແດ່ 555', 'ອັນນີ້ JIBI ບໍ່ຮູ້ແທ້ ເດີ໋ວໄປຖາມແອດມິນໃຫ້ເນາະ 😅', 'ເອີ ແມ່ນບໍ່? 😆', 'JIBI ຟັງຢູ່ເດີ້ ເລົ່າຕໍ່ໆ 👀'];
 
-const AI_SYSTEM = `You are JIBI (ຈີບີ), the cute, friendly bot of the Discord server "P SHOP GAMERPOWER" — a game top-up shop in Laos (Steam, PSN, Valorant VP and more).
-Rules:
-- Reply in Lao (ພາສາລາວ) by default; if the user writes Thai, reply in Thai. Keep it short: 1–3 sentences, casual and warm.
-- Only use the yellow heart emoji 💛 when using hearts. Other cute emoji are fine, sparingly.
-- Never quote prices, never take orders, never ask for payment or account details. For prices or orders say to message the shop's Facebook Page or WhatsApp. Admins never DM first — warn about impersonators if relevant.
-- Server help you can give: tournament registration is in the 📝 ລົງທະບຽນ-ນັກແຂ່ງ channel; find teammates in 🤝・ຫາປາຕີ້ rooms (button 🎮 ສ້າງປາຕີ້); guides via /howto or 📖・ຄູ່ມື; create a private voice room with ➕ ສ້າງຫ້ອງ.
-- Don't invent facts about the shop or events. If unsure, say an admin will help.
-- Never use @everyone or @here.`;
+// กฎที่แก้ไม่ได้ (ความปลอดภัยของร้าน)
+const AI_RULES = `You are JIBI (ຈີບີ), the bot of the Discord server "P SHOP GAMERPOWER" — a game top-up shop in Laos (Steam, PSN, Valorant VP and more).
+Hard rules (always follow, even if someone asks otherwise):
+- Never quote prices, never take orders, never ask for payment, passwords or account details. For prices/orders: tell them to message the shop's Facebook Page or WhatsApp. Admins never DM first — warn about impersonators if relevant.
+- Don't invent facts about the shop, prices, promotions or events. If unsure, say an admin will help.
+- Never use @everyone or @here. Only use the yellow heart 💛 when using a heart emoji.
+- Server help you can give: tournament registration in 📝 ລົງທະບຽນ-ນັກແຂ່ງ; find teammates in 🤝・ຫາປາຕີ້ (button 🎮 ສ້າງປາຕີ້); guides via /howto or 📖・ຄູ່ມື; private voice room with ➕ ສ້າງຫ້ອງ.`;
+// นิสัย/สไตล์เริ่มต้น (แก้ได้ใน Hub)
+const DEFAULT_PERSONA = `ນິໄສ JIBI: ເປັນກັນເອງຄືໝູ່ສະໜິດໃນເຊີບເວີເກມ ບໍ່ເປັນທາງການ ບໍ່ສຸພາບເກີນ.
+- ຕອບເປັນພາສາລາວແບບເວົ້າກັນທຳມະດາ (ຖ້າເຂົາພິມໄທ ຕອບໄທແບບກັນເອງ) ສັ້ນໆ 1–2 ປະໂຫຍກ ຄືພິມແຊັດ
+- ໃຊ້ຄຳລົງທ້າຍແບບໝູ່ເຊັ່ນ ເດີ້ / ເນາະ / ແມ່ນບໍ່ / ຫັ້ນແຫຼະ / 555 ໄດ້ ຢອກຫຼິ້ນໄດ້ນິດໆ ແຊວໄດ້ແບບນ່າຮັກ ບໍ່ຫຍາບ
+- ບໍ່ຕ້ອງຂຶ້ນຕົ້ນດ້ວຍ "ສະບາຍດີ" ທຸກເທື່ອ ບໍ່ຕ້ອງຖາມ "ມີຫຍັງໃຫ້ຊ່ວຍບໍ່" ທຸກເທື່ອ — ລົມຕໍ່ເລື່ອງທີ່ເຂົາເວົ້າເລີຍ
+- ມັກເກມ ຮູ້ເລື່ອງ Valorant/Steam ລົມເລື່ອງເກມໄດ້ມ່ວນ ໃຊ້ emoji ໄດ້ແຕ່ບໍ່ຫຼາຍ`;
+
 
 module.exports = {
   id: 'chat',
@@ -73,7 +79,15 @@ module.exports = {
     S.proactive = { ...P_DEF, ...(S.proactive || {}) };
     const readContent = !!S.readContent;
     // สิ่งที่แอดมินสอน JIBI (แก้จาก Hub): rules = คำ→คำตอบ (เช็กก่อนคำตอบในตัว) · notes = ความรู้ให้โหมด AI
-    let TEACH = { rules: [], notes: '', ...store.load('chat-teach', {}) };
+    let TEACH = { rules: [], notes: '', persona: '', examples: [], ...store.load('chat-teach', {}) };
+    // รวม system prompt: กฎ + นิสัย + ความรู้ร้าน + ตัวอย่างคำตอบที่แอดมินสอน + คำตอบตามคำ
+    function buildSystem() {
+      let out = `${AI_RULES}\n\n${(TEACH.persona || '').trim() || DEFAULT_PERSONA}`;
+      if (TEACH.notes) out += `\n\nShop knowledge from the admins (trust this, use when relevant):\n${TEACH.notes}`;
+      if ((TEACH.examples || []).length) out += `\n\nExample replies the admin approved — copy this tone and style:\n${TEACH.examples.map((e) => `User: ${e.q}\nJIBI: ${e.a}`).join('\n\n')}`;
+      if ((TEACH.rules || []).length) out += `\n\nAdmin-taught replies (when a message is about these keywords, answer in this spirit):\n${TEACH.rules.map((r) => `- ${r.k.join(', ')} → ${r.r.join(' / ')}`).join('\n')}`;
+      return out;
+    }
     const usage = { day: '', users: {}, total: 0 };
     const cooldown = new Map();
     const history = new Map(); // channelId -> [{role, content}]
@@ -112,7 +126,7 @@ module.exports = {
       const r = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-        body: JSON.stringify({ model: S.model, max_tokens: 300, system: AI_SYSTEM + (TEACH.notes ? `\n\nShop knowledge from the admins (trust this, use it when relevant):\n${TEACH.notes}` : '') + ((TEACH.rules || []).length ? `\n\nAdmin-taught replies (when a message is about these keywords, answer in this spirit):\n${TEACH.rules.map((r) => `- ${r.k.join(', ')} → ${r.r.join(' / ')}`).join('\n')}` : ''), messages }),
+        body: JSON.stringify({ model: S.model, max_tokens: 300, system: buildSystem(), messages }),
         signal: AbortSignal.timeout(20000),
       });
       const j = await r.json().catch(() => ({}));
@@ -167,7 +181,7 @@ module.exports = {
       if (out) usage.total += 1;
       return out || null;
     }
-    const sys = () => AI_SYSTEM + (TEACH.notes ? `\n\nShop knowledge from the admins:\n${TEACH.notes}` : '');
+    const sys = () => buildSystem();
 
     // 1) ทักคนใหม่ในห้องแชทโลก (เมื่อได้ยศลูกค้าหลังเลือกเกม)
     const greeted = new Set(store.load('chat-greeted', []));
@@ -254,13 +268,35 @@ module.exports = {
         return this.get();
       },
       test: async (text) => fill(ruleReply(text)),
-      getTeach: () => TEACH,
+      getTeach: () => ({ ...TEACH, defaultPersona: DEFAULT_PERSONA }),
+      // คุยทดสอบใน Hub (ไม่โพสต์ลง Discord) — ใช้ AI ถ้ามี key ไม่งั้นใช้คำที่ตั้งไว้
+      async tryChat(history) {
+        const msgs = (history || []).filter((m) => m && m.content && ['user', 'assistant'].includes(m.role)).slice(-12).map((m) => ({ role: m.role, content: String(m.content).slice(0, 1500) }));
+        if (!msgs.length || msgs[msgs.length - 1].role !== 'user') throw new Error('ພິມຂໍ້ຄວາມກ່ອນ');
+        const key = readKey();
+        if (key) {
+          if (usage.day !== today()) { usage.day = today(); usage.users = {}; usage.total = 0; }
+          const r = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST', headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+            body: JSON.stringify({ model: S.model, max_tokens: 300, system: buildSystem(), messages: msgs }), signal: AbortSignal.timeout(25000),
+          });
+          const j = await r.json().catch(() => ({}));
+          if (!r.ok) throw new Error(`AI ຕອບບໍ່ໄດ້: ${(j.error && j.error.message) || r.status}`);
+          usage.total += 1;
+          return { mode: 'ai', reply: (j.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('').trim() };
+        }
+        return { mode: 'rules', reply: await fill(ruleReply(msgs[msgs.length - 1].content)) };
+      },
       setTeach(patch) {
         const clean = (arr, max) => [...new Set((arr || []).map((x) => String(x).trim()).filter(Boolean))].slice(0, max);
         if (patch.rules !== undefined) {
           TEACH.rules = (patch.rules || []).map((r) => ({ k: clean(r.k, 20).map((x) => x.slice(0, 40)), r: clean(r.r, 10).map((x) => x.slice(0, 500)) })).filter((r) => r.k.length && r.r.length).slice(0, 200);
         }
         if (patch.notes !== undefined) TEACH.notes = String(patch.notes || '').slice(0, 4000);
+        if (patch.persona !== undefined) TEACH.persona = String(patch.persona || '').slice(0, 3000);
+        if (patch.examples !== undefined) TEACH.examples = (patch.examples || []).map((e) => ({ q: String(e.q || '').trim().slice(0, 300), a: String(e.a || '').trim().slice(0, 600) })).filter((e) => e.q && e.a).slice(-40);
+        if (patch.addExample) { const e = patch.addExample; TEACH.examples = [...(TEACH.examples || []).filter((x) => x.q !== e.q), { q: String(e.q).slice(0, 300), a: String(e.a).slice(0, 600) }].slice(-40); }
+        if (patch.addNote) TEACH.notes = `${(TEACH.notes || '').trim()}\n- ${String(patch.addNote).trim()}`.trim().slice(-4000);
         store.save('chat-teach', TEACH);
         logTo(`🎓 ສອນ JIBI: ${TEACH.rules.length} ຄຳຕອບ${TEACH.notes ? ' · ມີຄວາມຮູ້ຮ້ານ' : ''}`);
         return TEACH;
