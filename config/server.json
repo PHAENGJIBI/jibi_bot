@@ -102,17 +102,6 @@
           "topic": "ຍິນດີຕ້ອນຮັບສູ່ P SHOP GAMERPOWER"
         },
         {
-          "name": "🌏・ແຊັດໂລກ",
-          "type": "text",
-          "topic": "ແຊັດລວມຂອງທຸກຄົນ — ລົມກັນໄດ້ທຸກເລື່ອງ ທຸກເກມ 🌏"
-        }
-      ]
-    },
-    {
-      "name": "• Announce",
-      "visible": "customer",
-      "channels": [
-        {
           "key": "announce",
           "name": "📢・ປະກາດສຳຄັນ",
           "type": "announcement",
@@ -120,10 +109,9 @@
           "topic": "ປະກາດສຳຄັນຈາກ P SHOP"
         },
         {
-          "name": "⭐・highlight",
+          "name": "🌏・ແຊັດໂລກ",
           "type": "text",
-          "readOnly": true,
-          "topic": "ໂພສທີ່ໄດ້ ⭐ ຄົບ 5 ດວງ — ກົດ ⭐ ໃຫ້ໂພສທີ່ມັກ"
+          "topic": "ແຊັດລວມຂອງທຸກຄົນ — ລົມກັນໄດ້ທຸກເລື່ອງ ທຸກເກມ 🌏"
         }
       ]
     },

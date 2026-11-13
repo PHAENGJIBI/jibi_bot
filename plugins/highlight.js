@@ -16,7 +16,7 @@ module.exports = {
         if (reaction.emoji.name !== '⭐' || reaction.count < NEED) return;
         const msg = reaction.message.partial ? await reaction.message.fetch() : reaction.message;
         if (!msg.guild || msg.author.bot || posted.has(msg.id)) return;
-        const board = guild.channels.cache.find((c) => c.name.includes('highlight'));
+        const board = guild.channels.cache.find((c) => c.name.includes('highlight') && !(c.parent && c.parent.name.startsWith('📦 ARCHIVE')));
         if (!board || board.id === msg.channelId) return;
         posted.add(msg.id); store.save('highlight', [...posted].slice(-2000));
         const embed = new EmbedBuilder()
