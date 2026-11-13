@@ -7,6 +7,13 @@ const { Client, GatewayIntentBits, Events, PermissionFlagsBits, Partials } = req
 const { startBridge } = require('./lib/bridge');
 const { listPlugins } = require('./lib/plugins');
 
+// ย้ายไปรันบน VPS แล้ว: เครื่องที่มีไฟล์ HOSTED_ON_VPS ห้ามเปิดบอท (กัน JIBI ซ้อน 2 ตัว)
+if (fs.existsSync(path.join(__dirname, 'HOSTED_ON_VPS')) && process.env.JIBI_HOST !== 'vps') {
+  console.log('☁️ JIBI ย้ายไปออนไลน์บนเครื่องเช่า (VPS) แล้ว — เครื่องนี้ไม่ต้องเปิดบอท');
+  try { fs.writeFileSync(path.join(__dirname, 'data', 'status.json'), JSON.stringify({ online: false, error: 'moved-to-vps', at: new Date().toISOString() }, null, 2)); } catch {}
+  process.exit(2);
+}
+
 const TOKEN = (process.env.DISCORD_TOKEN || '').trim();
 const GUILD_ID = (process.env.GUILD_ID || '').trim();
 const STATUS = path.join(__dirname, 'data', 'status.json');
