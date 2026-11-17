@@ -145,6 +145,30 @@ module.exports = {
         )
         .setFooter({ text: '👑 ຄຳຕັດສິນຂອງແອດມິນຖືເປັນທີ່ສຸດ · JIBI · P SHOP GAMERPOWER' });
     }
+    // สมัครเสร็จ (ขั้น 3) — บอกสิ่งที่ต้องทำต่ออย่างเดียว + ปุ่มลิงก์
+    const chUrl = (c) => `https://discord.com/channels/${guild.id}/${c.id}`;
+    function doneMessage(no) {
+      const sub = no > MAX;
+      const hm = (iso, minus) => { const d = new Date(new Date(iso).getTime() + 7 * 3600000 - minus * 60000); return `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`; };
+      const day = EV.startAt ? laoTime(EV.startAt).split(' · ')[0] : 'ວັນແຂ່ງ';
+      const voice = guild.channels.cache.find((c) => c.type === ChannelType.GuildVoice && c.name.includes('βETA'));
+      const e = new EmbedBuilder().setColor(0x1D9E75)
+        .setTitle(`🎉 ສະໝັກສຳເລັດ! ເຈົ້າແມ່ນນັກແຂ່ງ #${no}${sub ? ' (ຕົວສຳຮອງ)' : ''}`)
+        .setDescription([
+          '✅ 1 ກົດຢາກແຂ່ງ  →  ✅ 2 ສະໝັກ  →  👉 **3 ວັນແຂ່ງ**',
+          '',
+          `🎧 **${day} · ${EV.startAt ? hm(EV.startAt, 30) : '—'} ໂມງ** ເຂົ້າ Voice ${voice ? `<#${voice.id}>` : '**🔊 βETA TOURNAMENT**'}`,
+          `🔑 ລະຫັດຫ້ອງຈະມາທີ່ ${codeLink()} (ເປີດໄດ້ແລ້ວດຽວນີ້) + DM`,
+          sub ? '🔁 ເຈົ້າເປັນຕົວສຳຮອງ — ຖ້າມີຄົນບໍ່ມາ ແອດມິນຈະເອີ້ນ ມາລໍຖ້າໃນ Voice ໄດ້' : null,
+        ].filter((x) => x !== null).join('\n'))
+        .setFooter({ text: '👑 ຄຳຕັດສິນຂອງແອດມິນຖືເປັນທີ່ສຸດ · JIBI · P SHOP GAMERPOWER' });
+      const code = guild.channels.cache.find(isCodeChannel);
+      const qa = guild.channels.cache.find((x) => x.type === ChannelType.GuildText && x.name.includes('ຖາມ-ຕອບ') && x.name.includes(EV.tag === 'B2' ? 'βeta' : ''));
+      const btns = [];
+      if (code) btns.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(chUrl(code)).setLabel('🔑 ເປີດຫ້ອງລະຫັດ'));
+      if (qa) btns.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(chUrl(qa)).setLabel('❓ ມີຄຳຖາມ'));
+      return { embeds: [e], components: btns.length ? [new ActionRowBuilder().addComponents(...btns)] : [] };
+    }
     // ข้อมูลหลังสมัครแบบอ่านง่าย (ตอบในห้อง + DM)
     function infoEmbed(no, edited) {
       const t = EV.startAt ? unix(EV.startAt) : 0;
@@ -446,6 +470,9 @@ module.exports = {
       remindNow: () => sendReminder(true),
       refreshPanels,
     };
+    api.isPlayer = (uid) => (db.players[uid] ? db.players[uid].no : 0);
+    api.regOpen = () => !!EV.regOpen && !EV.ended;
+    api.doneMessage = doneMessage;
     client.jibiTourney = api;
 
     client.on(Events.InteractionCreate, async (i) => {
@@ -486,8 +513,11 @@ module.exports = {
           const missing = conf.options.filter((o) => o.required && !v.confirm.includes(o.value));
           if (missing.length) return i.editReply(`❌ ຕ້ອງຕິກຢືນຢັນໃຫ້ຄົບ:\n${missing.map((o) => `• ${o.label}`).join('\n')}\n\nກົດ 📝 ແລ້ວລອງໃໝ່`);
           v.pshop = v.confirm.includes('pshop');
-          const ch = i.channel;
           const old = db.players[i.user.id];
+          // สมัครจากห้องอื่น (เช่น การ์ดต้อนรับ) → การ์ดนักแข่งไปลงห้องลงทะเบียนเสมอ
+          const ch = isRegChannel(i.channel) ? i.channel
+            : (old && await guild.channels.fetch(old.channelId).catch(() => null)) || guild.channels.cache.find(isRegChannel);
+          if (!ch) return i.editReply('❌ ບໍ່ພົບຫ້ອງລົງທະບຽນ — ແຈ້ງແອດມິນ');
           if (!EV.regOpen && !old) return i.editReply('🔒 ປິດຮັບສະໝັກແລ້ວ');
           const no = old ? old.no : Math.max(0, ...Object.values(db.players).map((x) => x.no)) + 1;
           const p = { ...v, no, at: old ? old.at : Date.now(), channelId: ch.id, messageId: old && old.messageId, style: 4, acceptedRules: true };
@@ -502,7 +532,8 @@ module.exports = {
           if (!old) {
             i.user.send({ embeds: [infoEmbed(no, false)] }).catch(() => {});
           }
-          return i.editReply({ content: `🎯 ກາດນັກແຂ່ງຂອງເຈົ້າ: ${msg.url}`, embeds: [infoEmbed(no, !!old)] });
+          if (!old) return i.editReply(doneMessage(no));
+          return i.editReply({ content: `🎯 ກາດນັກແຂ່ງຂອງເຈົ້າ: ${msg.url}`, embeds: [infoEmbed(no, true)] });
         }
 
         if (i.isButton() && i.customId === 'tourney:cancel') {
