@@ -4,7 +4,7 @@
 const {
   Events, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle,
   ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType, MessageFlags,
-  LabelBuilder, StringSelectMenuBuilder, CheckboxBuilder, SlashCommandBuilder, PermissionFlagsBits,
+  LabelBuilder, StringSelectMenuBuilder, CheckboxBuilder, CheckboxGroupBuilder, CheckboxGroupOptionBuilder, SlashCommandBuilder, PermissionFlagsBits,
 } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
@@ -25,7 +25,12 @@ const FIELDS = [
   { id: 'riot', type: 'text', label: 'Riot ID (ຊື່#TAG)', placeholder: 'ເຊັ່ນ: PShop#LAO', max: 40, required: true },
   { id: 'rank', type: 'select', label: 'ແຣງ (Rank)', placeholder: 'ເລືອກແຣງຂອງເຈົ້າ', options: RANKS, required: true },
   { id: 'team', type: 'text', label: 'ສັງກັດ / ທີມ (ບໍ່ໃສ່ກໍໄດ້)', placeholder: 'ເຊັ່ນ: ຊື່ທີມ ຫຼື ຊື່ຮ້ານ', max: 40, required: false },
-  { id: 'pshop', type: 'checkbox', label: 'ເຄີຍເຕີມເກມກັບຮ້ານ P SHOP ບໍ່?', description: 'ຕິກ ✅ ຖ້າເຄີຍເຕີມ' },
+  { id: 'confirm', type: 'group', label: 'ຢືນຢັນ — ຕ້ອງຕິກ 3 ຂໍ້ທຳອິດ', description: 'ຂໍ້ສຸດທ້າຍ (P SHOP) ບໍ່ຕິກກໍໄດ້', options: [
+    { value: 'rules', label: '📜 ອ່ານ ແລະ ເຂົ້າໃຈກົດທັງໝົດແລ້ວ', required: true },
+    { value: 'code', label: '🔑 ຮູ້ແລ້ວ: ລະຫັດຫ້ອງສົ່ງຢູ່ຫ້ອງ 🔑・ລະຫັດຫ້ອງ ເທົ່ານັ້ນ', required: true },
+    { value: 'admin', label: '👑 ຍອມຮັບຄຳຕັດສິນຂອງແອດມິນ ບໍ່ວ່າຈະເປັນແນວໃດ', description: 'ຄຳຕັດສິນຂອງແອດມິນຖືເປັນທີ່ສຸດ', required: true },
+    { value: 'pshop', label: '🛒 ເຄີຍເຕີມເກມກັບຮ້ານ P SHOP' },
+  ] },
 ];
 
 function buildField(f, cur) {
@@ -39,6 +44,16 @@ function buildField(f, cur) {
   if (f.type === 'checkbox') {
     return label.setCheckboxComponent(new CheckboxBuilder().setCustomId(f.id).setDefault(!!cur[f.id]));
   }
+  if (f.type === 'group') {
+    const had = Array.isArray(cur[f.id]) ? cur[f.id] : (cur.pshop ? ['pshop'] : []);
+    return label.setCheckboxGroupComponent(new CheckboxGroupBuilder().setCustomId(f.id).setRequired(true)
+      .setMinValues(f.options.filter((o) => o.required).length).setMaxValues(f.options.length)
+      .addOptions(f.options.map((o) => {
+        const b = new CheckboxGroupOptionBuilder().setValue(o.value).setLabel(o.label).setDefault(had.includes(o.value));
+        if (o.description) b.setDescription(o.description);
+        return b;
+      })));
+  }
   const input = new TextInputBuilder().setCustomId(f.id).setStyle(TextInputStyle.Short)
     .setPlaceholder(f.placeholder).setMaxLength(f.max).setRequired(f.required);
   if (cur[f.id]) input.setValue(cur[f.id]);
@@ -49,6 +64,7 @@ function readField(i, f) {
   if (!d) return f.type === 'checkbox' ? false : '';
   if (f.type === 'select') return (d.values && d.values[0]) || '';
   if (f.type === 'checkbox') return d.value === true || d.value === 'true';
+  if (f.type === 'group') return Array.isArray(d.values) ? d.values : [];
   return String(d.value || '').trim();
 }
 
@@ -449,6 +465,10 @@ module.exports = {
           await i.deferReply({ flags: MessageFlags.Ephemeral });
           const v = Object.fromEntries(FIELDS.map((f) => [f.id, readField(i, f)]));
           if (!v.riot.includes('#')) return i.editReply('❌ Riot ID ຕ້ອງມີ **#** ເຊັ່ນ `PShop#LAO` — ກົດ 📝 ແລ້ວໃສ່ໃໝ່');
+          const conf = FIELDS.find((f) => f.id === 'confirm');
+          const missing = conf.options.filter((o) => o.required && !v.confirm.includes(o.value));
+          if (missing.length) return i.editReply(`❌ ຕ້ອງຕິກຢືນຢັນໃຫ້ຄົບ:\n${missing.map((o) => `• ${o.label}`).join('\n')}\n\nກົດ 📝 ແລ້ວລອງໃໝ່`);
+          v.pshop = v.confirm.includes('pshop');
           const ch = i.channel;
           const old = db.players[i.user.id];
           if (!EV.regOpen && !old) return i.editReply('🔒 ປິດຮັບສະໝັກແລ້ວ');
