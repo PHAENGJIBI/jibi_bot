@@ -1,6 +1,26 @@
 {
   "panels": {
-    "1572217822208331896": "1572223127734329356"
+    "1572217822208331896": "1572260539911118849"
   },
-  "players": {}
+  "players": {
+    "446988988222275584": {
+      "name": "atyhuknene",
+      "riot": "STARBOYYY#01101",
+      "rank": "Diamond",
+      "team": "",
+      "confirm": [
+        "rules",
+        "code",
+        "admin",
+        "pshop"
+      ],
+      "pshop": true,
+      "no": 1,
+      "at": 1794926522076,
+      "channelId": "1572217822208331896",
+      "messageId": "1572260533145575508",
+      "style": 4,
+      "acceptedRules": true
+    }
+  }
 }
