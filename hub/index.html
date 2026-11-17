@@ -77,6 +77,52 @@ th{color:var(--muted);font-weight:600;font-size:12px}
 .autobox{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
 .autobox b{display:block}
 a{color:var(--y)}
+/* ---------- 🎮 รันงานแข่ง ---------- */
+.rbar{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;background:linear-gradient(135deg,#1f1a05,#17181c 60%);border:1px solid #4a3c00}
+.rclock{font-size:34px;font-weight:800;color:var(--y);font-variant-numeric:tabular-nums;line-height:1}
+.rclock small{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:4px}
+.rstats{display:flex;gap:8px;flex-wrap:wrap}
+.rstat{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 12px;min-width:92px}
+.rstat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}.rstat span{font-size:12px;color:var(--muted)}
+.rnext{grid-column:1/-1;background:#0b0c0e;border:1px dashed var(--y);border-radius:10px;padding:10px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.rnext .t{color:var(--y);font-weight:800}
+.rseg{display:flex;gap:6px;overflow-x:auto;margin:0 0 14px;padding:2px 0}
+.rseg button{flex:1;min-width:110px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;font-weight:700;cursor:pointer;color:var(--muted)}
+.rseg button.on{background:var(--y);color:#241a00;border-color:var(--y)}
+.tl{display:flex;flex-direction:column;gap:6px}
+.tl .it{display:grid;grid-template-columns:34px 74px 1fr auto;gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px}
+.tl .it.done{opacity:.5}.tl .it.done .ti{text-decoration:line-through}
+.tl .it.now{border-color:var(--y);box-shadow:0 0 0 1px var(--y) inset}
+.tl .it .tm{font-weight:800;font-variant-numeric:tabular-nums;color:var(--y)}
+.tl .it .ti{font-weight:700}.tl .it .ds{font-size:12px;color:var(--muted)}
+.tl .day{margin:10px 0 2px;font-size:12px;font-weight:800;color:var(--muted);letter-spacing:1px}
+.ck{width:28px;height:28px;border-radius:8px;border:2px solid var(--line);background:#0b0c0e;cursor:pointer;display:grid;place-items:center;font-size:16px}
+.ck.on{background:var(--ok);border-color:var(--ok);color:#06210f}
+.btn.s{min-height:36px;padding:6px 12px;font-size:13px}
+.btn.red{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.arm{background:#ff8a00;border-color:#ff8a00;color:#1d0f00;animation:pulse .6s infinite alternate}
+@keyframes pulse{to{filter:brightness(1.25)}}
+.st3{display:inline-flex;gap:4px}
+.st3 button{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 9px;cursor:pointer;font-size:13px}
+.st3 button.here{background:var(--ok);color:#06210f;border-color:var(--ok)}
+.st3 button.late{background:#ffb020;color:#241a00;border-color:#ffb020}
+.st3 button.absent{background:var(--bad);color:#fff;border-color:var(--bad)}
+.ros td{vertical-align:middle}.ros tr.sub td{background:#15161a}
+.ros .riot{cursor:pointer;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+.vc{font-size:12px;padding:1px 7px;border-radius:99px;background:#12321f;color:var(--ok)}
+.games{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.gcard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.gcard.live{border-color:var(--y)}.gcard.end{opacity:.75}
+.gcard h4{margin:0 0 8px;display:flex;justify-content:space-between;align-items:center}
+.gcard input{padding:8px 10px;margin-bottom:6px}
+.sc{display:grid;gap:14px;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+@media (max-width:820px){.sc{grid-template-columns:1fr}.rbar{grid-template-columns:1fr}.tl .it{grid-template-columns:30px 60px 1fr}.tl .it .ac{grid-column:1/-1}}
+.sg input{width:64px;padding:7px 6px;text-align:center;font-variant-numeric:tabular-nums}
+.sg td,.sg th{padding:5px 6px;vertical-align:middle}
+.lb td{font-variant-numeric:tabular-nums}.lb tr.win td{color:var(--y);font-weight:700}
+.qgrid{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.qgrid .btn{min-height:58px;text-align:left}
+.rlog{font-size:13px;max-height:260px;overflow:auto}.rlog div{padding:4px 0;border-bottom:1px solid var(--line)}.rlog span{color:var(--muted);margin-right:8px;font-variant-numeric:tabular-nums}
 @media (max-width:600px){.term{height:340px}.pill{margin-left:0;width:100%}}
 </style>
 </head>
@@ -101,6 +147,7 @@ a{color:var(--y)}
     <div class="pill"><span><span id="dot" class="dot"></span> <span id="stText">กำลังเช็ก...</span></span><button class="btn" id="logout" style="min-height:32px;padding:4px 10px">ออก</button></div>
   </div>
   <nav id="tabs">
+    <button data-tab="run">🎮 รันงานแข่ง</button>
     <button data-tab="control" class="on">🎛️ ควบคุม JIBI</button>
     <button data-tab="tourney">🏆 งานแข่ง</button>
     <button data-tab="inbox">💬 JIBI คุย / แท็กถึง JIBI</button>
@@ -158,6 +205,104 @@ a{color:var(--y)}
 </section>
 
 <!-- ===== งานแข่ง ===== -->
+<!-- ===== 🎮 รันงานแข่ง ===== -->
+<section id="tab-run" class="hidden">
+  <div class="card rbar">
+    <div class="rclock" id="rClock">--:--<small>ເວລາລາວ</small></div>
+    <div class="rstats">
+      <div class="rstat"><b id="rsCount">-</b><span>ລົງທະບຽນ</span></div>
+      <div class="rstat"><b id="rsHere">-</b><span>✅ ມາແລ້ວ</span></div>
+      <div class="rstat"><b id="rsVoice">-</b><span>🔊 ໃນ Voice</span></div>
+      <div class="rstat"><b id="rsGame">-</b><span>🎮 ເກມ</span></div>
+      <div class="rstat"><b id="rsLeft">-</b><span>⏳ ເຖິງເລີ່ມ</span></div>
+    </div>
+    <div class="rnext"><span>👉 ຕໍ່ໄປ:</span><span class="t" id="rNextT">—</span><span id="rNextD" class="hint"></span><span style="margin-left:auto" class="row" id="rNextA"></span></div>
+  </div>
+
+  <div class="rseg" id="rSeg">
+    <button data-r="time" class="on">⏱️ ຕາຕະລາງ</button>
+    <button data-r="roster">👥 ເຊັກຊື່</button>
+    <button data-r="games">🎮 ບອດເກມ</button>
+    <button data-r="scores">📊 ຄະແນນ</button>
+    <button data-r="urgent">🚨 ສົ່ງດ່ວນ</button>
+  </div>
+
+  <div id="r-time" class="card">
+    <h3>⏱️ ຕາຕະລາງງານ (ເວລາລາວ) <span class="hint" style="margin-left:auto">ຕິກ ✓ ເມື່ອເຮັດແລ້ວ · ປຸ່ມສີເຫຼືອງ = ສົ່ງໄປ Discord (ກົດ 2 ເທື່ອ)</span></h3>
+    <div class="tl" id="rTL"></div>
+  </div>
+
+  <div id="r-roster" class="card hidden">
+    <h3>👥 ລາຍຊື່ & ເຊັກຊື່ <span class="hint" id="rRosInfo" style="margin-left:auto"></span></h3>
+    <div class="row" style="margin-bottom:10px">
+      <button class="btn s" id="rVoiceAll">🔊 ຄົນໃນ Voice = ມາແລ້ວ</button>
+      <button class="btn s y" data-q="absent">🚨 ຕາມຄົນທີ່ຍັງບໍ່ມາ</button>
+      <button class="btn s" data-q="sub">🔁 ເອີ້ນຕົວສຳຮອງ</button>
+      <button class="btn s" data-q="checkin">🎧 ເອີ້ນເຂົ້າ Voice</button>
+      <span style="margin-left:auto" class="row"><span class="hint">ຮັບສະໝັກ</span><label class="sw"><input type="checkbox" id="rReg"><span></span></label><button class="btn s" id="rRosReload">🔄</button></span>
+    </div>
+    <div style="overflow-x:auto"><table class="ros"><thead><tr><th>#</th><th>ຊື່</th><th>Riot ID <span class="hint">(ກົດ=ກັອບ)</span></th><th>ແຣງ</th><th>Discord</th><th>ສະຖານະ</th></tr></thead><tbody id="rRos"></tbody></table></div>
+  </div>
+
+  <div id="r-games" class="card hidden">
+    <h3>🎮 ບອດເກມ <span class="hint" style="margin-left:auto">ໃສ່ລະຫັດ → ສົ່ງ · ຈົບແລ້ວກົດ 🏁 · ແລ້ວຈົດຄະແນນ</span></h3>
+    <div class="games" id="rGames"></div>
+  </div>
+
+  <div id="r-scores" class="hidden">
+    <div class="sc">
+      <div class="card">
+        <h3>📊 ຈົດຄະແນນ</h3>
+        <div class="seg" id="rGSel" style="margin-bottom:10px"></div>
+        <p class="hint">ພິມແລ້ວກົດ Enter ລົງແຖວລຸ່ມ · ບັນທຶກເອງອັດຕະໂນມັດ · ສົ່ງຮູບຄະແນນໃຫ້ Claude ໃສ່ແທນກໍໄດ້</p>
+        <div style="overflow-x:auto"><table class="sg"><thead><tr><th>#</th><th>ຊື່</th><th>Kill</th><th>Death</th><th>HS%</th></tr></thead><tbody id="rSG"></tbody></table></div>
+        <p class="hint" id="rSGSave"></p>
+      </div>
+      <div class="card">
+        <h3>🏆 ອັນດັບລວມ <span class="hint" id="rLBInfo" style="margin-left:auto"></span></h3>
+        <table class="lb"><thead><tr><th></th><th>ຊື່</th><th>K</th><th>D</th><th>HS%</th><th>ລາງວັນ</th></tr></thead><tbody id="rLB"></tbody></table>
+        <p class="hint" id="rTie" style="color:#ffb020"></p>
+        <div class="row" style="margin-top:12px">
+          <button class="btn" id="rPubMid">📊 ສົ່ງຕາຕະລາງລະຫວ່າງທາງ</button>
+          <button class="btn y" id="rPubFinal">🏆 ປະກາດຜົນສຸດທ້າຍ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="r-urgent" class="hidden">
+    <div class="card">
+      <h3>🚨 ປຸ່ມສົ່ງດ່ວນ <span class="hint" style="margin-left:auto">ກົດ 2 ເທື່ອເພື່ອສົ່ງ</span></h3>
+      <div class="row" style="margin-bottom:10px">
+        <div style="flex:1;min-width:120px"><label for="rMin">ເລື່ອນກີ່ນາທີ</label><input id="rMin" type="number" value="10" min="1"></div>
+        <div style="flex:3;min-width:200px"><label for="rReason">ເຫດຜົນ (ບໍ່ໃສ່ກໍໄດ້)</label><input id="rReason" placeholder="ເຊັ່ນ: ເຊີບເວີ Riot ມີບັນຫາ"></div>
+      </div>
+      <div class="qgrid" id="rQ"></div>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>✍️ ພິມຂໍ້ຄວາມເອງ</h3>
+        <label for="rCh">ຫ້ອງ</label>
+        <select id="rCh"><option value="announce">📢 ປະກາດ-βeta</option><option value="code">🔑 ລະຫັດຫ້ອງ-βeta</option><option value="results">🏆 ຜົນການແຂ່ງ-βeta</option><option value="qa">❓ ຖາມ-ຕອບ-βeta</option><option value="world">🌏 ແຊັດໂລກ</option><option value="valchat">💬 ຫ້ອງແຊັດ valorant</option></select>
+        <label for="rTitle">ຫົວຂໍ້ (ບໍ່ໃສ່ກໍໄດ້)</label><input id="rTitle">
+        <label for="rText">ຂໍ້ຄວາມ</label><textarea id="rText" placeholder="ພິມພາສາລາວ… ໃສ່ {#ຫ້ອງ} ບໍ່ໄດ້ຢູ່ນີ້ — ພິມປົກກະຕິ"></textarea>
+        <div class="row" style="margin-top:8px">
+          <label class="row" style="margin:0;color:var(--text)"><input type="checkbox" id="rPP" style="width:auto" checked> ແທັກ 🎯 ນັກແຂ່ງ</label>
+          <label class="row" style="margin:0;color:var(--text)"><input type="checkbox" id="rPV" style="width:auto"> ແທັກ Valorant</label>
+          <label class="row" style="margin:0;color:var(--text)"><input type="checkbox" id="rPE" style="width:auto"> @everyone</label>
+          <label class="row" style="margin:0;color:var(--text)"><input type="checkbox" id="rUrg" style="width:auto"> 🔴 ສີແດງ (ດ່ວນ)</label>
+        </div>
+        <div class="row" style="margin-top:12px"><button class="btn y" id="rCustom">📨 ສົ່ງ</button></div>
+      </div>
+      <div class="card">
+        <h3>📜 ສິ່ງທີ່ເຮັດໄປແລ້ວ</h3>
+        <div class="rlog" id="rLog"></div>
+        <div class="row" style="margin-top:12px"><button class="btn s bad" id="rReset">🧹 ລ້າງຂໍ້ມູນ (ເລີ່ມງານໃໝ່)</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="tab-tourney" class="hidden">
   <div class="grid">
     <div class="card">
@@ -337,7 +482,8 @@ $('#tabs').addEventListener('click', (e) => {
   const b = e.target.closest('button'); if (!b) return;
   curTab = b.dataset.tab;
   for (const x of $('#tabs').children) x.classList.toggle('on', x === b);
-  for (const t of ['control', 'tourney', 'inbox', 'lab', 'memory', 'logs']) $(`#tab-${t}`).classList.toggle('hidden', t !== curTab);
+  for (const t of ['run', 'control', 'tourney', 'inbox', 'lab', 'memory', 'logs']) $(`#tab-${t}`).classList.toggle('hidden', t !== curTab);
+  if (curTab === 'run') { loadRun(); tickRun(); }
   if (curTab === 'memory') loadMemory();
   if (curTab === 'lab') loadLab();
   if (curTab === 'tourney') { loadTourney(); loadSurvey(); }
@@ -739,6 +885,218 @@ $('#memReload').onclick = loadMemory;
 async function loadLogs() {
   try { const r = await api('/api/logs?n=300'); const b = $('#logBox'); const atBottom = b.scrollTop + b.clientHeight >= b.scrollHeight - 30; b.textContent = r.lines.join('\n'); if (atBottom) b.scrollTop = b.scrollHeight; } catch { /* ignore */ }
 }
+
+/* ---------- 🎮 รันงานแข่ง ---------- */
+let R = null, rSub = 'time', rGame = 1, rStart = null;
+const laoHM = (d = new Date()) => new Date(d.getTime() + 7 * 3600e3).toISOString().slice(11, 19);
+// ปุ่มส่ง Discord: กดครั้งแรก = เตรียม (สีส้ม 3 วิ) · กดอีกครั้ง = ส่งจริง
+function armed(btn, fn) {
+  btn.addEventListener('click', async () => {
+    if (!btn.classList.contains('arm')) {
+      btn.classList.add('arm'); btn.dataset.t = btn.textContent; btn.textContent = '👆 ກົດອີກເທື່ອ = ສົ່ງ';
+      clearTimeout(btn._t); btn._t = setTimeout(() => { btn.classList.remove('arm'); btn.textContent = btn.dataset.t; }, 3000);
+      return;
+    }
+    clearTimeout(btn._t); btn.classList.remove('arm'); btn.textContent = '⏳ ກຳລັງສົ່ງ…'; btn.disabled = true;
+    try { await fn(); toast('✅ ສົ່ງແລ້ວ'); loadRun(true); } catch (x) { toast(`❌ ${x.message}`, true); }
+    btn.disabled = false; btn.textContent = btn.dataset.t;
+  });
+}
+const quick = (preset, extra = {}) => api('/api/run/quick', { preset, ...extra });
+const qBtn = (preset, label, cls = 'btn s y', extra) => { const b = el('button', { className: cls, textContent: label || (R && R.presets[preset]) || preset }); armed(b, () => quick(preset, typeof extra === 'function' ? extra() : extra || {})); return b; };
+
+async function loadRun(soft) {
+  try { R = await api('/api/run'); } catch (x) { toast(`❌ ${x.message}`, true); return; }
+  rStart = R.event.startAt ? new Date(R.event.startAt) : null;
+  renderRunBar(); renderTL(); renderRoster(); renderGames(); renderScores(soft); renderLog();
+  $('#rReg').checked = !!R.event.regOpen;
+}
+function curGame() {
+  const g = R.state.games || {}; const n = R.event.games || 5;
+  for (let i = 1; i <= n; i++) if (!(g[i] && g[i].endAt)) return i;
+  return n;
+}
+function renderRunBar() {
+  const ps = R.players, main = ps.filter((p) => !p.sub);
+  $('#rsCount').textContent = `${main.length}/${R.event.max}${ps.length > main.length ? ` +${ps.length - main.length}` : ''}`;
+  $('#rsHere').textContent = `${ps.filter((p) => p.checkin === 'here').length}/${R.event.max}`;
+  $('#rsVoice').textContent = ps.filter((p) => p.inVoice).length;
+  const g = R.state.games || {}; const n = R.event.games || 5; const c = curGame();
+  $('#rsGame').textContent = g.final ? 'ຈົບ' : `${c}/${n}${g[c] && g[c].code ? ' 🔑' : ''}`;
+  const nx = R.timeline.find((t) => !R.state.done[t.id]);
+  $('#rNextT').textContent = nx ? `${nx.time} · ${nx.title}` : '🎉 ຄົບທຸກຂັ້ນຕອນແລ້ວ';
+  $('#rNextD').textContent = nx ? nx.desc : '';
+  const a = $('#rNextA'); a.innerHTML = '';
+  if (nx) {
+    if (nx.act) a.append(qBtn(nx.act));
+    if (nx.go) a.append(el('button', { className: 'btn s', textContent: '➡️ ໄປ', onclick: () => { if (nx.game) rGame = nx.game; rGo(nx.go); } }));
+    a.append(el('button', { className: 'btn s', textContent: '✓ ເຮັດແລ້ວ', onclick: () => tlDone(nx.id, true) }));
+  }
+}
+function tickRun() {
+  if (curTab !== 'run') return;
+  $('#rClock').firstChild.textContent = laoHM();
+  if (!rStart) { $('#rsLeft').textContent = '—'; return; }
+  const ms = rStart - Date.now(); const s = Math.abs(Math.round(ms / 1000));
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
+  const txt = h > 23 ? `${Math.floor(h / 24)}ມື້ ${h % 24}ຊມ` : `${h ? `${h}:` : ''}${String(m).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+  $('#rsLeft').textContent = ms > 0 ? txt : `+${txt}`;
+}
+async function tlDone(id, on) { try { R.state.done = await api('/api/run/done', { id, on }); renderTL(); renderRunBar(); } catch (x) { toast(`❌ ${x.message}`, true); } }
+function renderTL() {
+  const box = $('#rTL'); box.innerHTML = '';
+  const nx = R.timeline.find((t) => !R.state.done[t.id]);
+  let day = '';
+  for (const t of R.timeline) {
+    if (t.day !== day) { day = t.day; box.append(el('div', { className: 'day', textContent: day === 'D-1' ? '📅 D-1 · ມື້ກ່ອນແຂ່ງ' : `🔥 D-DAY · ${rStart ? new Date(rStart.getTime() + 7 * 3600e3).toISOString().slice(0, 10) : 'ວັນແຂ່ງ'}` })); }
+    const done = !!R.state.done[t.id];
+    const ck = el('button', { className: `ck${done ? ' on' : ''}`, textContent: done ? '✓' : '', title: 'ຕິກ = ເຮັດແລ້ວ', onclick: () => tlDone(t.id, !done) });
+    const info = el('div', {}, el('div', { className: 'ti', textContent: t.title }), el('div', { className: 'ds', textContent: t.desc || '' }));
+    const ac = el('div', { className: 'row ac' });
+    if (t.act) ac.append(qBtn(t.act));
+    if (t.go) ac.append(el('button', { className: 'btn s', textContent: '➡️ ເປີດ', onclick: () => { if (t.game) rGame = t.game; rGo(t.go); } }));
+    box.append(el('div', { className: `it${done ? ' done' : ''}${t === nx ? ' now' : ''}` }, ck, el('div', { className: 'tm', textContent: t.time }), info, ac));
+  }
+}
+async function setCheck(uid, status) {
+  try { R.state.checkin = await api('/api/run/checkin', { uid, status }); R.players.forEach((p) => { p.checkin = R.state.checkin[p.uid] || null; }); renderRoster(); renderRunBar(); renderScores(true); } catch (x) { toast(`❌ ${x.message}`, true); }
+}
+function renderRoster() {
+  const tb = $('#rRos'); tb.innerHTML = '';
+  const ps = R.players;
+  const here = ps.filter((p) => p.checkin === 'here').length;
+  $('#rRosInfo').textContent = `ຕົວຈິງ ${ps.filter((p) => !p.sub).length}/${R.event.max} · ສຳຮອງ ${ps.filter((p) => p.sub).length} · ມາແລ້ວ ${here}`;
+  if (!ps.length) { tb.append(el('tr', {}, el('td', { colSpan: 6, className: 'hint', textContent: 'ຍັງບໍ່ມີຄົນລົງທະບຽນ' }))); return; }
+  let subHead = false;
+  for (const p of ps) {
+    if (p.sub && !subHead) { subHead = true; tb.append(el('tr', {}, el('td', { colSpan: 6, className: 'hint', textContent: '— 🔁 ຕົວສຳຮອງ (ມາແທນໄດ້ ຖ້າຕົວຈິງບໍ່ມາ → ກົດ ✅) —' }))); }
+    const st = el('div', { className: 'st3' });
+    for (const [k, lab] of [['here', '✅ ມາ'], ['late', '⏰ ຊ້າ'], ['absent', '❌ ບໍ່ມາ']]) st.append(el('button', { className: p.checkin === k ? k : '', textContent: lab, onclick: () => setCheck(p.uid, p.checkin === k ? null : k) }));
+    const riot = el('span', { className: 'riot', textContent: p.riot, title: 'ກົດເພື່ອກັອບ', onclick: () => { navigator.clipboard.writeText(p.riot).then(() => toast(`📋 ${p.riot}`)); } });
+    tb.append(el('tr', { className: p.sub ? 'sub' : '' },
+      el('td', { textContent: `#${p.no}` }),
+      el('td', {}, el('b', { textContent: p.name }), p.team ? el('div', { className: 'hint', textContent: p.team }) : ''),
+      el('td', {}, riot),
+      el('td', { textContent: p.rank || '' }),
+      el('td', {}, el('span', { className: 'hint', textContent: p.discord }), p.inVoice ? el('div', {}, el('span', { className: 'vc', textContent: '🔊 ໃນ Voice' })) : ''),
+      el('td', {}, st)));
+  }
+}
+function renderGames() {
+  const box = $('#rGames'); box.innerHTML = '';
+  const n = R.event.games || 5; const g = R.state.games || {}; const c = curGame();
+  for (let i = 1; i <= n; i++) {
+    const s = g[i] || {};
+    const status = s.endAt ? '🏁 ຈົບແລ້ວ' : s.code ? '🟢 ກຳລັງແຂ່ງ' : i === c ? '👉 ຕໍ່ໄປ' : '⏳ ລໍຖ້າ';
+    const code = el('input', { placeholder: 'Party Code', value: s.code || '' });
+    const map = el('input', { placeholder: 'ແຜນທີ່ (ບໍ່ໃສ່ກໍໄດ້)' });
+    const send = el('button', { className: 'btn s y', textContent: s.code ? '🔑 ສົ່ງລະຫັດໃໝ່' : '🔑 ສົ່ງລະຫັດ', style: 'width:100%' });
+    armed(send, () => { if (!code.value.trim()) throw new Error('ໃສ່ລະຫັດກ່ອນ'); return api('/api/run/code', { game: i, code: code.value, map: map.value }); });
+    const end = el('button', { className: 'btn s', textContent: s.endAt ? '↩️ ຍັງບໍ່ຈົບ' : '🏁 ຈົບເກມ + ແຈ້ງ', style: 'flex:1' });
+    if (s.endAt) end.onclick = async () => { await api('/api/run/game', { game: i, end: false }); loadRun(true); };
+    else armed(end, () => api('/api/run/game', { game: i, end: true, announce: true }));
+    const sc = el('button', { className: 'btn s', textContent: '📊 ຄະແນນ', onclick: () => { rGame = i; rGo('scores'); } });
+    const filled = R.players.filter((p) => R.state.scores[p.uid] && R.state.scores[p.uid][i] && R.state.scores[p.uid][i].k !== '').length;
+    box.append(el('div', { className: `gcard${s.endAt ? ' end' : i === c ? ' live' : ''}` },
+      el('h4', {}, el('span', { textContent: `ເກມ ${i}` }), el('span', { className: 'tag', textContent: status })),
+      code, map, send,
+      el('div', { className: 'row', style: 'margin-top:6px' }, end, sc),
+      el('div', { className: 'hint', style: 'margin-top:6px', textContent: `ຄະແນນ: ${filled} ຄົນ${s.codeAt ? ` · ສົ່ງລະຫັດ ${laoHM(new Date(s.codeAt)).slice(0, 5)}` : ''}` })));
+  }
+}
+let scTimer = null; const scQueue = new Map();
+function queueScore(uid, field, val) {
+  const key = `${uid}:${rGame}`;
+  const cur = scQueue.get(key) || { uid, game: rGame, ...((R.state.scores[uid] || {})[rGame] || {}) };
+  cur[field] = val; scQueue.set(key, cur);
+  R.state.scores[uid] = R.state.scores[uid] || {}; R.state.scores[uid][rGame] = { k: cur.k ?? '', d: cur.d ?? '', hs: cur.hs ?? '' };
+  $('#rSGSave').textContent = '✏️ ກຳລັງບັນທຶກ…';
+  clearTimeout(scTimer); scTimer = setTimeout(flushScores, 600);
+  renderLB();
+}
+async function flushScores() {
+  const list = [...scQueue.values()]; scQueue.clear(); if (!list.length) return;
+  try { await api('/api/run/scores', { list }); $('#rSGSave').textContent = `✅ ບັນທຶກແລ້ວ ${laoHM().slice(0, 5)}`; } catch (x) { $('#rSGSave').textContent = `❌ ${x.message}`; toast(`❌ ບັນທຶກຄະແນນບໍ່ໄດ້: ${x.message}`, true); }
+}
+function scorePlayers() { return R.players.filter((p) => (!p.sub && p.checkin !== 'absent') || p.checkin === 'here' || (R.state.scores[p.uid] && Object.keys(R.state.scores[p.uid]).length)); }
+function calcTable(upTo) {
+  const rows = scorePlayers().map((p) => {
+    const g = R.state.scores[p.uid] || {}; let k = 0, d = 0, hs = 0, hn = 0, pl = 0;
+    for (let i = 1; i <= upTo; i++) { const x = g[i]; if (!x || x.k === '' || x.k == null) continue; pl++; k += +x.k || 0; d += +x.d || 0; if (x.hs !== '' && x.hs != null) { hs += +x.hs || 0; hn++; } }
+    return { uid: p.uid, name: p.name, k, d, hs: hn ? Math.round((hs / hn) * 10) / 10 : 0, pl };
+  }).filter((x) => x.pl);
+  rows.sort((a, b) => b.k - a.k || a.d - b.d || b.hs - a.hs);
+  return rows;
+}
+function renderScores(soft) {
+  const n = R.event.games || 5;
+  const seg = $('#rGSel'); seg.innerHTML = '';
+  for (let i = 1; i <= n; i++) seg.append(el('button', { className: i === rGame ? 'on' : '', textContent: `ເກມ ${i}`, onclick: () => { flushScores(); rGame = i; renderScores(); } }));
+  const tb = $('#rSG');
+  if (!(soft && tb.contains(document.activeElement))) {
+    tb.innerHTML = '';
+    const ps = scorePlayers();
+    if (!ps.length) tb.append(el('tr', {}, el('td', { colSpan: 5, className: 'hint', textContent: 'ຍັງບໍ່ມີນັກແຂ່ງ' })));
+    ps.forEach((p) => {
+      const v = (R.state.scores[p.uid] || {})[rGame] || {};
+      const mk = (f, ph) => {
+        const inp = el('input', { type: 'number', inputMode: 'numeric', min: 0, placeholder: ph, value: v[f] ?? '' });
+        inp.dataset.f = f;
+        inp.addEventListener('input', () => queueScore(p.uid, f, inp.value));
+        inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); const all = [...tb.querySelectorAll(`input[data-f="${f}"]`)]; const nx = all[all.indexOf(inp) + 1]; if (nx) nx.focus(); else inp.blur(); } });
+        inp.addEventListener('focus', () => inp.select());
+        return el('td', {}, inp);
+      };
+      tb.append(el('tr', {}, el('td', { textContent: `#${p.no}` }), el('td', { textContent: p.name }), mk('k', 'K'), mk('d', 'D'), mk('hs', '%')));
+    });
+  }
+  renderLB();
+}
+function renderLB() {
+  const n = R.event.games || 5; const rows = calcTable(n); const pz = R.event.prizes || [];
+  const tb = $('#rLB'); tb.innerHTML = '';
+  const MED = ['🥇', '🥈', '🥉'];
+  rows.forEach((x, i) => tb.append(el('tr', { className: i < pz.length ? 'win' : '' },
+    el('td', { textContent: MED[i] || `${i + 1}` }), el('td', { textContent: x.name }), el('td', { textContent: x.k }), el('td', { textContent: x.d }), el('td', { textContent: x.hs }),
+    el('td', { textContent: pz[i] ? Number(pz[i]).toLocaleString('en-US') : '' }))));
+  if (!rows.length) tb.append(el('tr', {}, el('td', { colSpan: 6, className: 'hint', textContent: 'ຍັງບໍ່ມີຄະແນນ' })));
+  const done = Object.values(R.state.scores).length ? Math.max(0, ...rows.map((x) => x.pl)) : 0;
+  $('#rLBInfo').textContent = `ຄະແນນເຖິງເກມ ${done}/${n}`;
+  const ties = rows.filter((x, i) => i > 0 && rows[i - 1].k === x.k && rows[i - 1].d === x.d && rows[i - 1].hs === x.hs).map((x) => x.name);
+  $('#rTie').textContent = ties.length ? `⚠️ ຄະແນນເທົ່າກັນທຸກຢ່າງ: ${ties.join(', ')} → ຕ້ອງດວນ 1v1 (5 Kill)` : '';
+}
+function renderLog() {
+  const box = $('#rLog'); box.innerHTML = '';
+  for (const l of (R.state.log || []).slice(0, 40)) box.append(el('div', {}, el('span', { textContent: laoHM(new Date(l.at)).slice(0, 5) }), l.t));
+  if (!(R.state.log || []).length) box.append(el('div', { className: 'hint', textContent: 'ຍັງບໍ່ມີ' }));
+  const q = $('#rQ'); if (q.childElementCount) return;
+  const reason = () => ({ reason: $('#rReason').value, min: $('#rMin').value });
+  q.append(qBtn('pause', '⛔ ຢຸດຊົ່ວຄາວ (ມີບັນຫາ)', 'btn red', reason), qBtn('resume', '▶️ ສືບຕໍ່ແລ້ວ', 'btn'), qBtn('delay', '⏰ ເລື່ອນເວລາ', 'btn y', reason),
+    qBtn('absent', '🚨 ຕາມຄົນທີ່ຍັງບໍ່ມາ', 'btn y'), qBtn('sub', '🔁 ເອີ້ນຕົວສຳຮອງ', 'btn'), qBtn('soon', '⏳ ອີກ 5 ນາທີ', 'btn'),
+    qBtn('checkin', '🎧 ເອີ້ນເຂົ້າ Voice', 'btn'), qBtn('d1', '📣 ພຣຸ່ງນີ້ແຂ່ງແລ້ວ', 'btn'), qBtn('thanks', '🙏 ຂອບໃຈ / ປິດງານ', 'btn'));
+  const rm = el('button', { className: 'btn', textContent: '🔔 ແຜງນັບຖອຍຫຼັງ (ເຕືອນດຽວນີ້)' }); armed(rm, () => api('/api/run/remind', {})); q.append(rm);
+}
+function rGo(sub) {
+  rSub = sub;
+  for (const b of $('#rSeg').children) b.classList.toggle('on', b.dataset.r === sub);
+  for (const s of ['time', 'roster', 'games', 'scores', 'urgent']) $(`#r-${s}`).classList.toggle('hidden', s !== sub);
+  if (sub === 'scores') renderScores();
+}
+$('#rSeg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) rGo(b.dataset.r); });
+document.querySelectorAll('#r-roster [data-q]').forEach((b) => { b.textContent = b.textContent; armed(b, () => quick(b.dataset.q)); });
+$('#rRosReload').onclick = () => loadRun(true);
+$('#rVoiceAll').onclick = async () => {
+  const uids = R.players.filter((p) => p.inVoice && p.checkin !== 'here').map((p) => p.uid);
+  if (!uids.length) return toast('ບໍ່ມີຄົນໃໝ່ໃນ Voice');
+  try { await api('/api/run/checkin-all', { uids, status: 'here' }); toast(`✅ ${uids.length} ຄົນ = ມາແລ້ວ`); loadRun(true); } catch (x) { toast(`❌ ${x.message}`, true); }
+};
+$('#rReg').onchange = async (e) => { try { await api('/api/run/reg', { open: e.target.checked }); toast(e.target.checked ? '🟢 ເປີດຮັບສະໝັກ' : '🔒 ປິດຮັບສະໝັກ'); } catch (x) { toast(`❌ ${x.message}`, true); e.target.checked = !e.target.checked; } };
+armed($('#rPubMid'), async () => { await flushScores(); const done = Math.max(1, ...calcTable(R.event.games || 5).map((x) => x.pl)); return api('/api/run/results', { upTo: done, final: false }); });
+armed($('#rPubFinal'), async () => { await flushScores(); return api('/api/run/results', { final: true }); });
+armed($('#rCustom'), () => api('/api/run/custom', { channel: $('#rCh').value, title: $('#rTitle').value, text: $('#rText').value, pingPlayers: $('#rPP').checked, pingValo: $('#rPV').checked, everyone: $('#rPE').checked, urgent: $('#rUrg').checked }).then((r) => { $('#rText').value = ''; $('#rTitle').value = ''; return r; }));
+$('#rReset').onclick = async () => { const v = prompt('ລ້າງເຊັກຊື່ + ຄະແນນ + ຕາຕະລາງທັງໝົດ (ສຳຮອງໄວ້ໃຫ້)\nພິມ RESET ເພື່ອຢືນຢັນ'); if (v !== 'RESET') return; try { await api('/api/run/reset', { confirm: 'RESET' }); toast('🧹 ລ້າງແລ້ວ'); loadRun(); } catch (x) { toast(`❌ ${x.message}`, true); } };
+setInterval(tickRun, 1000);
+setInterval(() => { if (curTab === 'run' && !document.hidden && !scQueue.size) loadRun(true); }, 12000);
 
 /* ---------- boot ---------- */
 let booted = false;
