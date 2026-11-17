@@ -513,6 +513,28 @@
   ],
   "onboarding": [
     {
+      "draft": true,
+      "_note": "βETA VOL.2 — เตรียมไว้ ยังไม่เปิด · ลบ draft ออกเมื่อจะใช้ (และเปิดหมวด βETA ให้ยศ valorant เห็นก่อน)",
+      "title": "🏆 ເຂົ້າມາເພື່ອແຂ່ງ βETA TOURNAMENT VOL.2 ບໍ່?",
+      "required": false,
+      "single": true,
+      "giveCustomer": true,
+      "options": [
+        {
+          "emoji": "✅",
+          "title": "ແມ່ນແລ້ວ! ມາແຂ່ງ βETA",
+          "description": "ຮັບຍົດ Valorant + ເປີດຫ້ອງງານແຂ່ງໃຫ້ເລີຍ",
+          "role": "valorant"
+        },
+        {
+          "emoji": "🎮",
+          "title": "ບໍ່ — ມາຫຼິ້ນ / ລົມກັນທົ່ວໄປ",
+          "description": "ໄປເລືອກເກມທີ່ຫຼິ້ນໃນຂັ້ນຕໍ່ໄປ",
+          "role": "general"
+        }
+      ]
+    },
+    {
       "title": "ເຈົ້າຫຼິ້ນເກມຫຍັງແດ່?",
       "required": true,
       "giveCustomer": true,
