@@ -332,7 +332,13 @@ module.exports = {
       if (!on && m.roles.cache.has(role.id)) await m.roles.remove(role).catch((e) => console.error('[tournament] role', e.message));
     }
     // ให้ยศคนที่ลงทะเบียนไว้แล้ว (หลังเปิดบอท รอซิงก์สร้างยศก่อน)
-    const ensureRoles = async () => { await guild.roles.fetch().catch(() => {}); for (const uid of Object.keys(db.players)) await setPlayerRole(uid, true); };
+    // ให้ยศคนที่ลงทะเบียน + ถอดยศคนที่ไม่ได้อยู่ในรายชื่องานนี้ (เช่น นักแข่งงานเก่า) → ห้อง 🔑 เห็นเฉพาะนักแข่งงานนี้
+    const ensureRoles = async () => {
+      await guild.roles.fetch().catch(() => {});
+      for (const uid of Object.keys(db.players)) await setPlayerRole(uid, true);
+      const role = playerRole();
+      if (role) for (const m of role.members.values()) if (!db.players[m.id]) await m.roles.remove(role).catch(() => {});
+    };
     setTimeout(ensureRoles, 20000);
     setInterval(ensureRoles, 5 * 60000);
 
