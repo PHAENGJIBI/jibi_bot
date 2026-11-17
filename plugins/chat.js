@@ -89,6 +89,7 @@ module.exports = {
     let TEACH = { rules: [], notes: '', persona: '', examples: [], ...store.load('chat-teach', {}) };
     // รวม system prompt: กฎ + นิสัย + ความรู้ร้าน + ตัวอย่างคำตอบที่แอดมินสอน + คำตอบตามคำ
     function buildSystem() {
+      TEACH = { rules: [], notes: '', persona: '', examples: [], ...store.load('chat-teach', {}) }; // โหลดใหม่ทุกครั้ง — แก้ไฟล์แล้วใช้ได้ทันที
       let out = `${AI_RULES}\n\n${(TEACH.persona || '').trim() || DEFAULT_PERSONA}`;
       if (TEACH.notes) out += `\n\nShop knowledge from the admins (trust this, use when relevant):\n${TEACH.notes}`;
       if ((TEACH.examples || []).length) out += `\n\nExample replies the admin approved — copy this tone and style:\n${TEACH.examples.map((e) => `User: ${e.q}\nJIBI: ${e.a}`).join('\n\n')}`;
@@ -155,10 +156,15 @@ module.exports = {
       const ev = client.jibiTourney ? client.jibiTourney.getEvent() : null;
       out = out.replace('{event}', ev ? ev.name : 'Valorant');
       const t = ev && ev.startAt ? Math.floor(new Date(ev.startAt).getTime() / 1000) : 0;
-      out = out.replace('{start}', t && t * 1000 > Date.now() ? `\n⏰ ເລີ່ມ <t:${t}:F> (<t:${t}:R>)` : '');
+      if (t && t * 1000 > Date.now()) {
+        const d = new Date(t * 1000 + 7 * 3600000); const p = (n) => String(n).padStart(2, '0');
+        const day = ['ອາທິດ', 'ຈັນ', 'ອັງຄານ', 'ພຸດ', 'ພະຫັດ', 'ສຸກ', 'ເສົາ'][d.getUTCDay()];
+        out = out.replace('{start}', `\n⏰ ເລີ່ມ ${day} ${d.getUTCDate()}/${d.getUTCMonth() + 1} · ${p(d.getUTCHours())}:${p(d.getUTCMinutes())} ໂມງ (ເວລາລາວ) · <t:${t}:R>`);
+      } else out = out.replace('{start}', '');
       return out;
     }
     function ruleReply(text, fallback = true) {
+      TEACH = { rules: [], notes: '', persona: '', examples: [], ...store.load('chat-teach', {}) };
       const s = String(text || '').toLowerCase();
       const hit = (k) => (/^[a-z ]{1,4}$/.test(k) ? new RegExp(`(^|[^a-z])${k}([^a-z]|$)`).test(s) : s.includes(k.toLowerCase()));
       for (const rule of [...(TEACH.rules || []), ...RULES]) if (rule.k.some(hit)) return pick(rule.r);
