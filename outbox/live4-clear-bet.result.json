@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "action": "clear-channel",
+  "at": "2026-11-17T14:08:32.386Z",
+  "result": {
+    "deleted": 3
+  }
+}
