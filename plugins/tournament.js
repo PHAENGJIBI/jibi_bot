@@ -102,6 +102,54 @@ module.exports = {
         '🎮 ວິທີເຂົ້າຫ້ອງ: ກົດ 📋 ກັອບລະຫັດ → ເປີດ Valorant → PARTY CODE → ວາງລະຫັດ → JOIN',
       ].join('\n');
     }
+    // กติกาแบบอ่านง่าย — แบ่งเป็นหัวข้อ (ใช้ตอนกด 📝 ก่อนกรอกใบสมัคร)
+    function rulesEmbed() {
+      const t = EV.startAt ? unix(EV.startAt) : 0;
+      return new EmbedBuilder().setColor(0xFF4655)
+        .setTitle('📜 ອ່ານກົດກ່ອນລົງທະບຽນ')
+        .setDescription(`**${EVENT}**\nອ່ານໃຫ້ຄົບ ແລ້ວກົດປຸ່ມ **✅ ຍອມຮັບ** ດ້ານລຸ່ມ`)
+        .addFields(
+          { name: '🎮 ຮູບແບບ', value: `Deathmatch · ${MAX} ຄົນ · 3 ເກມ\nນັບ **Kill ລວມ** 3 ເກມ`, inline: true },
+          { name: '🏆 ລາງວັນ', value: '🥇 100,000 ກີບ\n🥈 50,000 ກີບ', inline: true },
+          { name: '🕗 ວັນ-ເວລາ', value: t ? `<t:${t}:F>\n<t:${t}:R>` : 'ແອດມິນຈະປະກາດ', inline: true },
+          { name: '📌 ກົດສຳຄັນ', value: [
+            '• ໃຊ້ໄດ້ **ທຸກປືນ**',
+            '• **ທຸກແຣງ** ລົງແຂ່ງນຳກັນ',
+            '• ໃຊ້ບັນຊີ Riot ຂອງຕົວເອງ',
+            '• ເຂົ້າຫ້ອງສຽງກ່ອນ **10 ນາທີ**',
+            '• ຊ້າເກີນ 10 ນາທີ = ຕົວສຳຮອງລົງແທນ',
+            '• ຫຼຸດ: ເຂົ້າຄືນໄວ · ນັບຄະແນນຕາມຈິງ',
+            '• ສະຕຣີມໄດ້ ແຕ່ delay **2 ນາທີ**',
+          ].join('\n') },
+          { name: '⚖️ ຄະແນນເທົ່າກັນ', value: '1. Death ໜ້ອຍກວ່າ\n2. %Headshot ສູງກວ່າ\n3. ດວນ 1v1 (ໃຜໄດ້ 5 Kill ກ່ອນ)', inline: true },
+          { name: '🚫 ຫ້າມ', value: 'ໂກງ / ໃຊ້ໂປຣແກຣມຊ່ວຍ\n= **ຕັດສິດທັນທີ**', inline: true },
+          { name: '🔑 ລະຫັດຫ້ອງ', value: `ມີຢູ່ ${codeLink()} **ເທົ່ານັ້ນ**\n(ເຫັນຫຼັງລົງທະບຽນ)` },
+        )
+        .setFooter({ text: 'ຄຳຕັດສິນຂອງທີມງານຖືເປັນທີ່ສຸດ · JIBI · P SHOP GAMERPOWER' });
+    }
+    // ข้อมูลหลังสมัครแบบอ่านง่าย (ตอบในห้อง + DM)
+    function infoEmbed(no, edited) {
+      const t = EV.startAt ? unix(EV.startAt) : 0;
+      const e = new EmbedBuilder().setColor(0xFFC400)
+        .setTitle(edited ? '✏️ ແກ້ໄຂຂໍ້ມູນແລ້ວ' : '✅ ລົງທະບຽນສຳເລັດ!')
+        .setDescription(`**${EVENT}**`);
+      const fields = [];
+      if (no) fields.push({ name: '🎫 ເລກນັກແຂ່ງ', value: `**#${no}**${no > MAX ? ' · ຕົວສຳຮອງ' : ' · ຕົວຈິງ'}`, inline: true });
+      fields.push({ name: '🕗 ເລີ່ມແຂ່ງ', value: t ? `<t:${t}:F>\n<t:${t}:R>` : 'ແອດມິນຈະປະກາດ', inline: true });
+      fields.push({ name: '🔑 ລະຫັດຫ້ອງ', value: `ມີຢູ່ ${codeLink()} **ເທົ່ານັ້ນ**\nແຈ້ງເຕືອນກໍ່ຢູ່ຫ້ອງນີ້` });
+      fields.push({ name: '🎮 ວິທີເຂົ້າຫ້ອງ', value: '1. ກົດ 📋 ກັອບລະຫັດ\n2. ເປີດ Valorant → **PARTY CODE**\n3. ວາງລະຫັດ → **JOIN**' });
+      return e.addFields(fields).setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
+    }
+    // ส่ง DM หานักแข่งทุกคน (คนที่ปิด DM จะส่งไม่ถึง → แจ้งชื่อในห้องแอดมิน)
+    async function dmPlayers(ids, payload, label) {
+      const fail = [];
+      for (const id of ids) {
+        const u = await client.users.fetch(id).catch(() => null);
+        const ok = u && await u.send(payload).then(() => true).catch(() => false);
+        if (!ok) fail.push(db.players[id] ? db.players[id].name : id);
+      }
+      logTo(`📨 DM ${label}: ສົ່ງຖຶງ ${ids.length - fail.length}/${ids.length}${fail.length ? ` · ສົ່ງບໍ່ໄດ້ (ປິດ DM): ${fail.join(', ')}` : ''}`);
+    }
     function panelMessage() {
       const n = count();
       if (EV.ended) {
@@ -237,7 +285,14 @@ module.exports = {
       const head = o.preview ? '🧪 **ຕົວຢ່າງ** (ບໍ່ໄດ້ແທັກໃຜ)' : ids.map((x) => `<@${x}>`).join(' ');
       const msg = await ch.send({ content: head || undefined, ...codeMessage(user, o, now, false), allowedMentions: { users: ids } });
       db[lastKey] = { id: msg.id, o: { code: o.code, game: o.game, map: o.map, note: o.note }, at: now.getTime() }; save();
-      if (!o.preview) logTo(`🔑 **${user.username}** ສົ່ງລະຫັດຫ້ອງ${o.game ? ` ເກມ ${o.game}` : ''}: ${o.code}`);
+      if (!o.preview) {
+        logTo(`🔑 **${user.username}** ສົ່ງລະຫັດຫ້ອງ${o.game ? ` ເກມ ${o.game}` : ''}: ${o.code}`);
+        const dmE = new EmbedBuilder().setColor(0xFF4655)
+          .setTitle(`🔑 ລະຫັດຫ້ອງ${o.game ? ` ເກມ ${o.game}` : ''} ອອກແລ້ວ!`)
+          .setDescription(`**${EVENT}**\n\n👉 **[ກົດທີ່ນີ້ ເພື່ອເບິ່ງລະຫັດ](${msg.url})**\nລະຫັດມີຢູ່ ${ch} ເທົ່ານັ້ນ — ເຂົ້າຫ້ອງໄວໆເດີ້!`)
+          .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
+        dmPlayers(ids, { embeds: [dmE] }, `ລະຫັດຫ້ອງ${o.game ? ` ເກມ ${o.game}` : ''}`);
+      }
       return msg;
     }
     client.jibiRoomCode = sendRoomCode;
@@ -286,6 +341,15 @@ module.exports = {
       const ids = Object.keys(db.players);
       const msg = await ch.send({ content: ids.map((x) => `<@${x}>`).join(' ') || undefined, ...reminderMessage(minsLeft), allowedMentions: { users: ids } });
       logTo(`⏰ ແຈ້ງເຕືອນນັກແຂ່ງ${force ? ' (ສັ່ງເອງ)' : ''}: ອີກ ${minsLeft} ນາທີ`);
+      const dmE = new EmbedBuilder().setColor(0xFFC400)
+        .setTitle(minsLeft > 0 ? `⏰ ອີກ ${minsLeft} ນາທີ ເລີ່ມແຂ່ງ!` : '🔥 ເຖິງເວລາແຂ່ງແລ້ວ!')
+        .setDescription(`**${EVENT}**`)
+        .addFields(
+          { name: '🕗 ເລີ່ມ', value: `<t:${unix(EV.startAt)}:t> · <t:${unix(EV.startAt)}:R>`, inline: true },
+          { name: '🔊 ເຂົ້າຫ້ອງສຽງ', value: 'ກ່ອນເລີ່ມ 10 ນາທີ', inline: true },
+          { name: '🔑 ລະຫັດຫ້ອງ', value: `ເບິ່ງທີ່ ${ch} ເທົ່ານັ້ນ` },
+        ).setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
+      dmPlayers(ids, { embeds: [dmE] }, `ເຕືອນອີກ ${minsLeft} ນາທີ`);
       return msg;
     }
     setInterval(async () => {
@@ -367,17 +431,7 @@ module.exports = {
           if (!EV.regOpen && !db.players[i.user.id]) return i.reply({ content: '🔒 ປິດຮັບສະໝັກແລ້ວ — ຕິດຕາມງານແຂ່ງຄັ້ງໜ້າເດີ້ 💛', flags: MessageFlags.Ephemeral });
           // คนใหม่ → โชว์กติกา + ข้อมูลทั้งหมดก่อน ต้องกด ✅ ຍອມຮັບ ถึงจะได้กรอก
           if (!db.players[i.user.id]) {
-            const rules = new EmbedBuilder().setColor(0xFF4655)
-              .setTitle(`📜 ອ່ານກົດກ່ອນລົງທະບຽນ — ${EVENT}`)
-              .setDescription([
-                ...RULES(),
-                '',
-                EV.startAt ? `🕗 **ເລີ່ມແຂ່ງ:** <t:${unix(EV.startAt)}:F> · <t:${unix(EV.startAt)}:R>` : '🕗 **ວັນ-ເວລາແຂ່ງ:** ແອດມິນຈະປະກາດ',
-                `🔑 **ລະຫັດຫ້ອງ Custom ຈະມີຢູ່ຫ້ອງ ${codeLink()} ເທົ່ານັ້ນ** — ລົງທະບຽນແລ້ວຈຶ່ງເຫັນຫ້ອງນີ້`,
-                '',
-                'ກົດ **✅ ຍອມຮັບກົດ ແລະ ລົງທະບຽນ** ເພື່ອໃສ່ຂໍ້ມູນ',
-              ].join('\n'))
-              .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
+            const rules = rulesEmbed();
             const row = new ActionRowBuilder().addComponents(
               new ButtonBuilder().setCustomId('tourney:accept').setStyle(ButtonStyle.Success).setLabel('✅ ຍອມຮັບກົດ ແລະ ລົງທະບຽນ'));
             return i.reply({ embeds: [rules], components: [row], flags: MessageFlags.Ephemeral });
@@ -409,10 +463,9 @@ module.exports = {
           await bumpPanel(ch);
           logTo(`📝 **${i.user.username}** ${old ? 'ແກ້ໄຂ' : 'ລົງທະບຽນ'}ນັກແຂ່ງ #${no}: ${v.name} · ${v.riot} · ${v.rank}${v.team ? ` · ${v.team}` : ''} · ${v.pshop ? '✅ ເຄີຍເຕີມກັບ P SHOP' : '— ບໍ່ເຄີຍເຕີມກັບ P SHOP'}`);
           if (!old) {
-            const dm = new EmbedBuilder().setColor(0xFFC400).setTitle('✅ ລົງທະບຽນສຳເລັດ — ຂໍ້ມູນສຳຄັນ').setDescription(infoText(no)).setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
-            i.user.send({ embeds: [dm] }).catch(() => {});
+            i.user.send({ embeds: [infoEmbed(no, false)] }).catch(() => {});
           }
-          return i.editReply(`✅ ${old ? 'ແກ້ໄຂຂໍ້ມູນແລ້ວ' : `ລົງທະບຽນແລ້ວ! ເຈົ້າແມ່ນນັກແຂ່ງ #${no}${no > MAX ? ' (ຕົວສຳຮອງ)' : ''}`} — ${msg.url}\n\n${infoText(old ? 0 : no)}`);
+          return i.editReply({ content: `🎯 ກາດນັກແຂ່ງຂອງເຈົ້າ: ${msg.url}`, embeds: [infoEmbed(no, !!old)] });
         }
 
         if (i.isButton() && i.customId === 'tourney:cancel') {
