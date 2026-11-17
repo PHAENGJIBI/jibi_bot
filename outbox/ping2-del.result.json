@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "action": "delete-messages",
+  "at": "2026-11-17T14:31:23.655Z",
+  "result": {
+    "deleted": 1
+  }
+}
