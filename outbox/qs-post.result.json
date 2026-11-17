@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "action": "quick-survey-post",
+  "at": "2026-11-17T15:50:10.602Z",
+  "result": {
+    "url": "https://discord.com/channels/1245771682833109032/1570841744407400630/1572277657796739122",
+    "targets": 6,
+    "dm": {
+      "ok": [
+        "chibai",
+        "thejuicetz",
+        "optimumbai",
+        "Passobemsolto",
+        "Wet Dream",
+        "PG Nanz"
+      ],
+      "fail": []
+    }
+  }
+}

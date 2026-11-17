@@ -1,6 +1,6 @@
 {
   "panels": {
-    "1572217822208331896": "1572274355688308849"
+    "1572217822208331896": "1572277415223496866"
   },
   "players": {
     "446988988222275584": {
@@ -94,6 +94,25 @@
       "at": 1794929812696,
       "channelId": "1572217822208331896",
       "messageId": "1572274335132028969",
+      "style": 4,
+      "acceptedRules": true
+    },
+    "590446600401321984": {
+      "name": "ບິກ",
+      "riot": "PG Nanz#Big01",
+      "rank": "Immortal",
+      "team": "Paradise Esports",
+      "confirm": [
+        "rules",
+        "code",
+        "admin",
+        "pshop"
+      ],
+      "pshop": true,
+      "no": 6,
+      "at": 1794930542958,
+      "channelId": "1572217822208331896",
+      "messageId": "1572277397913468961",
       "style": 4,
       "acceptedRules": true
     }
