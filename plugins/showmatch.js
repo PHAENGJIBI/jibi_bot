@@ -171,6 +171,8 @@ module.exports = {
     }
 
     // แมตช์ทดลอง (ผู้เล่นชื่อสมมุติ) — เรียกจาก bridge: { action: 'showmatch-demo', players: [{name, rank}] }
+    // ล้างข้อมูลทดลอง: เครดิตทุกคนกลับไปเริ่มใหม่ · ไม่มีแมตช์ค้าง
+    client.jibiShowmatchReset = () => { db.balances = {}; db.match = null; db.no = 0; db.lbMsg = null; save(); return 'reset'; };
     client.jibiShowmatchDemo = async (list) => {
       if (db.match && ['open', 'locked'].includes(db.match.status)) throw new Error('ຍັງມີ SHOWMATCH ທີ່ບໍ່ທັນຈົບ');
       const players = list.slice(0, 4).map((p, k) => ({ id: `demo${k + 1}`, name: p.name, rank: rankOf(p.rank) }));

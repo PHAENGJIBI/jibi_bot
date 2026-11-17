@@ -116,18 +116,16 @@
       ]
     },
     {
-      "name": "🔴 TEST βETA TOURNAMENT VOL.2",
-      "visible": "admin",
-      "allowUsers": [
-        "phaeng_shiba"
-      ],
-      "_note": "หมวดทดลองระบบ VOL.2 — เห็นเฉพาะ Admin + phaeng_shiba",
+      "name": "• VALORANT | βETA TOURNAMENT VOL.2",
+      "visible": "valorant",
+      "_note": "งานแข่ง βETA VOL.2 (เปิดจริง 17/11) — ห้อง 🔑 เห็นเฉพาะยศ 🎯 ນັກແຂ່ງ",
       "channels": [
         {
           "name": "🔑・ລະຫັດຫ້ອງ-βeta",
           "type": "text",
           "readOnly": true,
-          "topic": "ລະຫັດຫ້ອງ Custom ສຳລັບນັກແຂ່ງ βETA TOURNAMENT ເທົ່ານັ້ນ"
+          "topic": "ລະຫັດຫ້ອງ Custom ສຳລັບນັກແຂ່ງ βETA TOURNAMENT ເທົ່ານັ້ນ",
+          "visible": "player"
         },
         {
           "name": "📢・ປະກາດ-βeta",
@@ -165,16 +163,14 @@
         }
       ],
       "was": [
+        "🔴 TEST βETA TOURNAMENT VOL.2",
         "🔴 TEST βETA TOURNAMENT"
       ]
     },
     {
-      "name": "🔴 TEST βETA SHOWMATCH 2v2",
-      "visible": "admin",
-      "allowUsers": [
-        "phaeng_shiba"
-      ],
-      "_note": "หมวดทดลอง SHOWMATCH 2v2 + ทายผลด้วยเครดิตจำลอง — เห็นเฉพาะ Admin + phaeng_shiba",
+      "name": "• VALORANT | SHOWMATCH 2v2",
+      "visible": "valorant",
+      "_note": "SHOWMATCH 2v2 + ทายผลด้วยเครดิตจำลอง (เปิดจริง 17/11)",
       "channels": [
         {
           "name": "📜・ວິທີຫຼິ້ນ-showmatch",
@@ -204,6 +200,9 @@
           "type": "voice",
           "userLimit": 20
         }
+      ],
+      "was": [
+        "🔴 TEST βETA SHOWMATCH 2v2"
       ]
     },
     {
@@ -551,8 +550,6 @@
   ],
   "onboarding": [
     {
-      "draft": true,
-      "_note": "βETA VOL.2 — เตรียมไว้ ยังไม่เปิด · ลบ draft ออกเมื่อจะใช้ (และเปิดหมวด βETA ให้ยศ valorant เห็นก่อน)",
       "title": "🏆 ເຂົ້າມາເພື່ອແຂ່ງ βETA TOURNAMENT VOL.2 ບໍ່?",
       "required": false,
       "single": true,
