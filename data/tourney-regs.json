@@ -1,20 +1,6 @@
 {
   "panels": {
-    "1572217822208331896": "1572221116301443124"
+    "1572217822208331896": "1572223127734329356"
   },
-  "players": {
-    "424942885478072338": {
-      "name": "phaeng",
-      "riot": "phaeng#pop",
-      "rank": "Bronze",
-      "team": "pshop",
-      "pshop": true,
-      "no": 1,
-      "at": 1794917123113,
-      "channelId": "1572217822208331896",
-      "messageId": "1572221111457026158",
-      "style": 4,
-      "acceptedRules": true
-    }
-  }
+  "players": {}
 }
