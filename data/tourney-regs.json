@@ -1,6 +1,6 @@
 {
   "panels": {
-    "1572217822208331896": "1572283100640051234"
+    "1572217822208331896": "1572288931683106968"
   },
   "players": {
     "446988988222275584": {
@@ -132,6 +132,44 @@
       "at": 1794931899370,
       "channelId": "1572217822208331896",
       "messageId": "1572283087860015125",
+      "style": 4,
+      "acceptedRules": true
+    },
+    "1066437329851531274": {
+      "name": "ອາເລັກ",
+      "riot": "Pipo#1174",
+      "rank": "Diamond",
+      "team": "",
+      "confirm": [
+        "rules",
+        "code",
+        "admin",
+        "pshop"
+      ],
+      "pshop": true,
+      "no": 8,
+      "at": 1794933071072,
+      "channelId": "1572217822208331896",
+      "messageId": "1572288001881411635",
+      "style": 4,
+      "acceptedRules": true
+    },
+    "1291710379432607778": {
+      "name": "bented",
+      "riot": "bented#14088",
+      "rank": "Gold",
+      "team": "",
+      "confirm": [
+        "rules",
+        "code",
+        "admin",
+        "pshop"
+      ],
+      "pshop": true,
+      "no": 9,
+      "at": 1794933291140,
+      "channelId": "1572217822208331896",
+      "messageId": "1572288924968026235",
       "style": 4,
       "acceptedRules": true
     }
