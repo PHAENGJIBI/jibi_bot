@@ -1,6 +1,6 @@
 {
   "panels": {
-    "1572217822208331896": "1572272013127589991"
+    "1572217822208331896": "1572274355688308849"
   },
   "players": {
     "446988988222275584": {
@@ -56,6 +56,44 @@
       "at": 1794929257512,
       "channelId": "1572217822208331896",
       "messageId": "1572272006601121843",
+      "style": 4,
+      "acceptedRules": true
+    },
+    "1533745210910314598": {
+      "name": "LOVEYED",
+      "riot": "LOVEYED#888",
+      "rank": "Diamond",
+      "team": "KY",
+      "confirm": [
+        "rules",
+        "code",
+        "admin",
+        "pshop"
+      ],
+      "pshop": true,
+      "no": 4,
+      "at": 1794929629612,
+      "channelId": "1572217822208331896",
+      "messageId": "1572273567138316479",
+      "style": 4,
+      "acceptedRules": true
+    },
+    "1129062068323106836": {
+      "name": "Wet Dream",
+      "riot": "Wet Dream#2108",
+      "rank": "Diamond",
+      "team": "KY",
+      "confirm": [
+        "rules",
+        "code",
+        "admin",
+        "pshop"
+      ],
+      "pshop": true,
+      "no": 5,
+      "at": 1794929812696,
+      "channelId": "1572217822208331896",
+      "messageId": "1572274335132028969",
       "style": 4,
       "acceptedRules": true
     }
