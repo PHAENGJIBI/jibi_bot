@@ -3,67 +3,61 @@
     "424942885478072338": 13333
   },
   "match": {
-    "no": 1,
+    "no": 2,
     "demo": true,
     "A": [
       {
-        "id": "demo1",
-        "name": "DEMO · Ace",
+        "id": "demo2",
+        "name": "DEMO · Fang",
         "rank": {
-          "name": "Radiant",
-          "value": 9,
-          "emoji": "🌟"
+          "name": "Ascendant",
+          "value": 7,
+          "emoji": "🟢"
         }
       },
       {
-        "id": "demo4",
-        "name": "DEMO · Dash",
+        "id": "demo3",
+        "name": "DEMO · Ghost",
         "rank": {
-          "name": "Silver",
-          "value": 3,
-          "emoji": "⚪"
+          "name": "Bronze",
+          "value": 2,
+          "emoji": "🟤"
         }
       }
     ],
     "B": [
       {
-        "id": "demo2",
-        "name": "DEMO · Blaze",
+        "id": "demo1",
+        "name": "DEMO · Echo",
         "rank": {
-          "name": "Immortal",
-          "value": 8,
-          "emoji": "🔴"
+          "name": "Diamond",
+          "value": 6,
+          "emoji": "💎"
         }
       },
       {
-        "id": "demo3",
-        "name": "DEMO · Cobra",
+        "id": "demo4",
+        "name": "DEMO · Hex",
         "rank": {
-          "name": "Gold",
-          "value": 4,
-          "emoji": "🟡"
+          "name": "Platinum",
+          "value": 5,
+          "emoji": "🔷"
         }
       }
     ],
-    "sumA": 12,
-    "sumB": 12,
+    "sumA": 9,
+    "sumB": 11,
     "players": [
       "demo1",
       "demo2",
       "demo3",
       "demo4"
     ],
-    "bets": {
-      "424942885478072338": {
-        "team": "A",
-        "amount": 10000
-      }
-    },
-    "status": "done",
+    "bets": {},
+    "status": "open",
     "chId": "1572234489713922068",
-    "msgId": "1572237425902747660",
-    "winner": "A"
+    "msgId": "1572238885688320152"
   },
-  "no": 1,
+  "no": 2,
   "lbMsg": "1572238378882179213"
 }
