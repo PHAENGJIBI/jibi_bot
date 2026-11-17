@@ -1,0 +1,177 @@
+// ปลั๊กอิน: แบบสอบถามสั้น "ใช้งานง่ายไหม?" สำหรับนักแข่งที่สมัครแล้ว (βETA VOL.2)
+// โพสต์ในห้อง 📝・ແບບສອບຖາມ-ນັກແຂ່ງ + แท็กนักแข่ง + DM ทุกคน · ตอบ 4 ข้อ (เลือกหน้ายิ้ม) + ความเห็น (ไม่ใส่ก็ได้)
+// แผงโชว์ "ตอบแล้ว X/Y" อัปเดตเอง · ผลเก็บใน data/quick-survey.json
+const {
+  Events, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder,
+  ModalBuilder, TextInputBuilder, TextInputStyle, ChannelType, MessageFlags,
+} = require('discord.js');
+const store = require('../lib/store');
+
+const FACES = [['easy', '😄 ງ່າຍຫຼາຍ'], ['ok', '🙂 ພໍໄດ້'], ['hard', '😵 ງົງ / ຍາກ']];
+const QS = [
+  { id: 'join', q: '1. ຕອນເຂົ້າເຊີບເວີ Discord ເທື່ອທຳອິດ' },
+  { id: 'info', q: '2. ຕອນຫາຂໍ້ມູນງານແຂ່ງ (ວັນ, ເວລາ, ກົດ)' },
+  { id: 'reg', q: '3. ຕອນກົດສະໝັກ + ກອກຟອມ' },
+  { id: 'next', q: '4. ສະໝັກແລ້ວ ຮູ້ບໍວ່າຕ້ອງເຮັດຫຍັງຕໍ່' },
+];
+const isSurveyCh = (c) => c && c.type === ChannelType.GuildText && c.name.includes('ແບບສອບຖາມ');
+const bar = (n, total) => { const t = Math.max(total, 1); const f = Math.round((n / t) * 10); return `${'🟩'.repeat(f)}${'⬛'.repeat(10 - f)}`; };
+
+module.exports = {
+  id: 'quick-survey',
+  name: 'แบบสอบถามสั้น (ใช้งานง่ายไหม)',
+  description: 'ถามนักแข่งที่สมัครแล้ว 4 ข้อแบบเลือกหน้ายิ้ม + ความเห็น · แท็ก + DM · แผงโชว์จำนวนคนตอบ',
+  setup({ client, guild, logTo }) {
+    const db = store.load('quick-survey', { panel: null, targets: [], responses: {} });
+    db.responses = db.responses || {}; db.targets = db.targets || [];
+    const save = () => store.save('quick-survey', db);
+    const draft = new Map(); // uid → answers
+
+    const count = () => db.targets.filter((u) => db.responses[u]).length;
+    function panelMessage() {
+      const n = count(); const total = db.targets.length;
+      const e = new EmbedBuilder().setColor(0xFFC400)
+        .setTitle('📝 ຂໍຖາມແດ່ — ໃຊ້ງານຍາກບໍ? 🙏')
+        .setDescription([
+          'ສະບາຍດີນັກແຂ່ງທຸກຄົນ ນ້ອງ JIBI ເອງ 👋',
+          'ຂອບໃຈທີ່ສະໝັກ βETA TOURNAMENT VOL.2 ເດີ້ 💛',
+          '',
+          'ຢາກຮູ້ວ່າຕອນເຂົ້າເຊີບເວີ ຕອນສະໝັກ ມັນ **ງ່າຍ ຫຼື ງົງ** ແນວໃດແດ່',
+          'ຈະເອົາໄປປັບລະບົບໃຫ້ດີຂຶ້ນ ໃຫ້ໝູ່ທີ່ມາໃໝ່ສະໝັກງ່າຍກວ່າເກົ່າ',
+          '',
+          '⏱️ ໃຊ້ເວລາ **30 ວິນາທີ** — ເລືອກໜ້າຍິ້ມ 4 ຂໍ້ ຈົບ!',
+          '✍️ ຢາກບົ່ນ ຢາກແນະນຳ ພິມໄດ້ເລີຍ (ບໍ່ພິມກໍໄດ້)',
+          '🔒 ຄຳຕອບເຫັນສະເພາະແອດມິນ',
+          '',
+          `📊 ຕອບແລ້ວ **${n}/${total}** ຄົນ\n${bar(n, total)}`,
+        ].join('\n'))
+        .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
+      const row = new ActionRowBuilder().addComponents(
+        new ButtonBuilder().setCustomId('qs:start').setStyle(ButtonStyle.Danger).setLabel('📝 ຕອບເລີຍ (30 ວິ)'),
+      );
+      return { embeds: [e], components: [row] };
+    }
+
+    function formMessage(uid) {
+      const a = draft.get(uid) || {};
+      const rows = QS.map((x) => new ActionRowBuilder().addComponents(
+        new StringSelectMenuBuilder().setCustomId(`qs:sel:${x.id}`).setPlaceholder(x.q)
+          .addOptions(FACES.map(([v, l]) => ({ label: `${x.q.split('.')[0]}. ${l}`, value: v, default: a[x.id] === v }))),
+      ));
+      const done = QS.every((x) => a[x.id]);
+      rows.push(new ActionRowBuilder().addComponents(
+        new ButtonBuilder().setCustomId('qs:send').setStyle(ButtonStyle.Success).setLabel('✅ ສົ່ງເລີຍ').setDisabled(!done),
+        new ButtonBuilder().setCustomId('qs:comment').setStyle(ButtonStyle.Primary).setLabel('✍️ ພິມຄຳເຫັນ ແລ້ວສົ່ງ').setDisabled(!done),
+      ));
+      const e = new EmbedBuilder().setColor(0xFFC400)
+        .setTitle('ເລືອກໜ້າຍິ້ມ 4 ຂໍ້ 👇')
+        .setDescription(`${QS.map((x) => `${a[x.id] ? '✅' : '▫️'} ${x.q}`).join('\n')}\n\n${done ? '👉 ຄົບແລ້ວ! ກົດ **ສົ່ງເລີຍ** ຫຼື **ພິມຄຳເຫັນ** ກໍໄດ້' : '_ຄົບ 4 ຂໍ້ ປຸ່ມສົ່ງຈະກົດໄດ້_'}`);
+      return { embeds: [e], components: rows };
+    }
+
+    async function refreshPanel() {
+      if (!db.panel) return;
+      const ch = await guild.channels.fetch(db.panel.chId).catch(() => null);
+      const msg = ch && await ch.messages.fetch(db.panel.msgId).catch(() => null);
+      if (msg) await msg.edit(panelMessage()).catch(() => {});
+    }
+
+    async function finish(i, comment) {
+      const uid = i.user.id;
+      const m = await guild.members.fetch(uid).catch(() => null);
+      db.responses[uid] = { name: (m && m.displayName) || i.user.username, at: new Date().toISOString(), answers: draft.get(uid), comment: comment || '' };
+      draft.delete(uid); save();
+      const a = db.responses[uid].answers;
+      const face = (v) => (FACES.find((f) => f[0] === v) || [, v])[1].split(' ')[0];
+      logTo(`📝 ${db.responses[uid].name} ຕອບແບບສອບຖາມສັ້ນແລ້ວ (${count()}/${db.targets.length}) · ${QS.map((x) => face(a[x.id])).join(' ')}${comment ? ` · 💬 ${comment.slice(0, 200)}` : ''}`);
+      await refreshPanel();
+    }
+
+    client.jibiQuickSurvey = {
+      async post({ text, dm = true } = {}) {
+        const ch = guild.channels.cache.find(isSurveyCh);
+        if (!ch) throw new Error('ບໍ່ພົບຫ້ອງ ແບບສອບຖາມ');
+        const players = client.jibiTourney ? client.jibiTourney.players().map((p) => p.uid) : [];
+        if (!players.length) throw new Error('ຍັງບໍ່ມີນັກແຂ່ງ');
+        db.targets = [...new Set([...db.targets, ...players])];
+        const content = `${players.map((u) => `<@${u}>`).join(' ')}\n${text || 'ນ້ອງ JIBI ຂໍລົບກວນ 30 ວິນາທີ ເດີ້ 🙏 ກົດປຸ່ມແດງລຸ່ມນີ້ໄດ້ເລີຍ 👇'}`;
+        const msg = await ch.send({ content, ...panelMessage(), allowedMentions: { users: players } });
+        db.panel = { chId: ch.id, msgId: msg.id }; save();
+        const dmRes = { ok: [], fail: [] };
+        if (dm) {
+          for (const u of players) {
+            const mem = await guild.members.fetch(u).catch(() => null);
+            const name = mem ? mem.displayName : '';
+            const e = new EmbedBuilder().setColor(0xFFC400)
+              .setTitle(`ສະບາຍດີ ${name} 👋 ນ້ອງ JIBI ເອງ`)
+              .setDescription([
+                'ຂອບໃຈທີ່ສະໝັກ **βETA TOURNAMENT VOL.2** ເດີ້ 💛',
+                '',
+                'ຂໍຖາມແດ່ ຕອນເຂົ້າເຊີບເວີ ກັບ ຕອນສະໝັກ ມັນ **ງ່າຍ ຫຼື ງົງ** ບໍ?',
+                'ຈະເອົາໄປປັບປຸງໃຫ້ດີຂຶ້ນ 🙏 ໃຊ້ເວລາແຄ່ **30 ວິນາທີ**',
+                '',
+                '👇 ກົດປຸ່ມລຸ່ມນີ້ ຕອບໃນ DM ນີ້ໄດ້ເລີຍ',
+              ].join('\n'))
+              .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
+            const row = new ActionRowBuilder().addComponents(
+              new ButtonBuilder().setCustomId('qs:start').setStyle(ButtonStyle.Danger).setLabel('📝 ຕອບເລີຍ (30 ວິ)'),
+              new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(msg.url).setLabel('ເບິ່ງໃນເຊີບເວີ'),
+            );
+            const ok = mem && await mem.send({ embeds: [e], components: [row] }).then(() => true).catch(() => false);
+            (ok ? dmRes.ok : dmRes.fail).push(name || u);
+          }
+          logTo(`📨 DM ແບບສອບຖາມສັ້ນ: ສົ່ງຖຶງ ${dmRes.ok.length}/${players.length}${dmRes.fail.length ? ` · ສົ່ງບໍ່ໄດ້ (ປິດ DM): ${dmRes.fail.join(', ')}` : ''}`);
+        }
+        return { url: msg.url, targets: players.length, dm: dmRes };
+      },
+      results: () => ({
+        answered: count(), total: db.targets.length,
+        waiting: db.targets.filter((u) => !db.responses[u]),
+        responses: Object.entries(db.responses).map(([uid, r]) => ({ uid, ...r })),
+      }),
+    };
+
+    client.on(Events.InteractionCreate, async (i) => {
+      try {
+        if (!i.customId || !i.customId.startsWith('qs:')) return;
+        const uid = i.user.id;
+        if (i.isButton() && i.customId === 'qs:start') {
+          if (db.responses[uid]) return i.reply({ content: '✅ ຕອບແລ້ວເດີ້ — ຂອບໃຈຫຼາຍໆ 💛', flags: MessageFlags.Ephemeral });
+          if (!draft.has(uid)) draft.set(uid, {});
+          return i.reply({ ...formMessage(uid), flags: MessageFlags.Ephemeral });
+        }
+        if (!draft.has(uid)) {
+          if (db.responses[uid]) return i.reply({ content: '✅ ຕອບແລ້ວເດີ້ — ຂອບໃຈຫຼາຍໆ 💛', flags: MessageFlags.Ephemeral });
+          return i.reply({ content: '⏳ ໝົດເວລາ — ກົດ 📝 ຕອບເລີຍ ໃໝ່ອີກຄັ້ງເດີ້', flags: MessageFlags.Ephemeral });
+        }
+        if (i.isStringSelectMenu() && i.customId.startsWith('qs:sel:')) {
+          draft.get(uid)[i.customId.slice('qs:sel:'.length)] = i.values[0];
+          return i.update(formMessage(uid));
+        }
+        if (i.isButton() && i.customId === 'qs:send') {
+          await finish(i, '');
+          return i.update({ content: '💛 ຂອບໃຈຫຼາຍໆເດີ້! ນ້ອງ JIBI ຈະເອົາໄປປັບປຸງໃຫ້ດີຂຶ້ນ — ພົບກັນວັນສຸກ 20:00 🎯', embeds: [], components: [] });
+        }
+        if (i.isButton() && i.customId === 'qs:comment') {
+          const modal = new ModalBuilder().setCustomId('qs:modal').setTitle('✍️ ຄຳເຫັນ (ບົ່ນໄດ້ເຕັມທີ່ 😄)');
+          modal.addComponents(
+            new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('hard').setLabel('ຕອນໃດງົງທີ່ສຸດ? (ບໍ່ໃສ່ກໍໄດ້)')
+              .setStyle(TextInputStyle.Paragraph).setRequired(false).setMaxLength(1000).setPlaceholder('ເຊັ່ນ ຫາຫ້ອງສະໝັກບໍ່ເຫັນ, ບໍ່ຮູ້ Riot ID ແມ່ນຫຍັງ…')),
+            new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('idea').setLabel('ຄຳເຫັນທົ່ວໄປ / ຢາກໃຫ້ເພີ່ມຫຍັງ?')
+              .setStyle(TextInputStyle.Paragraph).setRequired(false).setMaxLength(1000)),
+          );
+          return i.showModal(modal);
+        }
+        if (i.isModalSubmit() && i.customId === 'qs:modal') {
+          const hard = i.fields.getTextInputValue('hard') || '';
+          const idea = i.fields.getTextInputValue('idea') || '';
+          await finish(i, [hard && `ງົງ: ${hard}`, idea && `ຄຳເຫັນ: ${idea}`].filter(Boolean).join(' | '));
+          return i.reply({ content: '💛 ຂອບໃຈຫຼາຍໆເດີ້! ຄຳເຫັນນີ້ມີຄ່າຫຼາຍ ນ້ອງ JIBI ຈະເອົາໄປປັບປຸງ — ພົບກັນວັນສຸກ 20:00 🎯', flags: MessageFlags.Ephemeral });
+        }
+      } catch (e) {
+        console.error('[quick-survey]', e.message);
+        if (i.isRepliable() && !i.replied && !i.deferred) i.reply({ content: '⚠️ ມີບັນຫາ ລອງໃໝ່ອີກຄັ້ງເດີ້', flags: MessageFlags.Ephemeral }).catch(() => {});
+      }
+    });
+  },
+};
