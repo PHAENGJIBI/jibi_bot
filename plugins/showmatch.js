@@ -98,7 +98,7 @@ module.exports = {
         rows.push(new ActionRowBuilder().addComponents(
           new ButtonBuilder().setCustomId('sm:bet:A').setStyle(ButtonStyle.Danger).setLabel('🔴 ລົງທີມ A'),
           new ButtonBuilder().setCustomId('sm:bet:B').setStyle(ButtonStyle.Primary).setLabel('🔵 ລົງທີມ B'),
-          new ButtonBuilder().setCustomId('sm:me').setStyle(ButtonStyle.Secondary).setLabel('💰 ເຄຣດິດຂອງຂ້ອຍ'),
+          new ButtonBuilder().setCustomId('sm:me').setStyle(ButtonStyle.Secondary).setLabel('💰 ເຄຣດິດ & ລາງວັນຂອງຂ້ອຍ'),
         ));
       }
       if (m.status === 'open' || m.status === 'locked') {
@@ -196,10 +196,39 @@ module.exports = {
         const [, act, team] = i.customId.split(':');
 
         if (act === 'me') {
-          const b = m.bets[i.user.id];
-          let est = '';
-          if (b) { const pp = pools(m); const g = b.amount + Math.floor((b.amount / ((b.team === 'A' ? pp.A : pp.B) + HOUSE)) * ((b.team === 'A' ? pp.B : pp.A) + HOUSE)); est = `\n🧮 ຖ້າຊະນະ (ຕອນນີ້) ໄດ້ຄືນ ~**${fmt(g)}**`; }
-          return i.reply({ content: `💰 ເຄຣດິດຂອງເຈົ້າ: **${fmt(bal(i.user.id))}**${b ? `\n🎲 ລົງໄວ້: ທີມ ${b.team === 'A' ? '🔴 A' : '🔵 B'} · **${fmt(b.amount)}**${est}` : ''}`, flags: MessageFlags.Ephemeral });
+          const b = m.bets[i.user.id]; const have = bal(i.user.id); const pp = pools(m);
+          const side = (t) => ({ mine: t === 'A' ? pp.A : pp.B, other: t === 'A' ? pp.B : pp.A });
+          const tn = (t) => (t === 'A' ? '🔴 A' : '🔵 B');
+          const e = new EmbedBuilder().setColor(0xF2C14E).setTitle(`💰 ເຄຣດິດ & ລາງວັນຂອງເຈົ້າ — SHOWMATCH #${m.no}`)
+            .addFields({ name: '💳 ເຄຣດິດຄົງເຫຼືອ', value: `**${fmt(have)}**`, inline: true });
+          if (b) {
+            const { mine, other } = side(b.team);
+            const win = b.amount + Math.floor((b.amount / (mine + HOUSE)) * (other + HOUSE));
+            e.addFields(
+              { name: '🎲 ລົງໄວ້', value: `ທີມ ${tn(b.team)} · **${fmt(b.amount)}**`, inline: true },
+              { name: '\u200b', value: '\u200b', inline: false },
+              { name: `🏆 ຖ້າທີມ ${tn(b.team)} ຊະນະ`, value: `ໄດ້ຄືນ **${fmt(win)}**\nກຳໄລ **+${fmt(win - b.amount)}**\nເຄຣດິດຫຼັງຈົບ **${fmt(have + win)}**`, inline: true },
+              { name: `💀 ຖ້າທີມ ${tn(b.team)} ແພ້`, value: `ເສຍ **${fmt(b.amount)}**\nເຄຣດິດຫຼັງຈົບ **${fmt(have)}**`, inline: true },
+            );
+            if (m.status === 'open' && have >= MIN) {
+              const more = [1000, 2000, 3000].filter((x) => x <= have).map((x) => {
+                const tot = b.amount + x; const w = tot + Math.floor((tot / (mine + x + HOUSE)) * (other + HOUSE));
+                return `ເພີ່ມ ${fmt(x)} (ລວມ ${fmt(tot)}) → ໄດ້ຄືນ **${fmt(w)}**`;
+              });
+              if (more.length) e.addFields({ name: `➕ ຖ້າເພີ່ມໃສ່ທີມ ${tn(b.team)}`, value: more.join('\n') });
+            }
+          } else if (m.status === 'open') {
+            const amts = [...new Set([1000, 2000, 3000, have - (have % 1000)])].filter((x) => x >= MIN && x <= have);
+            const tbl = (t) => { const { mine, other } = side(t); return amts.map((x) => `ລົງ ${fmt(x)}${x === have - (have % 1000) && x > 3000 ? ' (ໝົດໜ້າຕັກ)' : ''} → ໄດ້ຄືນ **${fmt(payout(x, mine, other))}**`).join('\n') || '—'; };
+            e.addFields(
+              { name: '🎲 ຍັງບໍ່ໄດ້ລົງ', value: 'ກົດ 🔴 ຫຼື 🔵 ເພື່ອລົງ', inline: true },
+              { name: '\u200b', value: '\u200b', inline: false },
+              { name: '🧮 ຖ້າລົງ 🔴 A ແລ້ວ A ຊະນະ', value: tbl('A'), inline: true },
+              { name: '🧮 ຖ້າລົງ 🔵 B ແລ້ວ B ຊະນະ', value: tbl('B'), inline: true },
+            );
+          }
+          e.setFooter({ text: 'ຕົວເລກຄິດຈາກກອງຕອນນີ້ — ປ່ຽນໄດ້ຖ້າມີຄົນລົງເພີ່ມ · ທາຍຜິດ = ເສຍທີ່ລົງ · ເຄຣດິດຈຳລອງ' });
+          return i.reply({ embeds: [e], flags: MessageFlags.Ephemeral });
         }
         if (act === 'bet' && i.isButton()) {
           if (m.status !== 'open') return i.reply({ content: '🔒 ປິດຮັບທາຍຜົນແລ້ວ', flags: MessageFlags.Ephemeral });
