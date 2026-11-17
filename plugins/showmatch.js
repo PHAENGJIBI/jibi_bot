@@ -1,0 +1,222 @@
+// ปลั๊กอิน: SHOWMATCH 2v2 + ทายผลด้วยเครดิตจำลอง (ไม่ใช่เงินจริง)
+// /showmatch → สุ่มนักแข่ง 4 คน (หรือแอดมินเลือกเอง) แล้วจัดทีมให้แรงค์สูสีที่สุด (สูงสุดคู่กับต่ำสุด)
+// คนที่ไม่ได้ลงเล่นกด 🔴/🔵 เพื่อทายผล · ทุกคนเริ่มที่ 10,000 เครดิต · ขั้นต่ำ 1,000
+// แอดมินกด 🔒 ปิดรับ → 🏆 ทีมที่ชนะ → แบ่งกองกลางให้ฝั่งที่ทายถูกตามสัดส่วน
+const {
+  Events, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder,
+  TextInputBuilder, TextInputStyle, MessageFlags, SlashCommandBuilder, PermissionFlagsBits, ChannelType,
+} = require('discord.js');
+const store = require('../lib/store');
+
+const START = 10000; // เครดิตเริ่มต้นต่อคน
+const MIN = 1000; // ลงขั้นต่ำ (และต้องลงทีละ 1,000)
+const RANK_VALUE = { Iron: 1, Bronze: 2, Silver: 3, Gold: 4, Platinum: 5, Diamond: 6, Ascendant: 7, Immortal: 8, Radiant: 9 };
+const RANK_EMOJI = { Iron: '⚫', Bronze: '🟤', Silver: '⚪', Gold: '🟡', Platinum: '🔷', Diamond: '💎', Ascendant: '🟢', Immortal: '🔴', Radiant: '🌟' };
+const BET_CH = 'ທາຍຜົນ-showmatch';
+const LB_CH = 'ເຄຣດິດ-showmatch';
+const fmt = (n) => Number(n).toLocaleString('en-US');
+
+function rankOf(rankStr) {
+  const k = Object.keys(RANK_VALUE).find((x) => String(rankStr || '').startsWith(x));
+  return k ? { name: k, value: RANK_VALUE[k], emoji: RANK_EMOJI[k] } : { name: 'Unrated', value: 3, emoji: '🏅' };
+}
+
+// จัด 4 คนเป็น 2 ทีมให้ผลรวมแรงค์ใกล้กันที่สุด — เท่ากันให้เลือกแบบ "สูงสุด+ต่ำสุด"
+function balance(players) {
+  const s = [...players].sort((a, b) => b.rank.value - a.rank.value);
+  const [a, b, c, d] = s;
+  const splits = [[[a, d], [b, c]], [[a, c], [b, d]], [[a, b], [c, d]]];
+  const sum = (t) => t.reduce((x, p) => x + p.rank.value, 0);
+  let best = splits[0];
+  for (const sp of splits) if (Math.abs(sum(sp[0]) - sum(sp[1])) < Math.abs(sum(best[0]) - sum(best[1]))) best = sp;
+  return { A: best[0], B: best[1], sumA: sum(best[0]), sumB: sum(best[1]) };
+}
+
+module.exports = {
+  id: 'showmatch',
+  name: 'SHOWMATCH 2v2 + ทายผล (เครดิตจำลอง)',
+  description: '/showmatch จัดทีม 2v2 แรงค์สูสี · คนดูทายผลด้วยเครดิตจำลอง 10,000 (ขั้นต่ำ 1,000) · ไม่ใช่เงินจริง',
+  commands: [
+    new SlashCommandBuilder().setName('showmatch').setDescription('ເປີດ SHOWMATCH 2v2 + ທາຍຜົນ (ແອດມິນ)')
+      .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
+      .addUserOption((o) => o.setName('p1').setDescription('ຜູ້ຫຼິ້ນ 1 (ບໍ່ໃສ່ = ສຸ່ມຈາກນັກແຂ່ງ)'))
+      .addUserOption((o) => o.setName('p2').setDescription('ຜູ້ຫຼິ້ນ 2'))
+      .addUserOption((o) => o.setName('p3').setDescription('ຜູ້ຫຼິ້ນ 3'))
+      .addUserOption((o) => o.setName('p4').setDescription('ຜູ້ຫຼິ້ນ 4')),
+  ],
+  setup({ client, guild, logTo }) {
+    const db = store.load('showmatch', { balances: {}, match: null, no: 0, lbMsg: null });
+    const save = () => store.save('showmatch', db);
+    const bal = (uid) => (db.balances[uid] === undefined ? START : db.balances[uid]);
+    const findCh = (part) => guild.channels.cache.find((c) => c.type === ChannelType.GuildText && c.name.includes(part));
+    const isAdmin = (m) => m && m.permissions.has(PermissionFlagsBits.ManageGuild);
+
+    function pools(m) {
+      const p = { A: 0, B: 0, nA: 0, nB: 0 };
+      for (const b of Object.values(m.bets)) { p[b.team] += b.amount; p[`n${b.team}`] += 1; }
+      return p;
+    }
+    const odds = (win, lose) => (win ? (1 + lose / win).toFixed(2) : '—');
+
+    function teamText(team) {
+      return team.map((p) => `${p.rank.emoji} <@${p.id}> · ${p.rank.name}`).join('\n');
+    }
+    function card(m) {
+      const p = pools(m);
+      const status = { open: '🟢 ເປີດຮັບທາຍຜົນ', locked: '🔒 ປິດຮັບແລ້ວ — ກຳລັງແຂ່ງ', done: '🏁 ຈົບແລ້ວ', cancel: '↩️ ຍົກເລີກ — ຄືນເຄຣດິດແລ້ວ' }[m.status];
+      const e = new EmbedBuilder().setColor(m.status === 'done' ? 0xF2C14E : 0xFF4655)
+        .setTitle(`⚔️ SHOWMATCH 2v2 #${m.no}`)
+        .setDescription([
+          `**${status}**`,
+          m.winner ? `🏆 **ທີມ ${m.winner === 'A' ? '🔴 A' : '🔵 B'} ຊະນະ!**` : null,
+          '',
+          `💰 ທຸກຄົນມີ **${fmt(START)} ເຄຣດິດ** · ລົງຂັ້ນຕ່ຳ **${fmt(MIN)}** · ຄົນທີ່ລົງຫຼິ້ນທາຍບໍ່ໄດ້`,
+          '🎮 ເຄຣດິດຈຳລອງ ຫຼິ້ນມ່ວນໆ — ບໍ່ແມ່ນເງິນຈິງ',
+        ].filter((x) => x !== null).join('\n'))
+        .addFields(
+          { name: `🔴 ທີມ A · ແຣງລວມ ${m.sumA}`, value: teamText(m.A), inline: true },
+          { name: `🔵 ທີມ B · ແຣງລວມ ${m.sumB}`, value: teamText(m.B), inline: true },
+          { name: '​', value: '​', inline: false },
+          { name: '🔴 ກອງ A', value: `${fmt(p.A)} · ${p.nA} ຄົນ\nຈ່າຍ x${odds(p.A, p.B)}`, inline: true },
+          { name: '🔵 ກອງ B', value: `${fmt(p.B)} · ${p.nB} ຄົນ\nຈ່າຍ x${odds(p.B, p.A)}`, inline: true },
+        )
+        .setFooter({ text: 'ຈ່າຍ = ແບ່ງກອງຝັ່ງແພ້ໃຫ້ຝັ່ງທີ່ທາຍຖືກ ຕາມສັດສ່ວນ · JIBI · P SHOP GAMERPOWER' });
+      const rows = [];
+      if (m.status === 'open') {
+        rows.push(new ActionRowBuilder().addComponents(
+          new ButtonBuilder().setCustomId('sm:bet:A').setStyle(ButtonStyle.Danger).setLabel('🔴 ລົງທີມ A'),
+          new ButtonBuilder().setCustomId('sm:bet:B').setStyle(ButtonStyle.Primary).setLabel('🔵 ລົງທີມ B'),
+          new ButtonBuilder().setCustomId('sm:me').setStyle(ButtonStyle.Secondary).setLabel('💰 ເຄຣດິດຂອງຂ້ອຍ'),
+        ));
+      }
+      if (m.status === 'open' || m.status === 'locked') {
+        rows.push(new ActionRowBuilder().addComponents(
+          ...(m.status === 'open' ? [new ButtonBuilder().setCustomId('sm:lock').setStyle(ButtonStyle.Secondary).setLabel('🔒 ປິດຮັບ (ແອດມິນ)')] : []),
+          new ButtonBuilder().setCustomId('sm:win:A').setStyle(ButtonStyle.Secondary).setLabel('🏆 A ຊະນະ'),
+          new ButtonBuilder().setCustomId('sm:win:B').setStyle(ButtonStyle.Secondary).setLabel('🏆 B ຊະນະ'),
+          new ButtonBuilder().setCustomId('sm:cancel').setStyle(ButtonStyle.Secondary).setLabel('↩️ ຍົກເລີກ'),
+        ));
+      }
+      return { embeds: [e], components: rows, allowedMentions: { parse: [] } };
+    }
+    async function refresh() {
+      const m = db.match; if (!m) return;
+      const ch = await guild.channels.fetch(m.chId).catch(() => null);
+      const msg = ch && await ch.messages.fetch(m.msgId).catch(() => null);
+      if (msg) await msg.edit(card(m)).catch(() => {});
+    }
+    async function leaderboard() {
+      const ch = findCh(LB_CH); if (!ch) return;
+      const top = Object.entries(db.balances).sort((a, b) => b[1] - a[1]).slice(0, 15);
+      const medal = ['🥇', '🥈', '🥉'];
+      const e = new EmbedBuilder().setColor(0xF2C14E).setTitle('💰 ອັນດັບເຄຣດິດ — SHOWMATCH')
+        .setDescription(top.length ? top.map(([id, v], k) => `${medal[k] || `**${k + 1}.**`} <@${id}> · **${fmt(v)}**`).join('\n') : 'ຍັງບໍ່ມີໃຜທາຍຜົນ')
+        .setFooter({ text: `ທຸກຄົນເລີ່ມ ${fmt(START)} ເຄຣດິດ · ເຄຣດິດຈຳລອງ ບໍ່ແມ່ນເງິນຈິງ` });
+      const old = db.lbMsg && await ch.messages.fetch(db.lbMsg).catch(() => null);
+      if (old) await old.edit({ embeds: [e], allowedMentions: { parse: [] } }).catch(() => {});
+      else { const msg = await ch.send({ embeds: [e], allowedMentions: { parse: [] } }); db.lbMsg = msg.id; save(); }
+    }
+
+    async function startMatch(i) {
+      if (db.match && ['open', 'locked'].includes(db.match.status)) throw new Error('ຍັງມີ SHOWMATCH ທີ່ບໍ່ທັນຈົບ — ກົດ 🏆 ຫຼື ↩️ ກ່ອນ');
+      const regs = store.load('tourney-regs', { players: {} }).players || {};
+      let ids = ['p1', 'p2', 'p3', 'p4'].map((k) => i.options.getUser(k)).filter(Boolean).map((u) => u.id);
+      ids = [...new Set(ids)];
+      if (ids.length && ids.length !== 4) throw new Error('ເລືອກຜູ້ຫຼິ້ນໃຫ້ຄົບ 4 ຄົນ ຫຼື ບໍ່ເລືອກເລີຍ (ສຸ່ມ)');
+      if (!ids.length) {
+        const pool = Object.keys(regs);
+        if (pool.length < 4) throw new Error(`ນັກແຂ່ງທີ່ລົງທະບຽນມີ ${pool.length} ຄົນ — ຕ້ອງມີຢ່າງໜ້ອຍ 4 ຄົນ`);
+        for (let k = pool.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [pool[k], pool[j]] = [pool[j], pool[k]]; }
+        ids = pool.slice(0, 4);
+      }
+      const players = ids.map((id) => ({ id, rank: rankOf(regs[id] && regs[id].rank) }));
+      const t = balance(players);
+      const ch = findCh(BET_CH) || i.channel;
+      db.no = (db.no || 0) + 1;
+      db.match = { no: db.no, A: t.A, B: t.B, sumA: t.sumA, sumB: t.sumB, players: ids, bets: {}, status: 'open', chId: ch.id };
+      const msg = await ch.send({ content: `⚔️ **SHOWMATCH 2v2 #${db.no}** ${ids.map((x) => `<@${x}>`).join(' ')}`, ...card(db.match), allowedMentions: { users: ids } });
+      db.match.msgId = msg.id; save();
+      logTo(`⚔️ ເປີດ SHOWMATCH #${db.no}: A(${t.sumA}) vs B(${t.sumB})`);
+      return msg;
+    }
+
+    async function settle(winner, byName) {
+      const m = db.match; const p = pools(m);
+      const winPool = p[winner]; const losePool = p[winner === 'A' ? 'B' : 'A'];
+      const lines = [];
+      for (const [uid, b] of Object.entries(m.bets)) {
+        let get = 0;
+        if (!winPool) get = b.amount; // ไม่มีใครทายถูก → คืนทุกคน
+        else if (b.team === winner) get = b.amount + Math.floor((b.amount / winPool) * losePool);
+        db.balances[uid] = bal(uid) + get;
+        if (b.team === winner) lines.push(`✅ <@${uid}> +${fmt(get - b.amount)}`);
+      }
+      m.status = 'done'; m.winner = winner; save();
+      await refresh(); await leaderboard();
+      const ch = await guild.channels.fetch(m.chId).catch(() => null);
+      if (ch) await ch.send({ embeds: [new EmbedBuilder().setColor(0xF2C14E).setTitle(`🏆 SHOWMATCH #${m.no} — ທີມ ${winner === 'A' ? '🔴 A' : '🔵 B'} ຊະນະ!`)
+        .setDescription(winPool ? (lines.join('\n') || 'ບໍ່ມີໃຜທາຍຖືກ') : 'ບໍ່ມີໃຜທາຍຖືກ — ຄືນເຄຣດິດໃຫ້ທຸກຄົນ').setFooter({ text: `ຕັດສິນໂດຍ ${byName}` })], allowedMentions: { parse: [] } });
+      logTo(`🏆 SHOWMATCH #${m.no}: ${winner} ຊະນະ (ໂດຍ ${byName})`);
+    }
+
+    client.on(Events.InteractionCreate, async (i) => {
+      try {
+        if (i.isChatInputCommand() && i.commandName === 'showmatch') {
+          await i.deferReply({ flags: MessageFlags.Ephemeral });
+          const msg = await startMatch(i);
+          return i.editReply(`✅ ເປີດ SHOWMATCH ແລ້ວ — ${msg.url}`);
+        }
+        if (!(i.isButton() || i.isModalSubmit()) || !i.customId.startsWith('sm:')) return;
+        const m = db.match;
+        if (!m) return i.reply({ content: 'ຍັງບໍ່ມີ SHOWMATCH', flags: MessageFlags.Ephemeral });
+        const [, act, team] = i.customId.split(':');
+
+        if (act === 'me') {
+          const b = m.bets[i.user.id];
+          return i.reply({ content: `💰 ເຄຣດິດຂອງເຈົ້າ: **${fmt(bal(i.user.id))}**${b ? `\n🎲 ລົງໄວ້: ທີມ ${b.team === 'A' ? '🔴 A' : '🔵 B'} · **${fmt(b.amount)}**` : ''}`, flags: MessageFlags.Ephemeral });
+        }
+        if (act === 'bet' && i.isButton()) {
+          if (m.status !== 'open') return i.reply({ content: '🔒 ປິດຮັບທາຍຜົນແລ້ວ', flags: MessageFlags.Ephemeral });
+          if (m.players.includes(i.user.id)) return i.reply({ content: '🎮 ເຈົ້າເປັນຜູ້ຫຼິ້ນໃນແມັດນີ້ — ທາຍຜົນບໍ່ໄດ້', flags: MessageFlags.Ephemeral });
+          const had = m.bets[i.user.id];
+          if (had && had.team !== team) return i.reply({ content: `ເຈົ້າລົງທີມ ${had.team} ໄປແລ້ວ — ປ່ຽນທີມບໍ່ໄດ້ (ເພີ່ມໄດ້ສະເພາະທີມເດີມ)`, flags: MessageFlags.Ephemeral });
+          if (bal(i.user.id) < MIN) return i.reply({ content: `💸 ເຄຣດິດເຫຼືອ ${fmt(bal(i.user.id))} — ບໍ່ພໍລົງຂັ້ນຕ່ຳ ${fmt(MIN)}`, flags: MessageFlags.Ephemeral });
+          const modal = new ModalBuilder().setCustomId(`sm:modal:${team}`).setTitle(`ລົງທີມ ${team === 'A' ? '🔴 A' : '🔵 B'} · ມີ ${fmt(bal(i.user.id))}`);
+          modal.addComponents(new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('amount').setLabel(`ຈຳນວນ (ຂັ້ນຕ່ຳ ${fmt(MIN)} · ທີລະ 1,000)`).setStyle(TextInputStyle.Short).setPlaceholder('ເຊັ່ນ: 3000').setRequired(true).setMaxLength(7)));
+          return i.showModal(modal);
+        }
+        if (act === 'modal' && i.isModalSubmit()) {
+          if (m.status !== 'open') return i.reply({ content: '🔒 ປິດຮັບທາຍຜົນແລ້ວ', flags: MessageFlags.Ephemeral });
+          const amount = parseInt(String(i.fields.getTextInputValue('amount')).replace(/[^\d]/g, ''), 10);
+          if (!amount || amount < MIN || amount % 1000) return i.reply({ content: `❌ ໃສ່ຈຳນວນຢ່າງໜ້ອຍ ${fmt(MIN)} ແລະ ເປັນທີລະ 1,000`, flags: MessageFlags.Ephemeral });
+          if (amount > bal(i.user.id)) return i.reply({ content: `❌ ເຄຣດິດບໍ່ພໍ — ມີ ${fmt(bal(i.user.id))}`, flags: MessageFlags.Ephemeral });
+          const had = m.bets[i.user.id];
+          if (had && had.team !== team) return i.reply({ content: 'ປ່ຽນທີມບໍ່ໄດ້', flags: MessageFlags.Ephemeral });
+          db.balances[i.user.id] = bal(i.user.id) - amount;
+          m.bets[i.user.id] = { team, amount: (had ? had.amount : 0) + amount }; save();
+          await refresh();
+          return i.reply({ content: `✅ ລົງທີມ ${team === 'A' ? '🔴 A' : '🔵 B'} **${fmt(m.bets[i.user.id].amount)}** · ເຫຼືອ ${fmt(bal(i.user.id))}`, flags: MessageFlags.Ephemeral });
+        }
+        // ปุ่มแอดมิน
+        if (['lock', 'win', 'cancel'].includes(act)) {
+          if (!isAdmin(i.member)) return i.reply({ content: '⛔ ສະເພາະແອດມິນ', flags: MessageFlags.Ephemeral });
+          if (!['open', 'locked'].includes(m.status)) return i.reply({ content: 'ແມັດນີ້ຈົບແລ້ວ', flags: MessageFlags.Ephemeral });
+          await i.deferUpdate();
+          if (act === 'lock') { m.status = 'locked'; save(); await refresh(); logTo(`🔒 ປິດຮັບທາຍຜົນ SHOWMATCH #${m.no}`); return null; }
+          if (act === 'win') return settle(team, i.user.username);
+          if (act === 'cancel') {
+            for (const [uid, b] of Object.entries(m.bets)) db.balances[uid] = bal(uid) + b.amount;
+            m.status = 'cancel'; save(); await refresh(); await leaderboard();
+            logTo(`↩️ ຍົກເລີກ SHOWMATCH #${m.no} — ຄືນເຄຣດິດແລ້ວ`); return null;
+          }
+        }
+        return null;
+      } catch (e) {
+        console.error(`[showmatch] ${e.message}`);
+        if (i.deferred) return i.editReply(`❌ ${e.message}`).catch(() => {});
+        if (i.isRepliable() && !i.replied) return i.reply({ content: `❌ ${e.message}`, flags: MessageFlags.Ephemeral }).catch(() => {});
+        return null;
+      }
+    });
+  },
+};

@@ -169,6 +169,44 @@
       ]
     },
     {
+      "name": "🔴 TEST βETA SHOWMATCH 2v2",
+      "visible": "admin",
+      "allowUsers": [
+        "phaeng_shiba"
+      ],
+      "_note": "หมวดทดลอง SHOWMATCH 2v2 + ทายผลด้วยเครดิตจำลอง — เห็นเฉพาะ Admin + phaeng_shiba",
+      "channels": [
+        {
+          "name": "📜・ວິທີຫຼິ້ນ-showmatch",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ວິທີຫຼິ້ນ SHOWMATCH 2v2 ແລະ ທາຍຜົນດ້ວຍເຄຣດິດຈຳລອງ"
+        },
+        {
+          "name": "🎲・ທາຍຜົນ-showmatch",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ກົດປຸ່ມເພື່ອທາຍຜົນ — ເຄຣດິດຈຳລອງ ບໍ່ແມ່ນເງິນຈິງ"
+        },
+        {
+          "name": "💰・ເຄຣດິດ-showmatch",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ອັນດັບເຄຣດິດ"
+        },
+        {
+          "name": "💬・ເຊຍ-showmatch",
+          "type": "text",
+          "topic": "ລົມ ແລະ ເຊຍກັນລະຫວ່າງເບິ່ງແມັດ"
+        },
+        {
+          "name": "🔊 SHOWMATCH 2v2",
+          "type": "voice",
+          "userLimit": 20
+        }
+      ]
+    },
+    {
       "name": "• VALORANT | ແຊັດ",
       "was": [
         "• VALORANT"
