@@ -1,0 +1,61 @@
+{
+  "balances": {},
+  "match": {
+    "no": 1,
+    "demo": true,
+    "A": [
+      {
+        "id": "demo1",
+        "name": "DEMO · Ace",
+        "rank": {
+          "name": "Radiant",
+          "value": 9,
+          "emoji": "🌟"
+        }
+      },
+      {
+        "id": "demo4",
+        "name": "DEMO · Dash",
+        "rank": {
+          "name": "Silver",
+          "value": 3,
+          "emoji": "⚪"
+        }
+      }
+    ],
+    "B": [
+      {
+        "id": "demo2",
+        "name": "DEMO · Blaze",
+        "rank": {
+          "name": "Immortal",
+          "value": 8,
+          "emoji": "🔴"
+        }
+      },
+      {
+        "id": "demo3",
+        "name": "DEMO · Cobra",
+        "rank": {
+          "name": "Gold",
+          "value": 4,
+          "emoji": "🟡"
+        }
+      }
+    ],
+    "sumA": 12,
+    "sumB": 12,
+    "players": [
+      "demo1",
+      "demo2",
+      "demo3",
+      "demo4"
+    ],
+    "bets": {},
+    "status": "open",
+    "chId": "1572234489713922068",
+    "msgId": "1572237425902747660"
+  },
+  "no": 1,
+  "lbMsg": null
+}
