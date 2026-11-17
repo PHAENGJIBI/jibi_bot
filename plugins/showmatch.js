@@ -10,6 +10,7 @@ const store = require('../lib/store');
 
 const START = 10000; // เครดิตเริ่มต้นต่อคน
 const MIN = 1000; // ลงขั้นต่ำ (และต้องลงทีละ 1,000)
+const HOUSE = 5000; // ร้าน (P SHOP) ใส่กองให้ฝั่งละเท่านี้ — ถึงทุกคนเทฝั่งเดียว คนที่ทายถูกก็ยังได้กำไร (แต่น้อยลง)
 const RANK_VALUE = { Iron: 1, Bronze: 2, Silver: 3, Gold: 4, Platinum: 5, Diamond: 6, Ascendant: 7, Immortal: 8, Radiant: 9 };
 const RANK_EMOJI = { Iron: '⚫', Bronze: '🟤', Silver: '⚪', Gold: '🟡', Platinum: '🔷', Diamond: '💎', Ascendant: '🟢', Immortal: '🔴', Radiant: '🌟' };
 const BET_CH = 'ທາຍຜົນ-showmatch';
@@ -56,10 +57,15 @@ module.exports = {
       for (const b of Object.values(m.bets)) { p[b.team] += b.amount; p[`n${b.team}`] += 1; }
       return p;
     }
-    const odds = (win, lose) => (win ? (1 + lose / win).toFixed(2) : '—');
+    // ได้คืนเท่าไหร่ ถ้าลง x ฝั่ง side แล้วฝั่งนั้นชนะ (กองแต่ละฝั่ง = คนลง + ร้าน HOUSE)
+    const payout = (x, mine, other) => x + Math.floor((x / (mine + HOUSE + x)) * (other + HOUSE));
+    const preview = (p, side) => {
+      const mine = side === 'A' ? p.A : p.B; const other = side === 'A' ? p.B : p.A;
+      return [1000, 2000, 3000, 5000].map((x) => `ລົງ ${fmt(x)} → ໄດ້ຄືນ **${fmt(payout(x, mine, other))}**`).join('\n');
+    };
 
     function teamText(team) {
-      return team.map((p) => `${p.rank.emoji} <@${p.id}> · ${p.rank.name}`).join('\n');
+      return team.map((p) => `${p.rank.emoji} ${p.name ? `**${p.name}**` : `<@${p.id}>`} · ${p.rank.name}`).join('\n');
     }
     function card(m) {
       const p = pools(m);
@@ -70,17 +76,23 @@ module.exports = {
           `**${status}**`,
           m.winner ? `🏆 **ທີມ ${m.winner === 'A' ? '🔴 A' : '🔵 B'} ຊະນະ!**` : null,
           '',
+          m.demo ? '🧪 **ແມັດທົດລອງ** — ຜູ້ຫຼິ້ນເປັນຊື່ສົມມຸດ' : null,
           `💰 ທຸກຄົນມີ **${fmt(START)} ເຄຣດິດ** · ລົງຂັ້ນຕ່ຳ **${fmt(MIN)}** · ຄົນທີ່ລົງຫຼິ້ນທາຍບໍ່ໄດ້`,
+          `🏪 P SHOP ໃສ່ກອງໃຫ້ **ຝັ່ງລະ ${fmt(HOUSE)}** — ທຸກຄົນລົງຝັ່ງດຽວກັນ ກໍ່ຍັງໄດ້ກຳໄລ (ແຕ່ໜ້ອຍລົງ)`,
           '🎮 ເຄຣດິດຈຳລອງ ຫຼິ້ນມ່ວນໆ — ບໍ່ແມ່ນເງິນຈິງ',
         ].filter((x) => x !== null).join('\n'))
         .addFields(
           { name: `🔴 ທີມ A · ແຣງລວມ ${m.sumA}`, value: teamText(m.A), inline: true },
           { name: `🔵 ທີມ B · ແຣງລວມ ${m.sumB}`, value: teamText(m.B), inline: true },
           { name: '​', value: '​', inline: false },
-          { name: '🔴 ກອງ A', value: `${fmt(p.A)} · ${p.nA} ຄົນ\nຈ່າຍ x${odds(p.A, p.B)}`, inline: true },
-          { name: '🔵 ກອງ B', value: `${fmt(p.B)} · ${p.nB} ຄົນ\nຈ່າຍ x${odds(p.B, p.A)}`, inline: true },
+          { name: '🔴 ກອງ A', value: `ຄົນລົງ ${fmt(p.A)} (${p.nA} ຄົນ)\n+ ຮ້ານ ${fmt(HOUSE)} = **${fmt(p.A + HOUSE)}**`, inline: true },
+          { name: '🔵 ກອງ B', value: `ຄົນລົງ ${fmt(p.B)} (${p.nB} ຄົນ)\n+ ຮ້ານ ${fmt(HOUSE)} = **${fmt(p.B + HOUSE)}**`, inline: true },
+          { name: '\u200b', value: '\u200b', inline: false },
+          { name: '🧮 ຖ້າລົງ 🔴 A ຕອນນີ້ ແລ້ວ A ຊະນະ', value: preview(p, 'A'), inline: true },
+          { name: '🧮 ຖ້າລົງ 🔵 B ຕອນນີ້ ແລ້ວ B ຊະນະ', value: preview(p, 'B'), inline: true },
+          { name: '📌 ໝາຍເຫດ', value: 'ຕົວເລກປ່ຽນຕາມຄົນລົງ — ຝັ່ງທີ່ຄົນລົງໜ້ອຍ ຈະໄດ້ຫຼາຍກວ່າ · ທາຍຜິດ = ເສຍທີ່ລົງ' },
         )
-        .setFooter({ text: 'ຈ່າຍ = ແບ່ງກອງຝັ່ງແພ້ໃຫ້ຝັ່ງທີ່ທາຍຖືກ ຕາມສັດສ່ວນ · JIBI · P SHOP GAMERPOWER' });
+        .setFooter({ text: 'ຈ່າຍ = ກອງຝັ່ງແພ້ (ລວມຂອງຮ້ານ) ແບ່ງໃຫ້ຝັ່ງທີ່ທາຍຖືກ ຕາມສັດສ່ວນ · ເຄຣດິດຈຳລອງ · JIBI' });
       const rows = [];
       if (m.status === 'open') {
         rows.push(new ActionRowBuilder().addComponents(
@@ -146,19 +158,31 @@ module.exports = {
       const lines = [];
       for (const [uid, b] of Object.entries(m.bets)) {
         let get = 0;
-        if (!winPool) get = b.amount; // ไม่มีใครทายถูก → คืนทุกคน
-        else if (b.team === winner) get = b.amount + Math.floor((b.amount / winPool) * losePool);
+        if (b.team === winner) get = b.amount + Math.floor((b.amount / (winPool + HOUSE)) * (losePool + HOUSE));
         db.balances[uid] = bal(uid) + get;
-        if (b.team === winner) lines.push(`✅ <@${uid}> +${fmt(get - b.amount)}`);
+        lines.push(b.team === winner ? `✅ <@${uid}> ລົງ ${fmt(b.amount)} → ໄດ້ຄືນ **${fmt(get)}** (ກຳໄລ +${fmt(get - b.amount)})` : `❌ <@${uid}> ລົງ ${fmt(b.amount)} → ເສຍ`);
       }
       m.status = 'done'; m.winner = winner; save();
       await refresh(); await leaderboard();
       const ch = await guild.channels.fetch(m.chId).catch(() => null);
       if (ch) await ch.send({ embeds: [new EmbedBuilder().setColor(0xF2C14E).setTitle(`🏆 SHOWMATCH #${m.no} — ທີມ ${winner === 'A' ? '🔴 A' : '🔵 B'} ຊະນະ!`)
-        .setDescription(winPool ? (lines.join('\n') || 'ບໍ່ມີໃຜທາຍຖືກ') : 'ບໍ່ມີໃຜທາຍຖືກ — ຄືນເຄຣດິດໃຫ້ທຸກຄົນ').setFooter({ text: `ຕັດສິນໂດຍ ${byName}` })], allowedMentions: { parse: [] } });
+        .setDescription(lines.join('\n') || 'ບໍ່ມີໃຜທາຍຜົນ').setFooter({ text: `ຕັດສິນໂດຍ ${byName}` })], allowedMentions: { parse: [] } });
       logTo(`🏆 SHOWMATCH #${m.no}: ${winner} ຊະນະ (ໂດຍ ${byName})`);
     }
 
+    // แมตช์ทดลอง (ผู้เล่นชื่อสมมุติ) — เรียกจาก bridge: { action: 'showmatch-demo', players: [{name, rank}] }
+    client.jibiShowmatchDemo = async (list) => {
+      if (db.match && ['open', 'locked'].includes(db.match.status)) throw new Error('ຍັງມີ SHOWMATCH ທີ່ບໍ່ທັນຈົບ');
+      const players = list.slice(0, 4).map((p, k) => ({ id: `demo${k + 1}`, name: p.name, rank: rankOf(p.rank) }));
+      const t = balance(players);
+      const ch = findCh(BET_CH);
+      if (!ch) throw new Error('ບໍ່ພົບຫ້ອງທາຍຜົນ');
+      db.no = (db.no || 0) + 1;
+      db.match = { no: db.no, demo: true, A: t.A, B: t.B, sumA: t.sumA, sumB: t.sumB, players: players.map((p) => p.id), bets: {}, status: 'open', chId: ch.id };
+      const msg = await ch.send({ content: `⚔️ **SHOWMATCH 2v2 #${db.no}** 🧪 ແມັດທົດລອງ`, ...card(db.match) });
+      db.match.msgId = msg.id; save();
+      return msg.url;
+    };
     client.on(Events.InteractionCreate, async (i) => {
       try {
         if (i.isChatInputCommand() && i.commandName === 'showmatch') {
@@ -173,7 +197,9 @@ module.exports = {
 
         if (act === 'me') {
           const b = m.bets[i.user.id];
-          return i.reply({ content: `💰 ເຄຣດິດຂອງເຈົ້າ: **${fmt(bal(i.user.id))}**${b ? `\n🎲 ລົງໄວ້: ທີມ ${b.team === 'A' ? '🔴 A' : '🔵 B'} · **${fmt(b.amount)}**` : ''}`, flags: MessageFlags.Ephemeral });
+          let est = '';
+          if (b) { const pp = pools(m); const g = b.amount + Math.floor((b.amount / ((b.team === 'A' ? pp.A : pp.B) + HOUSE)) * ((b.team === 'A' ? pp.B : pp.A) + HOUSE)); est = `\n🧮 ຖ້າຊະນະ (ຕອນນີ້) ໄດ້ຄືນ ~**${fmt(g)}**`; }
+          return i.reply({ content: `💰 ເຄຣດິດຂອງເຈົ້າ: **${fmt(bal(i.user.id))}**${b ? `\n🎲 ລົງໄວ້: ທີມ ${b.team === 'A' ? '🔴 A' : '🔵 B'} · **${fmt(b.amount)}**${est}` : ''}`, flags: MessageFlags.Ephemeral });
         }
         if (act === 'bet' && i.isButton()) {
           if (m.status !== 'open') return i.reply({ content: '🔒 ປິດຮັບທາຍຜົນແລ້ວ', flags: MessageFlags.Ephemeral });
@@ -195,7 +221,9 @@ module.exports = {
           db.balances[i.user.id] = bal(i.user.id) - amount;
           m.bets[i.user.id] = { team, amount: (had ? had.amount : 0) + amount }; save();
           await refresh();
-          return i.reply({ content: `✅ ລົງທີມ ${team === 'A' ? '🔴 A' : '🔵 B'} **${fmt(m.bets[i.user.id].amount)}** · ເຫຼືອ ${fmt(bal(i.user.id))}`, flags: MessageFlags.Ephemeral });
+          const pp = pools(m); const mine = m.bets[i.user.id].amount;
+          const est = mine + Math.floor((mine / ((team === 'A' ? pp.A : pp.B) + HOUSE)) * ((team === 'A' ? pp.B : pp.A) + HOUSE));
+          return i.reply({ content: `✅ ລົງທີມ ${team === 'A' ? '🔴 A' : '🔵 B'} ລວມ **${fmt(mine)}** · ເຫຼືອ ${fmt(bal(i.user.id))}\n🧮 ຖ້າທີມ ${team} ຊະນະ (ຕອນນີ້) ຈະໄດ້ຄືນ ~**${fmt(est)}** (ກຳໄລ +${fmt(est - mine)}) — ຕົວເລກປ່ຽນຕາມຄົນລົງ`, flags: MessageFlags.Ephemeral });
         }
         // ปุ่มแอดมิน
         if (['lock', 'win', 'cancel'].includes(act)) {
