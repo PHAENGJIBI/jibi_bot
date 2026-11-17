@@ -11,7 +11,7 @@ const path = require('path');
 const store = require('../lib/store');
 
 // ข้อมูลงานแข่ง (แก้ได้จาก JIBI Center Hub) — data/tourney-event.json
-const EV_DEFAULT = { name: 'VALORANT DEATHMATCH MINI CUP #1', max: 10, startAt: null, reminders: [60, 30, 5], regOpen: true, sent: {} };
+const EV_DEFAULT = { name: 'VALORANT DEATHMATCH MINI CUP #1', tag: 'DM1', regChannel: 'ລົງທະບຽນ', codeChannel: 'ລະຫັດຫ້ອງ', max: 10, startAt: null, reminders: [60, 30, 5], regOpen: true, sent: {} };
 let EV = { ...EV_DEFAULT, ...store.load('tourney-event', {}) };
 let EVENT = EV.name;
 let MAX = EV.max; // จำนวนนักแข่งตัวจริง
@@ -52,8 +52,26 @@ function readField(i, f) {
   return String(d.value || '').trim();
 }
 
-const isCodeChannel = (c) => c && c.type === ChannelType.GuildText && c.name.includes('ລະຫັດຫ້ອງ');
-const isRegChannel = (c) => c && c.type === ChannelType.GuildText && c.name.includes('ລົງທະບຽນ');
+const isCodeChannel = (c) => c && c.type === ChannelType.GuildText && c.name.includes(EV.codeChannel || 'ລະຫັດຫ້ອງ');
+const isRegChannel = (c) => c && c.type === ChannelType.GuildText && c.name.includes(EV.regChannel || 'ລົງທະບຽນ');
+const TAG = () => EV.tag || 'DM1';
+
+// กติกา — โชว์ก่อนกรอกใบสมัคร (ต้องกดยอมรับก่อน) · แก้ข้อความได้ตรงนี้
+const RULES = () => [
+  `🎮 **ຮູບແບບ:** VALORANT Deathmatch · Custom Game · ${MAX} ຄົນ · 3 ເກມ`,
+  '📊 **ຄະແນນ:** ນັບ **Kill ລວມ** ທັງ 3 ເກມ — ຫຼາຍສຸດຊະນະ',
+  '🏆 **ລາງວັນ:** 🥇 100,000 ກີບ · 🥈 50,000 ກີບ',
+  '⚖️ **ຄະແນນເທົ່າກັນ:** Death ໜ້ອຍກວ່າ → %Headshot ສູງກວ່າ → ດວນ 1v1 ໃຜໄດ້ 5 Kill ກ່ອນຊະນະ',
+  '🔫 **ອາວຸດ:** ໃຊ້ໄດ້ **ທຸກປືນ** — ບໍ່ມີຂໍ້ຫ້າມ',
+  '🏅 **ແຣງ:** ທຸກແຣງລົງແຂ່ງນຳກັນ (Iron – Radiant) — ລົງທະບຽນ = ຍອມຮັບເງື່ອນໄຂນີ້',
+  '📝 **ຕ້ອງລົງທະບຽນກ່ອນ** — ບໍ່ໄດ້ລົງທະບຽນ = ລົງແຂ່ງບໍ່ໄດ້',
+  '👤 ໃຊ້ບັນຊີ Riot ຂອງຕົວເອງ ຕາມ Riot ID ທີ່ລົງທະບຽນ',
+  '⏰ ເຂົ້າຫ້ອງສຽງກ່ອນເລີ່ມ 10 ນາທີ · ມາຊ້າເກີນ 10 ນາທີ = ຕົວສຳຮອງລົງແທນ',
+  '🔌 ຫຼຸດລະຫວ່າງແຂ່ງ: ເຂົ້າຄືນໄວທີ່ສຸດ — ນັບຄະແນນຕາມຈິງ ບໍ່ເລີ່ມເກມໃໝ່',
+  '🚫 ຫ້າມໂກງ / ໃຊ້ໂປຣແກຣມຊ່ວຍ — ຕັດສິດທັນທີ',
+  '📺 ສະຕຣີມໄດ້ ແຕ່ຕ້ອງ delay 2 ນາທີ',
+  '👑 ຄຳຕັດສິນຂອງທີມງານຖືເປັນທີ່ສຸດ',
+];
 
 module.exports = {
   id: 'tournament',
@@ -80,7 +98,7 @@ module.exports = {
       return [
         `🏆 **${EVENT}**${no ? ` · ນັກແຂ່ງ #${no}${no > MAX ? ' (ຕົວສຳຮອງ)' : ''}` : ''}`,
         t ? `🕗 ເລີ່ມແຂ່ງ: <t:${t}:F>` : '🕗 ເວລາແຂ່ງ: ແອດມິນຈະປະກາດ ແລະ ແຈ້ງເຕືອນໃນຫ້ອງລະຫັດ',
-        `🔑 **ລະຫັດຫ້ອງ + ແຈ້ງເຕືອນ ຈະສົ່ງຢູ່ ${codeLink()}** — ຢ່າລືມເຂົ້າໄປເບິ່ງກ່ອນເວລາແຂ່ງເດີ້`,
+        `🔑 **ລະຫັດຫ້ອງ Custom ຈະມີຢູ່ຫ້ອງ ${codeLink()} ເທົ່ານັ້ນ** (ບໍ່ສົ່ງທາງອື່ນ) — ແຈ້ງເຕືອນກໍ່ຢູ່ຫ້ອງນີ້ ຢ່າລືມເຂົ້າໄປເບິ່ງກ່ອນເວລາແຂ່ງເດີ້`,
         '🎮 ວິທີເຂົ້າຫ້ອງ: ກົດ 📋 ກັອບລະຫັດ → ເປີດ Valorant → PARTY CODE → ວາງລະຫັດ → JOIN',
       ].join('\n');
     }
@@ -157,7 +175,7 @@ module.exports = {
           `### 💬 Discord: <@${member.id}>`,
           `### ${sub ? '⏳' : '✅'} ສະຖານະ: ${box(sub ? 'ຕົວສຳຮອງ' : `ຕົວຈິງ ${p.no} | ${MAX}`)}`,
         ].join('\n'))
-        .setFooter({ text: `Player No. / ເລກນັກແຂ່ງ #DM1-${String(p.no).padStart(3, '0')}`, iconURL: logo })
+        .setFooter({ text: `Player No. / ເລກນັກແຂ່ງ #${TAG()}-${String(p.no).padStart(3, '0')}`, iconURL: logo })
         .setTimestamp(p.at);
       const files = [];
       if (fs.existsSync(RAINBOW)) { embed.setImage('attachment://shine.gif'); files.push({ attachment: RAINBOW, name: 'shine.gif' }); }
@@ -196,7 +214,7 @@ module.exports = {
           expired ? '⛔ **ລະຫັດນີ້ໝົດອາຍຸແລ້ວ** — ໃຊ້ລະຫັດອັນລ່າສຸດດ້ານລຸ່ມ'
             : '📋 ກົດ **ກັອບລະຫັດ** → ເຂົ້າ Valorant → **PARTY CODE** → ວາງລະຫັດ → **JOIN**',
         ].filter((x) => x !== null).join('\n'))
-        .setFooter({ text: `Room Code / ລະຫັດຫ້ອງ #DM1-G${o.game || 0}`, ...(logo ? { iconURL: logo } : {}) })
+        .setFooter({ text: `Room Code / ລະຫັດຫ້ອງ #${TAG()}-G${o.game || 0}`, ...(logo ? { iconURL: logo } : {}) })
         .setTimestamp(now);
       if (logo) embed.setThumbnail(logo);
       const files = [];
@@ -347,8 +365,28 @@ module.exports = {
         if (EV.ended && i.isButton() && (i.customId === 'tourney:open' || i.customId === 'tourney:cancel')) return i.reply({ content: '🏁 ງານແຂ່ງນີ້ສິ້ນສຸດແລ້ວ — ຕິດຕາມງານແຂ່ງຄັ້ງໜ້າເດີ້ 💛', flags: MessageFlags.Ephemeral });
         if (i.isButton() && i.customId === 'tourney:open') {
           if (!EV.regOpen && !db.players[i.user.id]) return i.reply({ content: '🔒 ປິດຮັບສະໝັກແລ້ວ — ຕິດຕາມງານແຂ່ງຄັ້ງໜ້າເດີ້ 💛', flags: MessageFlags.Ephemeral });
+          // คนใหม่ → โชว์กติกา + ข้อมูลทั้งหมดก่อน ต้องกด ✅ ຍອມຮັບ ถึงจะได้กรอก
+          if (!db.players[i.user.id]) {
+            const rules = new EmbedBuilder().setColor(0xFF4655)
+              .setTitle(`📜 ອ່ານກົດກ່ອນລົງທະບຽນ — ${EVENT}`)
+              .setDescription([
+                ...RULES(),
+                '',
+                EV.startAt ? `🕗 **ເລີ່ມແຂ່ງ:** <t:${unix(EV.startAt)}:F> · <t:${unix(EV.startAt)}:R>` : '🕗 **ວັນ-ເວລາແຂ່ງ:** ແອດມິນຈະປະກາດ',
+                `🔑 **ລະຫັດຫ້ອງ Custom ຈະມີຢູ່ຫ້ອງ ${codeLink()} ເທົ່ານັ້ນ** — ລົງທະບຽນແລ້ວຈຶ່ງເຫັນຫ້ອງນີ້`,
+                '',
+                'ກົດ **✅ ຍອມຮັບກົດ ແລະ ລົງທະບຽນ** ເພື່ອໃສ່ຂໍ້ມູນ',
+              ].join('\n'))
+              .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
+            const row = new ActionRowBuilder().addComponents(
+              new ButtonBuilder().setCustomId('tourney:accept').setStyle(ButtonStyle.Success).setLabel('✅ ຍອມຮັບກົດ ແລະ ລົງທະບຽນ'));
+            return i.reply({ embeds: [rules], components: [row], flags: MessageFlags.Ephemeral });
+          }
+        }
+        if (i.isButton() && (i.customId === 'tourney:open' || i.customId === 'tourney:accept')) {
+          if (!EV.regOpen && !db.players[i.user.id]) return i.reply({ content: '🔒 ປິດຮັບສະໝັກແລ້ວ — ຕິດຕາມງານແຂ່ງຄັ້ງໜ້າເດີ້ 💛', flags: MessageFlags.Ephemeral });
           const cur = db.players[i.user.id] || {};
-          const modal = new ModalBuilder().setCustomId('tourney:modal').setTitle('ລົງທະບຽນນັກແຂ່ງ DEATHMATCH');
+          const modal = new ModalBuilder().setCustomId('tourney:modal').setTitle(`ລົງທະບຽນ ${EVENT}`.slice(0, 45));
           modal.addLabelComponents(...FIELDS.map((f) => buildField(f, cur)));
           return i.showModal(modal);
         }
@@ -361,7 +399,7 @@ module.exports = {
           const old = db.players[i.user.id];
           if (!EV.regOpen && !old) return i.editReply('🔒 ປິດຮັບສະໝັກແລ້ວ');
           const no = old ? old.no : Math.max(0, ...Object.values(db.players).map((x) => x.no)) + 1;
-          const p = { ...v, no, at: old ? old.at : Date.now(), channelId: ch.id, messageId: old && old.messageId, style: 4 };
+          const p = { ...v, no, at: old ? old.at : Date.now(), channelId: ch.id, messageId: old && old.messageId, style: 4, acceptedRules: true };
           let msg = null;
           if (old && old.messageId) msg = await ch.messages.fetch(old.messageId).catch(() => null);
           if (msg) await msg.edit(cardMessage(i.member, p));

@@ -116,7 +116,7 @@
       ]
     },
     {
-      "name": "🔴 TEST βETA TOURNAMENT",
+      "name": "🔴 TEST βETA TOURNAMENT VOL.2",
       "visible": "admin",
       "allowUsers": [
         "phaeng_shiba"
@@ -163,6 +163,9 @@
           "type": "voice",
           "userLimit": 20
         }
+      ],
+      "was": [
+        "🔴 TEST βETA TOURNAMENT"
       ]
     },
     {
