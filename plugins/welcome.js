@@ -39,6 +39,18 @@ module.exports = {
         if (banner && !short) embed.setImage(banner);
         return { content: `<@${m.id}>`, embeds: [embed], allowedMentions: { users: [m.id] } };
       }
+      if (!ev.regOpen) {
+        // นักแข่งเต็มแล้ว → ไม่ถามว่ามาแข่งไหม · ชวนมาเชียร์แทน
+        embed.setDescription([
+          `## 🏆 ${ev.name}`,
+          '😢 **ນັກແຂ່ງເຕັມແລ້ວ — ປິດຮັບສະໝັກ**',
+          `ມາເບິ່ງ / ເຊຍໄດ້ ${laoTime(ev.startAt)} 🔥`,
+          '',
+          'ເລືອກເກມທີ່ເຈົ້າຫຼິ້ນ ແລ້ວເປີດຫ້ອງ 📖 ຄູ່ມື ໄດ້ເລີຍ 💛',
+        ].join('\n'));
+        if (!short) { const banner = guild.bannerURL({ size: 1024 }) || guild.splashURL({ size: 1024 }); if (banner) embed.setImage(banner); }
+        return { content: `<@${m.id}>`, embeds: [embed], allowedMentions: { users: [m.id] } };
+      }
       embed.setDescription([
         `## 🏆 ເຈົ້າເຂົ້າມາເພື່ອແຂ່ງ ${ev.name} ບໍ່?`,
         '**ຢາກແຂ່ງ → ກົດປຸ່ມແດງ ອັນດຽວພໍ 👇**',
@@ -76,7 +88,7 @@ module.exports = {
         const wch = find('ຍິນດີຕ້ອນຮັບ');
         if (wch) { const msg = await wch.send(welcomeMessage(m, ev, false)); list.push({ chId: wch.id, msgId: msg.id }); }
         const world = find('ແຊັດໂລກ');
-        if (world && ev) { const msg = await world.send(welcomeMessage(m, ev, true)); list.push({ chId: world.id, msgId: msg.id }); }
+        if (world && ev && ev.regOpen) { const msg = await world.send(welcomeMessage(m, ev, true)); list.push({ chId: world.id, msgId: msg.id }); }
         posted.set(m.id, list);
       } catch (e) { console.error('[welcome]', e.message); }
     });
@@ -96,7 +108,7 @@ module.exports = {
           const T = client.jibiTourney;
           const no = T && T.isPlayer ? T.isPlayer(i.user.id) : 0;
           if (no) reply = T.doneMessage(no);
-          else if (T && T.regOpen && !T.regOpen()) text = '🔒 ປິດຮັບສະໝັກແລ້ວ — ຕິດຕາມງານແຂ່ງຄັ້ງໜ້າເດີ້ 💛';
+          else if (T && T.regOpen && !T.regOpen()) text = '😢 ນັກແຂ່ງ **ເຕັມແລ້ວ** — ປິດຮັບສະໝັກແລ້ວເດີ້ 🙏 ມາເບິ່ງ/ເຊຍໄດ້ ແລະ ຕິດຕາມງານໜ້າ 💛';
           else {
             const rules = find('ກົດກະຕິກາ-βeta');
             const e = new EmbedBuilder().setColor(0xE24B4A)

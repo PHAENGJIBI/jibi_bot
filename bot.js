@@ -111,6 +111,7 @@ client.once(Events.ClientReady, async () => {
 
   let bridge = null;
   try { bridge = startBridge({ client, guild, notify: logTo }); } catch (e) { console.error(`⚠️ เริ่มสะพาน Claude ไม่ได้: ${e.message}`); }
+  if (bridge) client.jibiSyncNow = (why) => bridge.sync(why || 'ງານແຂ່ງ');
   // JIBI Center Hub — หน้าเว็บควบคุม JIBI (รันบน VPS)
   if (process.env.JIBI_HOST === 'vps' || process.env.HUB_PORT) {
     try { require('./lib/hub').startHub({ client, guild, bridge, logTo }); } catch (e) { console.error(`⚠️ เริ่ม JIBI Hub ไม่ได้: ${e.message}`); }

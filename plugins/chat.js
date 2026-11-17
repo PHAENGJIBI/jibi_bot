@@ -92,6 +92,8 @@ module.exports = {
       TEACH = { rules: [], notes: '', persona: '', examples: [], ...store.load('chat-teach', {}) }; // โหลดใหม่ทุกครั้ง — แก้ไฟล์แล้วใช้ได้ทันที
       let out = `${AI_RULES}\n\n${(TEACH.persona || '').trim() || DEFAULT_PERSONA}`;
       if (TEACH.notes) out += `\n\nShop knowledge from the admins (trust this, use when relevant):\n${TEACH.notes}`;
+      const evx = client.jibiTourney ? client.jibiTourney.getEvent() : null;
+      if (evx && !evx.regOpen && !evx.ended) out += `\n\nIMPORTANT (live status, overrides the notes above): registration for ${evx.name} is CLOSED — all ${evx.max} player slots are FULL and there are no substitute slots. If anyone asks about joining, registering, or whether they can still compete, tell them kindly in Lao that it is full (ນັກແຂ່ງເຕັມແລ້ວ ປິດຮັບສະໝັກ), they are welcome to come watch/cheer, and to follow the next event. Never tell them to register.`;
       if ((TEACH.examples || []).length) out += `\n\nExample replies the admin approved — copy this tone and style:\n${TEACH.examples.map((e) => `User: ${e.q}\nJIBI: ${e.a}`).join('\n\n')}`;
       if ((TEACH.rules || []).length) out += `\n\nAdmin-taught replies (when a message is about these keywords, answer in this spirit):\n${TEACH.rules.map((r) => `- ${r.k.join(', ')} → ${r.r.join(' / ')}`).join('\n')}`;
       return out;
@@ -167,6 +169,10 @@ module.exports = {
       TEACH = { rules: [], notes: '', persona: '', examples: [], ...store.load('chat-teach', {}) };
       const s = String(text || '').toLowerCase();
       const hit = (k) => (/^[a-z ]{1,4}$/.test(k) ? new RegExp(`(^|[^a-z])${k}([^a-z]|$)`).test(s) : s.includes(k.toLowerCase()));
+      // นักแข่งเต็ม/ปิดรับสมัคร → ถามเรื่องสมัคร/งานแข่ง ตอบว่าเต็มแล้ว
+      const evx = client.jibiTourney ? client.jibiTourney.getEvent() : null;
+      const FULL_K = ['ລົງທະບຽນ', 'ສະໝັກ', 'ລົງຊື່', 'ລົງແຂ່ງ', 'ຢາກແຂ່ງ', 'ເຕັມ', 'ສຳຮອງ', 'ຍັງວ່າງ', 'ລົງທະບຽນ', 'ลงทะเบียน', 'สมัคร', 'อยากแข่ง', 'ลงแข่ง', 'เต็ม', 'ตัวสำรอง', 'register', 'join', 'sign up', 'βeta', 'beta', 'ເບຕ້າ', 'เบต้า', 'ງານແຂ່ງ', 'งานแข่ง', 'tournament', 'vol.2', 'vol 2'];
+      if (evx && !evx.regOpen && !evx.ended && FULL_K.some(hit)) return `😢 **${evx.name}** ນັກແຂ່ງ **ເຕັມແລ້ວ ${evx.max}/${evx.max}** — ປິດຮັບສະໝັກແລ້ວເດີ້ 🙏\nມາເບິ່ງ/ເຊຍໄດ້{start}\nຕິດຕາມງານແຂ່ງຄັ້ງໜ້າທີ່ {ch:ປະກາດ-βeta} ເດີ້ 💛`;
       for (const rule of [...(TEACH.rules || []), ...RULES]) if (rule.k.some(hit)) return pick(rule.r);
       return fallback ? pick(FALLBACK) : null;
     }

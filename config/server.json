@@ -571,7 +571,8 @@
           "description": "ໄປເລືອກເກມທີ່ຫຼິ້ນໃນຂັ້ນຕໍ່ໄປ",
           "role": "general"
         }
-      ]
+      ],
+      "whileRegOpen": true
     },
     {
       "title": "ເຈົ້າຫຼິ້ນເກມຫຍັງແດ່?",

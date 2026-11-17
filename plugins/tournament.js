@@ -77,6 +77,7 @@ function readField(i, f) {
 }
 
 const isCodeChannel = (c) => c && c.type === ChannelType.GuildText && c.name.includes(EV.codeChannel || 'ລະຫັດຫ້ອງ');
+const FULL_MSG = '😢 ນັກແຂ່ງ **ເຕັມແລ້ວ** — ປິດຮັບສະໝັກແລ້ວເດີ້ 🙏 ມາເບິ່ງ/ເຊຍໄດ້ ແລະ ຕິດຕາມງານໜ້າ 💛';
 const isRegChannel = (c) => c && c.type === ChannelType.GuildText && c.name.includes(EV.regChannel || 'ລົງທະບຽນ');
 const TAG = () => EV.tag || 'DM1';
 
@@ -99,6 +100,7 @@ module.exports = {
   ],
   setup({ client, guild, cfg, logTo }) {
     const db = store.load('tourney-regs', { panels: {}, players: {} });
+    const pending = new Set(); // คนที่กำลังสมัคร (กันเกินจำนวน)
     db.panels = db.panels || {}; db.players = db.players || {};
     const save = () => store.save('tourney-regs', db);
     const count = () => Object.keys(db.players).length;
@@ -224,7 +226,7 @@ module.exports = {
           '',
           `📊 ລົງທະບຽນແລ້ວ: **${Math.min(n, MAX)} / ${MAX}**${n > MAX ? ` · ສຳຮອງ ${n - MAX} ຄົນ` : ''}${n >= MAX ? ' · ຕົວຈິງເຕັມແລ້ວ ✅' : ''}`,
           EV.startAt ? `⏰ ເລີ່ມແຂ່ງ: **${laoTime(EV.startAt)}** · <t:${unix(EV.startAt)}:R>\n${EARLY}` : null,
-          EV.regOpen ? null : '🔒 **ປິດຮັບສະໝັກແລ້ວ** — ຄົນທີ່ລົງທະບຽນແລ້ວ ຍັງແກ້ໄຂ/ຍົກເລີກໄດ້',
+          EV.regOpen ? null : (n >= MAX ? '🔒 **ນັກແຂ່ງເຕັມແລ້ວ — ປິດຮັບສະໝັກ** · ຄົນທີ່ລົງທະບຽນແລ້ວ ຍັງແກ້ໄຂ/ຍົກເລີກໄດ້' : '🔒 **ປິດຮັບສະໝັກແລ້ວ** — ຄົນທີ່ລົງທະບຽນແລ້ວ ຍັງແກ້ໄຂ/ຍົກເລີກໄດ້'),
         ].filter((x) => x !== null).join('\n'))
         .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
       const row = new ActionRowBuilder().addComponents(
@@ -448,9 +450,12 @@ module.exports = {
         if (patch.ended !== undefined) { next.ended = patch.ended ? (EV.ended || new Date().toISOString()) : null; if (patch.ended) next.regOpen = false; }
         if (patch.summary !== undefined) next.summary = String(patch.summary || '').slice(0, 3800) || null;
         next.sent = EV.sent || {};
+        const regChanged = !!EV.regOpen !== !!next.regOpen;
         EV = next; EVENT = EV.name; MAX = EV.max;
         store.save('tourney-event', EV);
         await refreshPanels();
+        // เปิด/ปิดรับสมัคร → ซิงก์คำถามตอนเข้าเซิร์ฟ (ซ่อน/โชว์คำถาม βeta)
+        if (regChanged && client.jibiSyncNow) client.jibiSyncNow(EV.regOpen ? 'ເປີດຮັບສະໝັກ' : 'ປິດຮັບສະໝັກ').catch((e) => console.error('[tournament] sync', e.message));
         logTo(`🏆 ອັບເດດງານແຂ່ງ: ${EVENT}${EV.startAt ? ` · ເລີ່ມ ${laoTime(EV.startAt)}` : ''} · ${EV.regOpen ? 'ເປີດຮັບສະໝັກ' : 'ປິດຮັບສະໝັກ'}`);
         return api.getEvent();
       },
@@ -488,7 +493,7 @@ module.exports = {
         }
         if (EV.ended && i.isButton() && (i.customId === 'tourney:open' || i.customId === 'tourney:cancel')) return i.reply({ content: '🏁 ງານແຂ່ງນີ້ສິ້ນສຸດແລ້ວ — ຕິດຕາມງານແຂ່ງຄັ້ງໜ້າເດີ້ 💛', flags: MessageFlags.Ephemeral });
         if (i.isButton() && i.customId === 'tourney:open') {
-          if (!EV.regOpen && !db.players[i.user.id]) return i.reply({ content: '🔒 ປິດຮັບສະໝັກແລ້ວ — ຕິດຕາມງານແຂ່ງຄັ້ງໜ້າເດີ້ 💛', flags: MessageFlags.Ephemeral });
+          if (!EV.regOpen && !db.players[i.user.id]) return i.reply({ content: FULL_MSG, flags: MessageFlags.Ephemeral });
           // คนใหม่ → โชว์กติกา + ข้อมูลทั้งหมดก่อน ต้องกด ✅ ຍອມຮັບ ถึงจะได้กรอก
           if (!db.players[i.user.id]) {
             const rules = rulesEmbed();
@@ -498,7 +503,7 @@ module.exports = {
           }
         }
         if (i.isButton() && (i.customId === 'tourney:open' || i.customId === 'tourney:accept')) {
-          if (!EV.regOpen && !db.players[i.user.id]) return i.reply({ content: '🔒 ປິດຮັບສະໝັກແລ້ວ — ຕິດຕາມງານແຂ່ງຄັ້ງໜ້າເດີ້ 💛', flags: MessageFlags.Ephemeral });
+          if (!EV.regOpen && !db.players[i.user.id]) return i.reply({ content: FULL_MSG, flags: MessageFlags.Ephemeral });
           const cur = db.players[i.user.id] || {};
           const modal = new ModalBuilder().setCustomId('tourney:modal').setTitle(`ລົງທະບຽນ ${EVENT}`.slice(0, 45));
           modal.addLabelComponents(...FIELDS.map((f) => buildField(f, cur)));
@@ -518,7 +523,10 @@ module.exports = {
           const ch = isRegChannel(i.channel) ? i.channel
             : (old && await guild.channels.fetch(old.channelId).catch(() => null)) || guild.channels.cache.find(isRegChannel);
           if (!ch) return i.editReply('❌ ບໍ່ພົບຫ້ອງລົງທະບຽນ — ແຈ້ງແອດມິນ');
-          if (!EV.regOpen && !old) return i.editReply('🔒 ປິດຮັບສະໝັກແລ້ວ');
+          // ครบ 10 คน = เต็ม (กันสมัครพร้อมกันเกิน: จองที่ไว้ก่อนแบบทันที)
+          if (!old && (!EV.regOpen || Object.keys(db.players).length + pending.size >= MAX)) return i.editReply(FULL_MSG);
+          if (!old) pending.add(i.user.id);
+          try {
           const no = old ? old.no : Math.max(0, ...Object.values(db.players).map((x) => x.no)) + 1;
           const p = { ...v, no, at: old ? old.at : Date.now(), channelId: ch.id, messageId: old && old.messageId, style: 4, acceptedRules: true };
           let msg = null;
@@ -526,6 +534,12 @@ module.exports = {
           if (msg) await msg.edit(cardMessage(i.member, p));
           else { const { attachments, ...m } = cardMessage(i.member, p); msg = await ch.send(m); p.messageId = msg.id; }
           db.players[i.user.id] = p; save();
+          } finally { pending.delete(i.user.id); }
+          const v2 = db.players[i.user.id]; const no = v2.no; const msg = { url: `https://discord.com/channels/${guild.id}/${v2.channelId}/${v2.messageId}` };
+          if (!old && EV.regOpen && Object.keys(db.players).length >= MAX) {
+            await api.setEvent({ regOpen: false });
+            logTo(`🔒 ນັກແຂ່ງຄົບ ${MAX} ຄົນແລ້ວ → ປິດຮັບສະໝັກອັດຕະໂນມັດ (ແຜງ + ການ໌ດຕ້ອນຮັບ + ຄຳຖາມຕອນເຂົ້າເຊີບ)`);
+          }
           await setPlayerRole(i.user.id, true);
           await bumpPanel(ch);
           logTo(`📝 **${i.user.username}** ${old ? 'ແກ້ໄຂ' : 'ລົງທະບຽນ'}ນັກແຂ່ງ #${no}: ${v.name} · ${v.riot} · ${v.rank}${v.team ? ` · ${v.team}` : ''} · ${v.pshop ? '✅ ເຄີຍເຕີມກັບ P SHOP' : '— ບໍ່ເຄີຍເຕີມກັບ P SHOP'}`);
