@@ -168,9 +168,9 @@
       ]
     },
     {
-      "name": "• VALORANT | SHOWMATCH 2v2",
-      "visible": "valorant",
-      "_note": "SHOWMATCH 2v2 + ทายผลด้วยเครดิตจำลอง (เปิดจริง 17/11)",
+      "name": "🔴 SHOWMATCH 2v2 (ຍັງບໍ່ເປີດ)",
+      "visible": "admin",
+      "_note": "SHOWMATCH — เก็บไว้ ยังไม่เปิด (เจ้าของจะเปิดเอง) · เห็นเฉพาะ Admin + phaeng_shiba",
       "channels": [
         {
           "name": "📜・ວິທີຫຼິ້ນ-showmatch",
@@ -202,7 +202,11 @@
         }
       ],
       "was": [
+        "• VALORANT | SHOWMATCH 2v2",
         "🔴 TEST βETA SHOWMATCH 2v2"
+      ],
+      "allowUsers": [
+        "phaeng_shiba"
       ]
     },
     {
