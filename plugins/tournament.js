@@ -56,22 +56,10 @@ const isCodeChannel = (c) => c && c.type === ChannelType.GuildText && c.name.inc
 const isRegChannel = (c) => c && c.type === ChannelType.GuildText && c.name.includes(EV.regChannel || 'ລົງທະບຽນ');
 const TAG = () => EV.tag || 'DM1';
 
-// กติกา — โชว์ก่อนกรอกใบสมัคร (ต้องกดยอมรับก่อน) · แก้ข้อความได้ตรงนี้
-const RULES = () => [
-  `🎮 **ຮູບແບບ:** VALORANT Deathmatch · Custom Game · ${MAX} ຄົນ · 3 ເກມ`,
-  '📊 **ຄະແນນ:** ນັບ **Kill ລວມ** ທັງ 3 ເກມ — ຫຼາຍສຸດຊະນະ',
-  '🏆 **ລາງວັນ:** 🥇 100,000 ກີບ · 🥈 50,000 ກີບ',
-  '⚖️ **ຄະແນນເທົ່າກັນ:** Death ໜ້ອຍກວ່າ → %Headshot ສູງກວ່າ → ດວນ 1v1 ໃຜໄດ້ 5 Kill ກ່ອນຊະນະ',
-  '🔫 **ອາວຸດ:** ໃຊ້ໄດ້ **ທຸກປືນ** — ບໍ່ມີຂໍ້ຫ້າມ',
-  '🏅 **ແຣງ:** ທຸກແຣງລົງແຂ່ງນຳກັນ (Iron – Radiant) — ລົງທະບຽນ = ຍອມຮັບເງື່ອນໄຂນີ້',
-  '📝 **ຕ້ອງລົງທະບຽນກ່ອນ** — ບໍ່ໄດ້ລົງທະບຽນ = ລົງແຂ່ງບໍ່ໄດ້',
-  '👤 ໃຊ້ບັນຊີ Riot ຂອງຕົວເອງ ຕາມ Riot ID ທີ່ລົງທະບຽນ',
-  '⏰ ເຂົ້າຫ້ອງສຽງກ່ອນເລີ່ມ 10 ນາທີ · ມາຊ້າເກີນ 10 ນາທີ = ຕົວສຳຮອງລົງແທນ',
-  '🔌 ຫຼຸດລະຫວ່າງແຂ່ງ: ເຂົ້າຄືນໄວທີ່ສຸດ — ນັບຄະແນນຕາມຈິງ ບໍ່ເລີ່ມເກມໃໝ່',
-  '🚫 ຫ້າມໂກງ / ໃຊ້ໂປຣແກຣມຊ່ວຍ — ຕັດສິດທັນທີ',
-  '📺 ສະຕຣີມໄດ້ ແຕ່ຕ້ອງ delay 2 ນາທີ',
-  '👑 ຄຳຕັດສິນຂອງທີມງານຖືເປັນທີ່ສຸດ',
-];
+// จำนวนเกม + รางวัล (แก้ใน data/tourney-event.json: games, prizes)
+const GAMES = () => EV.games || 3;
+const MEDALS = ['🥇', '🥈', '🥉', '🎖️ ທີ 4', '🎖️ ທີ 5', '🎖️ ທີ 6', '🎖️ ທີ 7', '🎖️ ທີ 8'];
+const PRIZES = () => (EV.prizes || [100000, 50000]).map((p, k) => `${MEDALS[k] || `ທີ ${k + 1}`} ${Number(p).toLocaleString('en-US')} ກີບ`).join('\n');
 
 module.exports = {
   id: 'tournament',
@@ -81,7 +69,7 @@ module.exports = {
     new SlashCommandBuilder().setName('roomcode').setDescription('ສົ່ງລະຫັດຫ້ອງ Custom ໃຫ້ນັກແຂ່ງ (ແອດມິນ)')
       .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
       .addStringOption((o) => o.setName('code').setDescription('ລະຫັດຫ້ອງ / Party Code').setRequired(true).setMaxLength(40))
-      .addIntegerOption((o) => o.setName('game').setDescription('ເກມທີ (1-3)').setMinValue(1).setMaxValue(3))
+      .addIntegerOption((o) => o.setName('game').setDescription('ເກມທີ (1-10)').setMinValue(1).setMaxValue(10))
       .addStringOption((o) => o.setName('map').setDescription('ແຜນທີ່ ເຊັ່ນ Ascent').setMaxLength(40))
       .addStringOption((o) => o.setName('note').setDescription('ໝາຍເຫດເພີ່ມ').setMaxLength(200)),
   ],
@@ -91,6 +79,7 @@ module.exports = {
     const save = () => store.save('tourney-regs', db);
     const count = () => Object.keys(db.players).length;
 
+    const qaLink = () => { const c = guild.channels.cache.find((x) => x.type === ChannelType.GuildText && x.name.includes('ຖາມ-ຕອບ') && x.name.includes(EV.tag === 'B2' ? 'βeta' : '')); return c ? `<#${c.id}>` : '❓・ຖາມ-ຕອບ'; };
     const codeLink = () => { const c = guild.channels.cache.find(isCodeChannel); return c ? `<#${c.id}>` : '🔑・ລະຫັດຫ້ອງ'; };
     // ข้อมูลสำคัญหลังสมัคร (ตอบในห้อง + ส่ง DM)
     function infoText(no) {
@@ -107,23 +96,22 @@ module.exports = {
       const t = EV.startAt ? unix(EV.startAt) : 0;
       return new EmbedBuilder().setColor(0xFF4655)
         .setTitle('📜 ອ່ານກົດກ່ອນລົງທະບຽນ')
-        .setDescription(`**${EVENT}**\nອ່ານໃຫ້ຄົບ ແລ້ວກົດປຸ່ມ **✅ ຍອມຮັບ** ດ້ານລຸ່ມ`)
+        .setDescription(`**${EVENT}**\n🔑 ສະໝັກແລ້ວ → ເອົາລະຫັດຫ້ອງທີ່ ${codeLink()} **ເທົ່ານັ້ນ**\nອ່ານໃຫ້ຄົບ ແລ້ວກົດ **✅ ຍອມຮັບ** ດ້ານລຸ່ມ`)
         .addFields(
-          { name: '🎮 ຮູບແບບ', value: `Deathmatch · ${MAX} ຄົນ · 3 ເກມ\nນັບ **Kill ລວມ** 3 ເກມ`, inline: true },
-          { name: '🏆 ລາງວັນ', value: '🥇 100,000 ກີບ\n🥈 50,000 ກີບ', inline: true },
           { name: '🕗 ວັນ-ເວລາ', value: t ? `<t:${t}:F>\n<t:${t}:R>` : 'ແອດມິນຈະປະກາດ', inline: true },
-          { name: '📌 ກົດສຳຄັນ', value: [
-            '• ໃຊ້ໄດ້ **ທຸກປືນ**',
-            '• **ທຸກແຣງ** ລົງແຂ່ງນຳກັນ',
-            '• ໃຊ້ບັນຊີ Riot ຂອງຕົວເອງ',
-            '• ເຂົ້າຫ້ອງສຽງກ່ອນ **10 ນາທີ**',
-            '• ຊ້າເກີນ 10 ນາທີ = ຕົວສຳຮອງລົງແທນ',
-            '• ຫຼຸດ: ເຂົ້າຄືນໄວ · ນັບຄະແນນຕາມຈິງ',
-            '• ສະຕຣີມໄດ້ ແຕ່ delay **2 ນາທີ**',
+          { name: '🎮 ຮູບແບບ', value: `Deathmatch · ${MAX} ຄົນ\n**${GAMES()} ເກມ** · ນັບ **Kill ລວມ**`, inline: true },
+          { name: '🏆 ລາງວັນ', value: PRIZES(), inline: true },
+          { name: '✅ ອະນຸຍາດ', value: '• ໃຊ້ໄດ້ **ທຸກປືນ**\n• **ທຸກແຣງ** ລົງແຂ່ງນຳກັນ\n• ສະຕຣີມໄດ້ (delay **2 ນາທີ**)', inline: true },
+          { name: '🚫 ຫ້າມ', value: '• ໂກງ / ໂປຣແກຣມຊ່ວຍ\n→ **ຕັດສິດທັນທີ**', inline: true },
+          { name: '⚖️ ຄະແນນເທົ່າກັນ', value: '1. Death ໜ້ອຍກວ່າ\n2. %Headshot ສູງກວ່າ\n3. ດວນ 1v1 (5 Kill)', inline: true },
+          { name: '📝 ວັນແຂ່ງ', value: [
+            '1. ໃຊ້ບັນຊີ Riot ຂອງຕົວເອງ (ຕາມທີ່ລົງທະບຽນ)',
+            '2. ເຂົ້າຫ້ອງສຽງ 🔊 ກ່ອນເລີ່ມ **10 ນາທີ**',
+            '3. ຊ້າເກີນ 10 ນາທີ = **ຕົວສຳຮອງລົງແທນ**',
+            '4. ຫຼຸດ: ເຂົ້າຄືນໄວ · ນັບຄະແນນຕາມຈິງ',
           ].join('\n') },
-          { name: '⚖️ ຄະແນນເທົ່າກັນ', value: '1. Death ໜ້ອຍກວ່າ\n2. %Headshot ສູງກວ່າ\n3. ດວນ 1v1 (ໃຜໄດ້ 5 Kill ກ່ອນ)', inline: true },
-          { name: '🚫 ຫ້າມ', value: 'ໂກງ / ໃຊ້ໂປຣແກຣມຊ່ວຍ\n= **ຕັດສິດທັນທີ**', inline: true },
-          { name: '🔑 ລະຫັດຫ້ອງ', value: `ມີຢູ່ ${codeLink()} **ເທົ່ານັ້ນ**\n(ເຫັນຫຼັງລົງທະບຽນ)` },
+          { name: '🔑 ລະຫັດຫ້ອງ', value: `ມີຢູ່ ${codeLink()} **ເທົ່ານັ້ນ** — ເຫັນຫຼັງລົງທະບຽນ`, inline: true },
+          { name: '❓ ມີຄຳຖາມ', value: `ຖາມທີ່ ${qaLink()} **ເທົ່ານັ້ນ**`, inline: true },
         )
         .setFooter({ text: 'ຄຳຕັດສິນຂອງທີມງານຖືເປັນທີ່ສຸດ · JIBI · P SHOP GAMERPOWER' });
     }
@@ -138,6 +126,7 @@ module.exports = {
       fields.push({ name: '🕗 ເລີ່ມແຂ່ງ', value: t ? `<t:${t}:F>\n<t:${t}:R>` : 'ແອດມິນຈະປະກາດ', inline: true });
       fields.push({ name: '🔑 ລະຫັດຫ້ອງ', value: `ມີຢູ່ ${codeLink()} **ເທົ່ານັ້ນ**\nແຈ້ງເຕືອນກໍ່ຢູ່ຫ້ອງນີ້` });
       fields.push({ name: '🎮 ວິທີເຂົ້າຫ້ອງ', value: '1. ກົດ 📋 ກັອບລະຫັດ\n2. ເປີດ Valorant → **PARTY CODE**\n3. ວາງລະຫັດ → **JOIN**' });
+      fields.push({ name: '❓ ມີຄຳຖາມ', value: `ຖາມທີ່ ${qaLink()} ເທົ່ານັ້ນ` });
       return e.addFields(fields).setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
     }
     // ส่ง DM หานักแข่งทุกคน (คนที่ปิด DM จะส่งไม่ถึง → แจ้งชื่อในห้องแอดมิน)
@@ -173,6 +162,7 @@ module.exports = {
           '• ແຈ້ງເຕືອນກ່ອນແຂ່ງ ແລະ **ລະຫັດຫ້ອງ Custom** ຈະສົ່ງຢູ່ຫ້ອງນັ້ນເທົ່ານັ້ນ',
           '• ໃກ້ເວລາແຂ່ງ ໃຫ້ເຂົ້າໄປເບິ່ງຫ້ອງນັ້ນ ແລ້ວກົດ 📋 ກັອບລະຫັດ → Valorant → PARTY CODE → JOIN',
           `ນັກແຂ່ງຕົວຈິງ ${MAX} ຄົນທຳອິດ — ຄົນທີ ${MAX + 1} ຂຶ້ນໄປ ເປັນ **ຕົວສຳຮອງ**`,
+          `❓ ມີຄຳຖາມ: ຖາມທີ່ ${qaLink()} ເທົ່ານັ້ນ`,
           '',
           `📊 ລົງທະບຽນແລ້ວ: **${Math.min(n, MAX)} / ${MAX}**${n > MAX ? ` · ສຳຮອງ ${n - MAX} ຄົນ` : ''}${n >= MAX ? ' · ຕົວຈິງເຕັມແລ້ວ ✅' : ''}`,
           EV.startAt ? `⏰ ເລີ່ມແຂ່ງ: <t:${unix(EV.startAt)}:F> · **<t:${unix(EV.startAt)}:R>**` : null,
@@ -242,7 +232,7 @@ module.exports = {
     })();
 
     // ---------- /roomcode: ส่งรหัสห้องทันที พร้อมเวลา (เวลาลาว) — สไตล์เดียวกับการ์ดนักแข่ง ----------
-    const GAMES_TOTAL = 3;
+
     function codeMessage(user, o, now, expired) {
       const logo = guild.iconURL({ size: 256 });
       const laoTime = now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Vientiane', hour: '2-digit', minute: '2-digit' });
@@ -252,7 +242,7 @@ module.exports = {
         .setColor(expired ? 0x80848E : 0xFFC400)
         .setTitle(`🔑 ລະຫັດຫ້ອງ${o.game ? ` — ເກມ ${o.game}` : ''}${expired ? ' · ໝົດອາຍຸແລ້ວ' : ''}`)
         .setDescription([
-          o.game ? `🎮 **ເກມທີ:** ${box(`${o.game} | ${GAMES_TOTAL}`)}` : null,
+          o.game ? `🎮 **ເກມທີ:** ${box(`${o.game} | ${GAMES()}`)}` : null,
           `🔑 **ລະຫັດ:** ${box(o.code)}`,
           `🕗 **ເວລາ:** ${box(`${laoTime} ໂມງ`)} (ເວລາລາວ · ${laoDate})`,
           o.map ? `🗺️ **ແຜນທີ່:** ${box(o.map)}` : null,
