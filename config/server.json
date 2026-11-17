@@ -116,6 +116,56 @@
       ]
     },
     {
+      "name": "🔴 TEST βETA TOURNAMENT",
+      "visible": "admin",
+      "allowUsers": [
+        "phaeng_shiba"
+      ],
+      "_note": "หมวดทดลองระบบ VOL.2 — เห็นเฉพาะ Admin + phaeng_shiba",
+      "channels": [
+        {
+          "name": "🔑・ລະຫັດຫ້ອງ-βeta",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ລະຫັດຫ້ອງ Custom ສຳລັບນັກແຂ່ງ βETA TOURNAMENT ເທົ່ານັ້ນ"
+        },
+        {
+          "name": "📢・ປະກາດ-βeta",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ປະກາດ ແລະ ນັບຖອຍຫຼັງ βETA TOURNAMENT VOL.2"
+        },
+        {
+          "name": "📜・ກົດກະຕິກາ-βeta",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ກົດກະຕິກາທັງໝົດຂອງ βETA TOURNAMENT — ອ່ານກ່ອນລົງທະບຽນ"
+        },
+        {
+          "name": "📝・ລົງທະບຽນ-βeta",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ກົດປຸ່ມເພື່ອລົງທະບຽນ / ເຊັກອິນ"
+        },
+        {
+          "name": "❓・ຖາມ-ຕອບ-βeta",
+          "type": "text",
+          "topic": "ຖາມຂໍ້ສົງໄສກ່ຽວກັບງານແຂ່ງ"
+        },
+        {
+          "name": "🏆・ຜົນການແຂ່ງ-βeta",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ຜົນການແຂ່ງ ແລະ Leaderboard"
+        },
+        {
+          "name": "🔊 βETA TOURNAMENT",
+          "type": "voice",
+          "userLimit": 20
+        }
+      ]
+    },
+    {
       "name": "• VALORANT | ແຊັດ",
       "was": [
         "• VALORANT"
