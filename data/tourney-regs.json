@@ -1,6 +1,6 @@
 {
   "panels": {
-    "1572217822208331896": "1572288931683106968"
+    "1572217822208331896": "1572355488559931513"
   },
   "players": {
     "446988988222275584": {
@@ -170,6 +170,24 @@
       "at": 1794933291140,
       "channelId": "1572217822208331896",
       "messageId": "1572288924968026235",
+      "style": 4,
+      "acceptedRules": true
+    },
+    "543064147068452876": {
+      "name": "sakeeto",
+      "riot": "tex#skeet",
+      "rank": "Diamond",
+      "team": "br mi",
+      "confirm": [
+        "rules",
+        "code",
+        "admin"
+      ],
+      "pshop": false,
+      "no": 10,
+      "at": 1794949158772,
+      "channelId": "1572217822208331896",
+      "messageId": "1572355479634714684",
       "style": 4,
       "acceptedRules": true
     }
