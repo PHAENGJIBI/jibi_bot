@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "action": "create-event",
+  "at": "2026-11-17T14:11:46.597Z",
+  "result": {
+    "eventUrl": "https://discord.com/events/1245771682833109032/1572252912053264627",
+    "id": "1572252912053264627",
+    "updated": false,
+    "messageUrl": "https://discord.com/channels/1245771682833109032/1572217818282332270/1572252916230651935"
+  }
+}

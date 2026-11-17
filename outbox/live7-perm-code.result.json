@@ -1,0 +1,132 @@
+{
+  "ok": true,
+  "action": "channel-perms",
+  "at": "2026-11-17T14:11:41.029Z",
+  "result": {
+    "@everyone": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "ADMIN": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "ການຕະຫຼາດ": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "heartopia": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "valorant": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "STEAM": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "BOT🤖": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "DELTA FORCE": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "ตำแหน่งใหม่": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "Admin": {
+      "view": true,
+      "send": true,
+      "admin": true
+    },
+    "Staff": {
+      "view": true,
+      "send": true,
+      "admin": false
+    },
+    "ລູກຄ້າ": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "Valorant": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "General": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "Delta Force": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "Heartopia": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "🔔 Promo": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "🔔 Game News": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "⭐ Lv.5": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "🌟 Lv.10": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "💫 Lv.20": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "🤖 JIBI": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "🎯 ນັກແຂ່ງ": {
+      "view": true,
+      "send": false,
+      "admin": false
+    },
+    "👦 ຊາຍ": {
+      "view": false,
+      "send": true,
+      "admin": false
+    },
+    "👧 ຍິງ": {
+      "view": false,
+      "send": true,
+      "admin": false
+    }
+  }
+}
