@@ -16,6 +16,14 @@ let EV = { ...EV_DEFAULT, ...store.load('tourney-event', {}) };
 let EVENT = EV.name;
 let MAX = EV.max; // จำนวนนักแข่งตัวจริง
 const unix = (iso) => Math.floor(new Date(iso).getTime() / 1000);
+// เวลาแบบตายตัว (เวลาลาว) — ไม่ใช้ <t:..:F> เพราะ Discord แปลงตามเขตเวลาเครื่องคนดู ทำให้เห็นเวลาเพี้ยน
+const LAO_DAYS = ['ອາທິດ', 'ຈັນ', 'ອັງຄານ', 'ພຸດ', 'ພະຫັດ', 'ສຸກ', 'ເສົາ'];
+function laoTime(iso) {
+  const d = new Date(new Date(iso).getTime() + 7 * 3600000); // UTC+7
+  const p = (n) => String(n).padStart(2, '0');
+  return `${LAO_DAYS[d.getUTCDay()]} ${d.getUTCDate()}/${d.getUTCMonth() + 1}/${d.getUTCFullYear()} · ${p(d.getUTCHours())}:${p(d.getUTCMinutes())} ໂມງ (ເວລາລາວ)`;
+}
+const EARLY = '⚡ ຖ້ານັກແຂ່ງມາຄົບກ່ອນ **ອາດເລີ່ມກ່ອນເວລາໄດ້** — ມາໃຫ້ໄວ!';
 
 // ช่องในกล่องลงทะเบียน — แก้/เพิ่มได้ตรงนี้ (Discord ให้สูงสุด 5 ช่องต่อกล่อง)
 // type: text = พิมพ์เอง · select = เลือกจากรายการ · checkbox = ติ๊ก
@@ -102,7 +110,7 @@ module.exports = {
       const t = EV.startAt ? Math.floor(new Date(EV.startAt).getTime() / 1000) : 0;
       return [
         `🏆 **${EVENT}**${no ? ` · ນັກແຂ່ງ #${no}${no > MAX ? ' (ຕົວສຳຮອງ)' : ''}` : ''}`,
-        t ? `🕗 ເລີ່ມແຂ່ງ: <t:${t}:F>` : '🕗 ເວລາແຂ່ງ: ແອດມິນຈະປະກາດ ແລະ ແຈ້ງເຕືອນໃນຫ້ອງລະຫັດ',
+        t ? `🕗 ເລີ່ມແຂ່ງ: ${laoTime(EV.startAt)}\n${EARLY}` : '🕗 ເວລາແຂ່ງ: ແອດມິນຈະປະກາດ ແລະ ແຈ້ງເຕືອນໃນຫ້ອງລະຫັດ',
         `🔑 **ລະຫັດຫ້ອງ Custom ຈະມີຢູ່ຫ້ອງ ${codeLink()} ເທົ່ານັ້ນ** (ບໍ່ສົ່ງທາງອື່ນ) — ແຈ້ງເຕືອນກໍ່ຢູ່ຫ້ອງນີ້ ຢ່າລືມເຂົ້າໄປເບິ່ງກ່ອນເວລາແຂ່ງເດີ້`,
         '🎮 ວິທີເຂົ້າຫ້ອງ: ກົດ 📋 ກັອບລະຫັດ → ເປີດ Valorant → PARTY CODE → ວາງລະຫັດ → JOIN',
       ].join('\n');
@@ -114,7 +122,7 @@ module.exports = {
         .setTitle('📜 ອ່ານກົດກ່ອນລົງທະບຽນ')
         .setDescription(`**${EVENT}**\n🔑 ສະໝັກແລ້ວ → ເອົາລະຫັດຫ້ອງທີ່ ${codeLink()} **ເທົ່ານັ້ນ**\nອ່ານໃຫ້ຄົບ ແລ້ວກົດ **✅ ຍອມຮັບ** ດ້ານລຸ່ມ\n⚠️ ກົດ ✅ = ຍອມຮັບກົດທັງໝົດ **ລວມທັງຄຳຕັດສິນຂອງແອດມິນ**`)
         .addFields(
-          { name: '🕗 ວັນ-ເວລາ', value: t ? `<t:${t}:F>\n<t:${t}:R>` : 'ແອດມິນຈະປະກາດ', inline: true },
+          { name: '🕗 ວັນ-ເວລາ', value: t ? `${laoTime(EV.startAt)}\n(<t:${t}:R>)\n${EARLY}` : 'ແອດມິນຈະປະກາດ', inline: true },
           { name: '🎮 ຮູບແບບ', value: `Deathmatch · ${MAX} ຄົນ\n**${GAMES()} ເກມ** · ນັບ **Kill ລວມ**`, inline: true },
           { name: '🏆 ລາງວັນ', value: PRIZES(), inline: true },
           { name: '✅ ອະນຸຍາດ', value: '• ໃຊ້ໄດ້ **ທຸກປືນ**\n• **ທຸກແຣງ** ລົງແຂ່ງນຳກັນ\n• ສະຕຣີມໄດ້ (delay **2 ນາທີ**)', inline: true },
@@ -145,7 +153,7 @@ module.exports = {
         .setDescription(`**${EVENT}**`);
       const fields = [];
       if (no) fields.push({ name: '🎫 ເລກນັກແຂ່ງ', value: `**#${no}**${no > MAX ? ' · ຕົວສຳຮອງ' : ' · ຕົວຈິງ'}`, inline: true });
-      fields.push({ name: '🕗 ເລີ່ມແຂ່ງ', value: t ? `<t:${t}:F>\n<t:${t}:R>` : 'ແອດມິນຈະປະກາດ', inline: true });
+      fields.push({ name: '🕗 ເລີ່ມແຂ່ງ', value: t ? `${laoTime(EV.startAt)}\n(<t:${t}:R>)\n${EARLY}` : 'ແອດມິນຈະປະກາດ', inline: true });
       fields.push({ name: '🔑 ລະຫັດຫ້ອງ', value: `ມີຢູ່ ${codeLink()} **ເທົ່ານັ້ນ**\nແຈ້ງເຕືອນກໍ່ຢູ່ຫ້ອງນີ້` });
       fields.push({ name: '🎮 ວິທີເຂົ້າຫ້ອງ', value: '1. ກົດ 📋 ກັອບລະຫັດ\n2. ເປີດ Valorant → **PARTY CODE**\n3. ວາງລະຫັດ → **JOIN**' });
       fields.push({ name: '❓ ມີຄຳຖາມ', value: `ຖາມທີ່ ${qaLink()} ເທົ່ານັ້ນ` });
@@ -191,7 +199,7 @@ module.exports = {
           '🔌 ເນັດຫຼຸດ / ຄອມມີບັນຫາ: ບໍ່ມີ Rematch ໃຫ້ຄົນດຽວ · ຂໍ Surrender ບໍ່ໄດ້',
           '',
           `📊 ລົງທະບຽນແລ້ວ: **${Math.min(n, MAX)} / ${MAX}**${n > MAX ? ` · ສຳຮອງ ${n - MAX} ຄົນ` : ''}${n >= MAX ? ' · ຕົວຈິງເຕັມແລ້ວ ✅' : ''}`,
-          EV.startAt ? `⏰ ເລີ່ມແຂ່ງ: <t:${unix(EV.startAt)}:F> · **<t:${unix(EV.startAt)}:R>**` : null,
+          EV.startAt ? `⏰ ເລີ່ມແຂ່ງ: **${laoTime(EV.startAt)}** · <t:${unix(EV.startAt)}:R>\n${EARLY}` : null,
           EV.regOpen ? null : '🔒 **ປິດຮັບສະໝັກແລ້ວ** — ຄົນທີ່ລົງທະບຽນແລ້ວ ຍັງແກ້ໄຂ/ຍົກເລີກໄດ້',
         ].filter((x) => x !== null).join('\n'))
         .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
@@ -338,7 +346,8 @@ module.exports = {
         .setDescription([
           `## ເລີ່ມ <t:${t}:R>`,
           `🏆 **${EVENT}**`,
-          `🕗 **ເວລາເລີ່ມ:** <t:${t}:t> (<t:${t}:D>)`,
+          `🕗 **ເວລາເລີ່ມ:** ${laoTime(EV.startAt)}`,
+          EARLY,
           `👥 **ນັກແຂ່ງ:** ${box(`${n} | ${MAX} ຄົນ`)}`,
           '',
           '✅ ເປີດ Valorant ລໍຖ້າໄວ້ເລີຍ — ລະຫັດຫ້ອງຈະສົ່ງໃນຫ້ອງນີ້ 💛',
@@ -361,7 +370,8 @@ module.exports = {
         .setTitle(minsLeft > 0 ? `⏰ ອີກ ${minsLeft} ນາທີ ເລີ່ມແຂ່ງ!` : '🔥 ເຖິງເວລາແຂ່ງແລ້ວ!')
         .setDescription(`**${EVENT}**`)
         .addFields(
-          { name: '🕗 ເລີ່ມ', value: `<t:${unix(EV.startAt)}:t> · <t:${unix(EV.startAt)}:R>`, inline: true },
+          { name: '🕗 ເລີ່ມ', value: `${laoTime(EV.startAt)}\n(<t:${unix(EV.startAt)}:R>)`, inline: true },
+          { name: '⚡ ອາດເລີ່ມກ່ອນ', value: 'ຖ້ານັກແຂ່ງມາຄົບກ່ອນ ອາດເລີ່ມກ່ອນເວລາ', inline: true },
           { name: '🔊 ເຂົ້າຫ້ອງສຽງ', value: 'ກ່ອນເລີ່ມ 10 ນາທີ', inline: true },
           { name: '🔑 ລະຫັດຫ້ອງ', value: `ເບິ່ງທີ່ ${ch} ເທົ່ານັ້ນ` },
         ).setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
@@ -410,7 +420,7 @@ module.exports = {
         EV = next; EVENT = EV.name; MAX = EV.max;
         store.save('tourney-event', EV);
         await refreshPanels();
-        logTo(`🏆 ອັບເດດງານແຂ່ງ: ${EVENT}${EV.startAt ? ` · ເລີ່ມ <t:${unix(EV.startAt)}:F>` : ''} · ${EV.regOpen ? 'ເປີດຮັບສະໝັກ' : 'ປິດຮັບສະໝັກ'}`);
+        logTo(`🏆 ອັບເດດງານແຂ່ງ: ${EVENT}${EV.startAt ? ` · ເລີ່ມ ${laoTime(EV.startAt)}` : ''} · ${EV.regOpen ? 'ເປີດຮັບສະໝັກ' : 'ປິດຮັບສະໝັກ'}`);
         return api.getEvent();
       },
       players: () => Object.entries(db.players).map(([uid, p]) => ({ uid, ...p })).sort((a, b) => a.no - b.no),
