@@ -337,6 +337,7 @@ module.exports = {
       await guild.roles.fetch().catch(() => {});
       for (const uid of Object.keys(db.players)) await setPlayerRole(uid, true);
       const role = playerRole();
+      if (role) await guild.members.fetch().catch(() => {});
       if (role) for (const m of role.members.values()) if (!db.players[m.id]) await m.roles.remove(role).catch(() => {});
     };
     setTimeout(ensureRoles, 20000);
