@@ -1,13 +1,11 @@
 {
   "ok": true,
-  "at": "2026-11-17T14:08:24.894Z",
+  "at": "2026-11-17T14:19:26.100Z",
   "log": [
-    "🔄 ซิงก์เซิร์ฟ (สั่งจาก Claude)",
+    "🔄 ซิงก์เซิร์ฟ (config เปลี่ยน)",
     "⚠️ แก้ยศ Staff ไม่ได้: Missing Permissions",
-    "✏️ เปลี่ยนชื่อหมวด 🔴 TEST βETA TOURNAMENT VOL.2 → • VALORANT | βETA TOURNAMENT VOL.2",
-    "✏️ เปลี่ยนชื่อหมวด 🔴 TEST βETA SHOWMATCH 2v2 → • VALORANT | SHOWMATCH 2v2",
+    "✏️ เปลี่ยนชื่อหมวด • VALORANT | SHOWMATCH 2v2 → 🔴 SHOWMATCH 2v2 (ຍັງບໍ່ເປີດ)",
     "📌 keepLayout: ไม่เรียงตำแหน่งห้องใหม่",
-    "✅ ตั้งคำถามตอนเข้าเซิร์ฟ และเปิดใช้งานแล้ว",
     "✅ ซิงก์โครงสร้างเสร็จ"
   ]
 }
