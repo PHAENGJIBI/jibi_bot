@@ -210,6 +210,50 @@
       ]
     },
     {
+      "name": "🔴 R.E.P.O. CASH-OUT CUP (ຕົວຢ່າງ)",
+      "visible": "admin",
+      "_note": "ตัวอย่างหมวดงานแข่ง R.E.P.O. — ยังไม่เปิด · เห็นเฉพาะ Admin + phaeng_shiba · ปรับจากฟีดแบ็ก Mini Cup #1 + แบบสอบถาม",
+      "allowUsers": [
+        "phaeng_shiba"
+      ],
+      "channels": [
+        {
+          "name": "📌・ເລີ່ມທີ່ນີ້-repo",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ຂໍ້ມູນທັງໝົດໃນຫ້ອງດຽວ: ວັນ-ເວລາ, ລາງວັນ, ກົດກະຕິກາ ແລະ ສະໝັກແລ້ວເຮັດຫຍັງຕໍ່"
+        },
+        {
+          "name": "📝・ລົງທະບຽນທີມ-repo",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ກົດປຸ່ມເພື່ອລົງທະບຽນທີມ R.E.P.O. (1–4 ຄົນ)"
+        },
+        {
+          "name": "📅・ຕາຕະລາງ-ແລະ-ຜົນ-repo",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ມື້ລະ 1 ທີມ · ຕາຕະລາງ 8 ມື້ ແລະ ອັນດັບເງິນລາງວັນ"
+        },
+        {
+          "name": "🎲・ທາຍຜົນ-repo",
+          "type": "text",
+          "readOnly": true,
+          "topic": "ທາຍຜົນດ້ວຍເຄຣດິດຟຣີ — ບໍ່ແມ່ນເງິນແທ້"
+        },
+        {
+          "name": "💬・ແຊັດ-ຄົນເບິ່ງ-repo",
+          "type": "text",
+          "topic": "ເຊຍ ແລະ ລົມກັນລະຫວ່າງເບິ່ງສົດ — ຫ້າມບອກທາງທີມທີ່ກຳລັງແຂ່ງ"
+        },
+        {
+          "name": "📺 R.E.P.O. LIVE",
+          "type": "voice",
+          "userLimit": 25
+        }
+      ]
+    },
+    {
       "name": "• VALORANT | ແຊັດ",
       "was": [
         "• VALORANT"
