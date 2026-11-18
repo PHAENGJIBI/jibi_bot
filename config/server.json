@@ -210,9 +210,9 @@
       ]
     },
     {
-      "name": "🔴 R.E.P.O. CASH-OUT CUP (ຕົວຢ່າງ)",
+      "name": "🔴 CASH OUT (ຕົວຢ່າງ)",
       "visible": "admin",
-      "_note": "ตัวอย่างหมวดงานแข่ง R.E.P.O. — ยังไม่เปิด · เห็นเฉพาะ Admin + phaeng_shiba · ปรับจากฟีดแบ็ก Mini Cup #1 + แบบสอบถาม",
+      "_note": "ตัวอย่างงาน CASH OUT (เกม R.E.P.O.) — 2 ทีม แข่งวันเดียวจบ · เห็นเฉพาะ Admin + phaeng_shiba",
       "allowUsers": [
         "phaeng_shiba"
       ],
@@ -227,13 +227,13 @@
           "name": "📝・ລົງທະບຽນທີມ-repo",
           "type": "text",
           "readOnly": true,
-          "topic": "ກົດປຸ່ມເພື່ອລົງທະບຽນທີມ R.E.P.O. (1–4 ຄົນ)"
+          "topic": "ກົດປຸ່ມເພື່ອລົງທະບຽນທີມ CASH OUT (1–4 ຄົນ) · ຮັບ 2 ທີມ"
         },
         {
           "name": "📅・ຕາຕະລາງ-ແລະ-ຜົນ-repo",
           "type": "text",
           "readOnly": true,
-          "topic": "ມື້ລະ 1 ທີມ · ຕາຕະລາງ 8 ມື້ ແລະ ອັນດັບເງິນລາງວັນ"
+          "topic": "ຕາຕະລາງ 2 ທີມ (ແຂ່ງມື້ດຽວຈົບ) ແລະ ຜົນການແຂ່ງ"
         },
         {
           "name": "🎲・ທາຍຜົນ-repo",
@@ -251,6 +251,9 @@
           "type": "voice",
           "userLimit": 25
         }
+      ],
+      "was": [
+        "🔴 R.E.P.O. CASH-OUT CUP (ຕົວຢ່າງ)"
       ]
     },
     {
