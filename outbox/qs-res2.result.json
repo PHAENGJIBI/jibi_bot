@@ -1,0 +1,63 @@
+{
+  "ok": true,
+  "action": "quick-survey-results",
+  "at": "2026-11-18T02:09:31.227Z",
+  "result": {
+    "answered": 4,
+    "total": 6,
+    "waiting": [
+      "446988988222275584",
+      "1479742337633488896"
+    ],
+    "responses": [
+      {
+        "uid": "310734168004755456",
+        "name": "optimumbai",
+        "at": "2026-11-17T15:50:39.932Z",
+        "answers": {
+          "join": "ok",
+          "info": "easy",
+          "reg": "easy",
+          "next": "easy"
+        },
+        "comment": ""
+      },
+      {
+        "uid": "1533745210910314598",
+        "name": "Passobemsolto",
+        "at": "2026-11-17T15:51:08.359Z",
+        "answers": {
+          "join": "ok",
+          "info": "hard",
+          "reg": "easy",
+          "next": "easy"
+        },
+        "comment": ""
+      },
+      {
+        "uid": "1129062068323106836",
+        "name": "Wet Dream",
+        "at": "2026-11-17T16:03:42.318Z",
+        "answers": {
+          "join": "ok",
+          "info": "easy",
+          "reg": "ok",
+          "next": "ok"
+        },
+        "comment": ""
+      },
+      {
+        "uid": "590446600401321984",
+        "name": "PG Nanz",
+        "at": "2026-11-17T21:10:15.299Z",
+        "answers": {
+          "join": "ok",
+          "info": "hard",
+          "reg": "easy",
+          "next": "hard"
+        },
+        "comment": ""
+      }
+    ]
+  }
+}
