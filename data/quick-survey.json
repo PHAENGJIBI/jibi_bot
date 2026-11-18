@@ -59,6 +59,30 @@
         "next": "hard"
       },
       "comment": ""
+    },
+    "1291710379432607778": {
+      "name": "Benny",
+      "at": "2026-11-18T02:14:50.012Z",
+      "answers": {
+        "join": "easy",
+        "info": "easy",
+        "reg": "easy",
+        "next": "ok",
+        "stuck": "none"
+      },
+      "comment": ""
+    },
+    "1025195859870220321": {
+      "name": "=^._.^=",
+      "at": "2026-11-18T02:15:50.757Z",
+      "answers": {
+        "join": "easy",
+        "info": "easy",
+        "reg": "easy",
+        "next": "easy",
+        "stuck": "none"
+      },
+      "comment": ""
     }
   },
   "panels": [
