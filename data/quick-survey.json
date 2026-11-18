@@ -83,6 +83,18 @@
         "stuck": "none"
       },
       "comment": ""
+    },
+    "704985716505182298": {
+      "name": "Clayface Thailand",
+      "at": "2026-11-18T04:58:23.160Z",
+      "answers": {
+        "join": "easy",
+        "info": "easy",
+        "reg": "easy",
+        "next": "skip",
+        "stuck": "none"
+      },
+      "comment": ""
     }
   },
   "panels": [
