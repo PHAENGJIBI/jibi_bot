@@ -196,6 +196,39 @@ module.exports = {
       }
       logTo(`📨 DM ${label}: ສົ່ງຖຶງ ${ids.length - fail.length}/${ids.length}${fail.length ? ` · ສົ່ງບໍ່ໄດ້ (ປິດ DM): ${fail.join(', ')}` : ''}`);
     }
+    // DM รหัสห้องตัวใหญ่ (ใช้รหัสเดียวทั้งงาน) — ส่งก่อนแข่ง ~1 ชม.
+    function codeDMMessage(o) {
+      const code = String(o.code).trim().toUpperCase();
+      const start = EV.startAt ? laoTime(EV.startAt) : '';
+      const mins = EV.startAt ? Math.round((new Date(EV.startAt).getTime() - Date.now()) / 60000) : null;
+      const left = o.left || (mins && mins > 0 ? (mins >= 55 ? `ອີກ ${Math.round(mins / 60)} ຊົ່ວໂມງ` : `ອີກ ${mins} ນາທີ`) : 'ໃກ້ເລີ່ມແລ້ວ');
+      const content = [
+        o.test ? '-# 🧪 ຕົວຢ່າງ (ທົດສອບ) — ຍັງບໍ່ແມ່ນລະຫັດຈິງ' : null,
+        `## ⏰ ${left} ເລີ່ມແຂ່ງ!`,
+        `-# ${EVENT}${start ? ` · ${start}` : ''}`,
+        '## 🔑 ລະຫັດຫ້ອງ',
+        `# ${code}`,
+        `\`\`\`${code}\`\`\``,
+      ].filter((x) => x !== null).join('\n');
+      const voiceUrl = o.voiceUrl || EV.voiceInvite || null;
+      const e = new EmbedBuilder().setColor(0xFF4655)
+        .setDescription([
+          `✅ **ໃຊ້ລະຫັດນີ້ອັນດຽວ ທັງ ${GAMES()} ເກມ** ຈົນຈົບງານ`,
+          '',
+          '**ວິທີເຂົ້າ:**',
+          '1️⃣ ກົດ **📋 ກັອບລະຫັດ** (ຫຼື ກົດຄ້າງທີ່ກ່ອງລະຫັດ)',
+          '2️⃣ ເປີດ Valorant → **PARTY CODE**',
+          '3️⃣ ວາງລະຫັດ → **JOIN** ✅',
+          '',
+          voiceUrl ? `🎧 ເຂົ້າ Voice ໄດ້ (ບໍ່ບັງຄັບ) → ກົດ **ເຂົ້າ Voice** ລຸ່ມນີ້` : null,
+          '🤫 ຢ່າແຊລະຫັດໃຫ້ຄົນອື່ນເດີ້',
+          '👑 ຄຳຕັດສິນຂອງແອດມິນຖືເປັນທີ່ສຸດ',
+        ].filter((x) => x !== null).join('\n'))
+        .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
+      const btns = [new ButtonBuilder().setCustomId(`tourney:copy:${code}`.slice(0, 100)).setStyle(ButtonStyle.Success).setLabel('📋 ກັອບລະຫັດ')];
+      if (voiceUrl) btns.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(voiceUrl).setLabel('🎧 ເຂົ້າ Voice'));
+      return { content, embeds: [e], components: [new ActionRowBuilder().addComponents(...btns)] };
+    }
     function panelMessage() {
       const n = count();
       if (EV.ended) {
@@ -472,6 +505,20 @@ module.exports = {
         return true;
       },
       sendCode: (o, by) => sendRoomCode({ username: by || 'Hub' }, o),
+      // DM รหัสตัวใหญ่ · userIds = ทดสอบส่งเฉพาะคน · ไม่ใส่ = นักแข่งตัวจริงทุกคน
+      async codeDM(o) {
+        if (!o || !o.code) throw new Error('ໃສ່ລະຫັດກ່ອນ');
+        const ids = o.userIds && o.userIds.length ? o.userIds : Object.entries(db.players).filter(([, p]) => p.no <= MAX).map(([id]) => id);
+        const payload = codeDMMessage(o);
+        const res = { ok: [], fail: [] };
+        for (const id of ids) {
+          const u = await client.users.fetch(id).catch(() => null);
+          const ok = u && await u.send(payload).then(() => true).catch(() => false);
+          (ok ? res.ok : res.fail).push(u ? u.username : id);
+        }
+        logTo(`📨 DM ລະຫັດຫ້ອງ${o.test ? ' (🧪 ທົດສອບ)' : ''} ${String(o.code).toUpperCase()}: ສົ່ງຖຶງ ${res.ok.length}/${ids.length}${res.fail.length ? ` · ສົ່ງບໍ່ໄດ້: ${res.fail.join(', ')}` : ''}`);
+        return res;
+      },
       remindNow: () => sendReminder(true),
       refreshPanels,
     };
