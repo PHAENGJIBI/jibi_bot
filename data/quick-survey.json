@@ -107,6 +107,18 @@
         "stuck": "none"
       },
       "comment": ""
+    },
+    "1066437329851531274": {
+      "name": "LFT Pipo",
+      "at": "2026-11-19T10:52:30.949Z",
+      "answers": {
+        "join": "ok",
+        "info": "easy",
+        "reg": "easy",
+        "next": "easy",
+        "stuck": "none"
+      },
+      "comment": ""
     }
   },
   "panels": [
