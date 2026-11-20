@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "action": "post-survey-post",
+  "at": "2026-11-20T16:27:37.321Z",
+  "result": {
+    "url": "https://discord.com/channels/1245771682833109032/1570465965244813414/1573374229720866948",
+    "dm": {
+      "ok": [
+        "chibai",
+        "PG Nanz",
+        "Clayface Thailand",
+        "LFT Pipo",
+        "Benny",
+        "sakeeto",
+        "e tai"
+      ],
+      "fail": []
+    }
+  }
+}
