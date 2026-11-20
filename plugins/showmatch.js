@@ -248,6 +248,12 @@ module.exports = {
       }
       return client.jibiShowmatchCustom({ A, B, prize });
     };
+    client.jibiShowmatchCredit = async (uid, amount, by = 'Claude') => {
+      const before = bal(uid); db.balances[uid] = before + Math.round(Number(amount) || 0); save();
+      await leaderboard();
+      logTo(`💰 ເພີ່ມເຄຣດິດ <@${uid}> ${fmt(amount)} (${fmt(before)} → ${fmt(db.balances[uid])}) ໂດຍ ${by}`);
+      return { before, after: db.balances[uid] };
+    };
     client.jibiShowmatchWin = async (winner, by = 'Claude') => {
       const m = db.match;
       if (!m || !['open', 'locked'].includes(m.status)) throw new Error('ບໍ່ມີແມັດທີ່ເປີດຢູ່');
