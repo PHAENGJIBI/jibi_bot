@@ -238,6 +238,13 @@ module.exports = {
       return { schedule: sched.url, first: first.url };
     };
     // เปิดแมตช์นี้ทันที: ยกเลิกแมตช์ค้าง (คืนเครดิต) · ล้างคิว · ไม่รีเซ็ตเครดิต
+    client.jibiShowmatchWin = async (winner, by = 'Claude') => {
+      const m = db.match;
+      if (!m || !['open', 'locked'].includes(m.status)) throw new Error('ບໍ່ມີແມັດທີ່ເປີດຢູ່');
+      if (!['A', 'B'].includes(winner)) throw new Error('winner = A ຫຼື B');
+      await settle(winner, by);
+      return { no: m.no, winner: m[winner].map((p) => p.name) };
+    };
     client.jibiShowmatchNow = async ({ A, B, prize = 0 } = {}) => {
       const m = db.match;
       if (m && ['open', 'locked'].includes(m.status)) {
