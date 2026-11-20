@@ -238,6 +238,16 @@ module.exports = {
       return { schedule: sched.url, first: first.url };
     };
     // เปิดแมตช์นี้ทันที: ยกเลิกแมตช์ค้าง (คืนเครดิต) · ล้างคิว · ไม่รีเซ็ตเครดิต
+    // คู่ถัดไป: ถ้ายังมีแมตช์เปิดอยู่ → ต่อคิว (เปิดเองเมื่อแมตช์นั้นจบ) · ถ้าไม่มี → เปิดทันที
+    client.jibiShowmatchNext = async ({ A, B, prize = 0 } = {}) => {
+      const m = db.match;
+      if (m && ['open', 'locked'].includes(m.status)) {
+        db.queue = db.queue || []; db.queue.push({ A, B, prize }); save();
+        logTo(`⏭️ ຕໍ່ຄິວ SHOWMATCH: ${A.map((x) => x.name).join('+')} vs ${B.map((x) => x.name).join('+')} (ລໍແມັດ #${m.no} ຈົບ)`);
+        return { queued: true, waitingFor: m.no, queue: db.queue.length };
+      }
+      return client.jibiShowmatchCustom({ A, B, prize });
+    };
     client.jibiShowmatchWin = async (winner, by = 'Claude') => {
       const m = db.match;
       if (!m || !['open', 'locked'].includes(m.status)) throw new Error('ບໍ່ມີແມັດທີ່ເປີດຢູ່');
