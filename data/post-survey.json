@@ -120,6 +120,29 @@
         "game": "",
         "other": ""
       }
+    },
+    "704985716505182298": {
+      "name": "Clayface Thailand",
+      "at": "2026-11-20T16:36:05.272Z",
+      "answers": {
+        "overall": "3",
+        "again": "maybe",
+        "recommend": "maybe",
+        "source": "fb",
+        "reg": "easy",
+        "info": "clear",
+        "notify": "many",
+        "code": "hard",
+        "length": "ok",
+        "time": "earlier",
+        "weapon": "mix",
+        "format": "mix",
+        "prize": "ok",
+        "fee": "20k",
+        "freq": "any",
+        "showmatch": "ok"
+      },
+      "texts": {}
     }
   }
 }
