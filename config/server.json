@@ -168,9 +168,9 @@
       ]
     },
     {
-      "name": "🔴 SHOWMATCH 2v2 (ຍັງບໍ່ເປີດ)",
-      "visible": "admin",
-      "_note": "SHOWMATCH — เก็บไว้ ยังไม่เปิด (เจ้าของจะเปิดเอง) · เห็นเฉพาะ Admin + phaeng_shiba",
+      "name": "• VALORANT | SHOWMATCH 2v2",
+      "visible": "player",
+      "_note": "SHOWMATCH — เปิด 20/11 ระหว่างงาน βETA VOL.2 · เห็นเฉพาะยศ 🎯 ນັກແຂ່ງ (+ Admin, phaeng_shiba) · เครดิตจำลอง ไม่ใช่เงินจริง",
       "channels": [
         {
           "name": "📜・ວິທີຫຼິ້ນ-showmatch",
@@ -202,6 +202,7 @@
         }
       ],
       "was": [
+        "🔴 SHOWMATCH 2v2 (ຍັງບໍ່ເປີດ)",
         "• VALORANT | SHOWMATCH 2v2",
         "🔴 TEST βETA SHOWMATCH 2v2"
       ],
