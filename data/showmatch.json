@@ -1,6 +1,47 @@
 {
-  "balances": {},
-  "match": null,
-  "no": 0,
+  "balances": {
+    "1479742337633488896": 5000
+  },
+  "match": {
+    "no": 1,
+    "A": [
+      {
+        "id": "x1",
+        "name": "PG MonstieZ",
+        "rank": {
+          "name": "Unrated",
+          "value": 3,
+          "emoji": "🏅"
+        }
+      }
+    ],
+    "B": [
+      {
+        "id": "590446600401321984",
+        "name": "PG Nanz",
+        "rank": {
+          "name": "Immortal",
+          "value": 8,
+          "emoji": "🔴"
+        }
+      }
+    ],
+    "sumA": 3,
+    "sumB": 8,
+    "players": [
+      "x1",
+      "590446600401321984"
+    ],
+    "bets": {
+      "1479742337633488896": {
+        "team": "B",
+        "amount": 5000
+      }
+    },
+    "status": "open",
+    "chId": "1572234489713922068",
+    "msgId": "1573315827929849927"
+  },
+  "no": 1,
   "lbMsg": null
 }

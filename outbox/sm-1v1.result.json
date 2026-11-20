@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "action": "showmatch-custom",
+  "at": "2026-11-20T12:35:24.427Z",
+  "result": {
+    "url": "https://discord.com/channels/1245771682833109032/1572234489713922068/1573315827929849927",
+    "A": [
+      {
+        "id": "x1",
+        "name": "PG MonstieZ",
+        "rank": {
+          "name": "Unrated",
+          "value": 3,
+          "emoji": "🏅"
+        }
+      }
+    ],
+    "B": [
+      {
+        "id": "590446600401321984",
+        "name": "PG Nanz",
+        "rank": {
+          "name": "Immortal",
+          "value": 8,
+          "emoji": "🔴"
+        }
+      }
+    ]
+  }
+}
