@@ -1,0 +1,118 @@
+{
+  "ok": true,
+  "action": "run-scores",
+  "at": "2026-11-20T13:56:32.594Z",
+  "result": {
+    "saved": 9,
+    "table": [
+      {
+        "uid": "590446600401321984",
+        "no": 6,
+        "name": "ບິກ",
+        "riot": "PG Nanz#Big01",
+        "k": 176,
+        "d": 136,
+        "hs": 0,
+        "played": 5,
+        "tie": false,
+        "pos": 1
+      },
+      {
+        "uid": "1479742337633488896",
+        "no": 2,
+        "name": "ເຈ",
+        "riot": "theJu1c3tz#aax10",
+        "k": 174,
+        "d": 157,
+        "hs": 0,
+        "played": 5,
+        "tie": false,
+        "pos": 2
+      },
+      {
+        "uid": "446988988222275584",
+        "no": 1,
+        "name": "atyhuknene",
+        "riot": "STARBOYYY#01101",
+        "k": 172,
+        "d": 162,
+        "hs": 0,
+        "played": 5,
+        "tie": false,
+        "pos": 3
+      },
+      {
+        "uid": "885723409416331344",
+        "no": 11,
+        "name": "PG MonstieZ",
+        "riot": "PG MonstieZ",
+        "k": 167,
+        "d": 175,
+        "hs": 0,
+        "played": 5,
+        "tie": false,
+        "pos": 4
+      },
+      {
+        "uid": "1129062068323106836",
+        "no": 5,
+        "name": "Wet Dream",
+        "riot": "Wet Dream#2108",
+        "k": 158,
+        "d": 139,
+        "hs": 0,
+        "played": 5,
+        "tie": false,
+        "pos": 5
+      },
+      {
+        "uid": "543064147068452876",
+        "no": 10,
+        "name": "sakeeto",
+        "riot": "tex#skeet",
+        "k": 140,
+        "d": 163,
+        "hs": 0,
+        "played": 5,
+        "tie": false,
+        "pos": 6
+      },
+      {
+        "uid": "1533745210910314598",
+        "no": 4,
+        "name": "LOVEYED",
+        "riot": "LOVEYED#888",
+        "k": 126,
+        "d": 115,
+        "hs": 0,
+        "played": 5,
+        "tie": false,
+        "pos": 7
+      },
+      {
+        "uid": "310734168004755456",
+        "no": 3,
+        "name": "optimumbai",
+        "riot": "9469456823476231#wwe",
+        "k": 125,
+        "d": 174,
+        "hs": 0,
+        "played": 5,
+        "tie": false,
+        "pos": 8
+      },
+      {
+        "uid": "704985716505182298",
+        "no": 7,
+        "name": "AniZa",
+        "riot": "AniZa#13578",
+        "k": 112,
+        "d": 129,
+        "hs": 0,
+        "played": 5,
+        "tie": false,
+        "pos": 9
+      }
+    ]
+  }
+}
