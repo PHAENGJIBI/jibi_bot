@@ -229,6 +229,40 @@ module.exports = {
       if (voiceUrl) btns.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(voiceUrl).setLabel('🎧 ເຂົ້າ Voice'));
       return { content, embeds: [e], components: [new ActionRowBuilder().addComponents(...btns)] };
     }
+    // DM แจ้งนักแข่ง "วันนี้แข่ง" + ปุ่มยืนยันมา/ไม่มา
+    function todayDMMessage(name, test) {
+      const start = EV.startAt ? laoTime(EV.startAt) : '';
+      const hm = (min) => { const d = new Date(new Date(EV.startAt).getTime() + 7 * 3600000 - min * 60000); return `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`; };
+      const content = [test ? '-# 🧪 ຕົວຢ່າງ (ທົດສອບ) — ສົ່ງຫາແອດມິນຄົນດຽວ' : null, '# 🔥 ມື້ນີ້ແຂ່ງແລ້ວ!'].filter(Boolean).join('\n');
+      const e = new EmbedBuilder().setColor(0xFFC400)
+        .setTitle(`🏆 ${EVENT}`)
+        .setDescription([
+          `ສະບາຍດີ **${name}** 👋 ນ້ອງ JIBI ເອງ`,
+          '',
+          `## 📅 ${start}`,
+          '⚡ ມາຄົບກ່ອນ ອາດເລີ່ມກ່ອນເວລາ',
+          '',
+          '**ສິ່ງທີ່ຕ້ອງເຮັດມື້ນີ້:**',
+          `🔑 **${hm(60)}** — ລະຫັດຫ້ອງສົ່ງມາທາງ DM ນີ້ + ຫ້ອງລະຫັດ (ໃຊ້ລະຫັດດຽວ ທັງ ${GAMES()} ເກມ)`,
+          `🎮 **${hm(30)}** — ເປີດ Valorant ລໍຖ້າ · ເຂົ້າ Voice ໄດ້ (ບໍ່ບັງຄັບ)`,
+          `🏁 **${hm(0)}** — ເລີ່ມເກມ 1`,
+          '',
+          '⚠️ ເນັດຫຼຸດ/ຄອມມີບັນຫາ = ບໍ່ມີ Rematch ໃຫ້ຄົນດຽວ',
+          '👑 ຄຳຕັດສິນຂອງແອດມິນຖືເປັນທີ່ສຸດ',
+          '',
+          '👇 **ກົດຢືນຢັນແດ່ວ່າມາໄດ້ບໍ່** (ຊ່ວຍແອດມິນກຽມງານ 🙏)',
+        ].join('\n'))
+        .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
+      const row1 = new ActionRowBuilder().addComponents(
+        new ButtonBuilder().setCustomId('tourney:rsvp:yes').setStyle(ButtonStyle.Success).setLabel('✅ ມາແນ່ນອນ'),
+        new ButtonBuilder().setCustomId('tourney:rsvp:no').setStyle(ButtonStyle.Danger).setLabel('❌ ມາບໍ່ໄດ້'),
+      );
+      const links = [];
+      const code = guild.channels.cache.find(isCodeChannel);
+      if (code) links.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(`https://discord.com/channels/${guild.id}/${code.id}`).setLabel('🔑 ຫ້ອງລະຫັດ'));
+      if (EV.voiceInvite) links.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(EV.voiceInvite).setLabel('🎧 ເຂົ້າ Voice'));
+      return { content, embeds: [e], components: links.length ? [row1, new ActionRowBuilder().addComponents(...links)] : [row1] };
+    }
     function panelMessage() {
       const n = count();
       if (EV.ended) {
@@ -505,6 +539,20 @@ module.exports = {
         return true;
       },
       sendCode: (o, by) => sendRoomCode({ username: by || 'Hub' }, o),
+      async todayDM(o = {}) {
+        const ids = o.userIds && o.userIds.length ? o.userIds : Object.entries(db.players).filter(([, p]) => p.no <= MAX).map(([id]) => id);
+        const res = { ok: [], fail: [] };
+        for (const id of ids) {
+          const u = await client.users.fetch(id).catch(() => null);
+          const mem = await guild.members.fetch(id).catch(() => null);
+          const name = (db.players[id] && db.players[id].name) || (mem && mem.displayName) || (u && u.username) || '';
+          const ok = u && await u.send(todayDMMessage(name, !!o.test)).then(() => true).catch(() => false);
+          (ok ? res.ok : res.fail).push(name || id);
+        }
+        logTo(`📨 DM "ມື້ນີ້ແຂ່ງ"${o.test ? ' (🧪 ທົດສອບ)' : ''}: ສົ່ງຖຶງ ${res.ok.length}/${ids.length}${res.fail.length ? ` · ສົ່ງບໍ່ໄດ້ (ປິດ DM): ${res.fail.join(', ')}` : ''}`);
+        return res;
+      },
+      rsvp: () => Object.values(db.players).map((p) => ({ no: p.no, name: p.name, rsvp: p.rsvp || null })),
       // DM รหัสตัวใหญ่ · userIds = ทดสอบส่งเฉพาะคน · ไม่ใส่ = นักแข่งตัวจริงทุกคน
       async codeDM(o) {
         if (!o || !o.code) throw new Error('ໃສ່ລະຫັດກ່ອນ');
@@ -529,6 +577,15 @@ module.exports = {
 
     client.on(Events.InteractionCreate, async (i) => {
       try {
+        if (i.isButton() && i.customId.startsWith('tourney:rsvp:')) {
+          const ans = i.customId.endsWith(':yes') ? 'yes' : 'no';
+          const p = db.players[i.user.id];
+          if (!p) return i.reply({ content: ans === 'yes' ? '✅ ຮັບຊາບ! (ທົດສອບ — ເຈົ້າບໍ່ໄດ້ຢູ່ໃນລາຍຊື່ນັກແຂ່ງ)' : '❌ ຮັບຊາບ (ທົດສອບ)', flags: MessageFlags.Ephemeral });
+          p.rsvp = ans; p.rsvpAt = Date.now(); save();
+          const yes = Object.values(db.players).filter((x) => x.rsvp === 'yes').length;
+          logTo(`${ans === 'yes' ? '✅' : '❌'} #${p.no} **${p.name}** ${ans === 'yes' ? 'ຢືນຢັນມາແຂ່ງ' : '**ມາບໍ່ໄດ້** — ຕ້ອງຫາຄົນແທນ!'} (ຢືນຢັນມາແລ້ວ ${yes}/${MAX})`);
+          return i.reply({ content: ans === 'yes' ? '✅ ຮັບຊາບ! ພົບກັນຄືນນີ້ 20:00 ເດີ້ 🔥 ລະຫັດຫ້ອງຈະສົ່ງມາທາງ DM ນີ້' : '😢 ຮັບຊາບ — ແຈ້ງແອດມິນແລ້ວ ຂອບໃຈທີ່ບອກເດີ້ 🙏 (ກົດ ✅ ໄດ້ ຖ້າປ່ຽນໃຈ)', flags: MessageFlags.Ephemeral });
+        }
         if (i.isButton() && i.customId.startsWith('tourney:copy:')) {
           // ตอบเป็นข้อความที่มีแค่รหัสอย่างเดียว — กดค้าง/คลิกขวา → Copy Text ได้ทันที
           return i.reply({ content: i.customId.slice('tourney:copy:'.length), flags: MessageFlags.Ephemeral });
