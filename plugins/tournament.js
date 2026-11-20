@@ -354,7 +354,7 @@ module.exports = {
       const logo = guild.iconURL({ size: 256 });
       const laoTime = now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Vientiane', hour: '2-digit', minute: '2-digit' });
       const laoDate = now.toLocaleDateString('en-GB', { timeZone: 'Asia/Vientiane' });
-      const n = Object.values(db.players).filter((p) => p.no <= MAX).length;
+      const n = Object.values(db.players).filter((p) => (p.no <= MAX || p.forceMain)).length;
       const embed = new EmbedBuilder()
         .setColor(expired ? 0x80848E : 0xFFC400)
         .setTitle(`🔑 ລະຫັດຫ້ອງ${o.game ? ` — ເກມ ${o.game}` : ''}${expired ? ' · ໝົດອາຍຸແລ້ວ' : ''}`)
@@ -388,7 +388,7 @@ module.exports = {
         const old = await ch.messages.fetch(db[lastKey].id).catch(() => null);
         if (old) await old.edit({ ...codeMessage(user, db[lastKey].o, new Date(db[lastKey].at), true), attachments: [] }).catch(() => {});
       }
-      const ids = o.preview ? [] : Object.entries(db.players).filter(([, p]) => p.no <= MAX).map(([id]) => id);
+      const ids = o.preview ? [] : Object.entries(db.players).filter(([, p]) => (p.no <= MAX || p.forceMain)).map(([id]) => id);
       const head = o.preview ? '🧪 **ຕົວຢ່າງ** (ບໍ່ໄດ້ແທັກໃຜ)' : ids.map((x) => `<@${x}>`).join(' ');
       const msg = await ch.send({ content: head || undefined, ...codeMessage(user, o, now, false), allowedMentions: { users: ids } });
       db[lastKey] = { id: msg.id, o: { code: o.code, game: o.game, map: o.map, note: o.note }, at: now.getTime() }; save();
@@ -429,7 +429,7 @@ module.exports = {
     // ---------- แจ้งเตือนก่อนเริ่ม (นับถอยหลังเรียลไทม์ด้วย <t:..:R>) ----------
     function reminderMessage(minsLeft) {
       const t = unix(EV.startAt);
-      const n = Object.values(db.players).filter((p) => p.no <= MAX).length;
+      const n = Object.values(db.players).filter((p) => (p.no <= MAX || p.forceMain)).length;
       const embed = new EmbedBuilder()
         .setColor(0xFFC400)
         .setTitle(minsLeft > 0 ? `⏰ ອີກ ${minsLeft} ນາທີ ເລີ່ມແຂ່ງ!` : '🔥 ເຖິງເວລາແຂ່ງແລ້ວ!')
@@ -518,6 +518,21 @@ module.exports = {
         return api.getEvent();
       },
       players: () => Object.entries(db.players).map(([uid, p]) => ({ uid, ...p })).sort((a, b) => a.no - b.no),
+      // แอดมินเพิ่มนักแข่งเอง (คนมาแทน) — { user: ชื่อ Discord/username, riot, rank, name } · forceMain = นับเป็นตัวจริง
+      async addPlayer(o, by = 'Claude') {
+        await guild.members.fetch().catch(() => {});
+        const k = String(o.user || '').toLowerCase();
+        const m = guild.members.cache.get(o.user) || guild.members.cache.find((x) => [x.user.username, x.displayName, x.user.globalName].filter(Boolean).some((v) => v.toLowerCase() === k));
+        if (!m) throw new Error(`ບໍ່ພົບສະມາຊິກ ${o.user}`);
+        if (db.players[m.id]) throw new Error('ຄົນນີ້ລົງທະບຽນແລ້ວ');
+        const no = Math.max(0, ...Object.values(db.players).map((p) => p.no)) + 1;
+        db.players[m.id] = { no, name: o.name || m.displayName, riot: o.riot || o.name || m.displayName, rank: o.rank || 'Unrated', team: '', forceMain: true, addedBy: by, at: new Date().toISOString() };
+        save();
+        await setPlayerRole(m.id, true);
+        if (client.jibiShowmatchRelink) client.jibiShowmatchRelink(o.name || m.displayName, m.id);
+        logTo(`➕ ເພີ່ມນັກແຂ່ງແທນ #${no} **${o.name || m.displayName}** (@${m.user.username}) ໂດຍ ${by}`);
+        return { no, uid: m.id, username: m.user.username };
+      },
       async removePlayer(uid, by) {
         const p = db.players[uid];
         if (!p) throw new Error('ບໍ່ພົບນັກແຂ່ງ');
@@ -531,7 +546,7 @@ module.exports = {
       },
       sendCode: (o, by) => sendRoomCode({ username: by || 'Hub' }, o),
       async todayDM(o = {}) {
-        const ids = o.userIds && o.userIds.length ? o.userIds : Object.entries(db.players).filter(([, p]) => p.no <= MAX).map(([id]) => id);
+        const ids = o.userIds && o.userIds.length ? o.userIds : Object.entries(db.players).filter(([, p]) => (p.no <= MAX || p.forceMain)).map(([id]) => id);
         const res = { ok: [], fail: [] };
         for (const id of ids) {
           const u = await client.users.fetch(id).catch(() => null);
@@ -547,7 +562,7 @@ module.exports = {
       // DM รหัสตัวใหญ่ · userIds = ทดสอบส่งเฉพาะคน · ไม่ใส่ = นักแข่งตัวจริงทุกคน
       async codeDM(o) {
         if (!o || !o.code) throw new Error('ໃສ່ລະຫັດກ່ອນ');
-        const ids = o.userIds && o.userIds.length ? o.userIds : Object.entries(db.players).filter(([, p]) => p.no <= MAX).map(([id]) => id);
+        const ids = o.userIds && o.userIds.length ? o.userIds : Object.entries(db.players).filter(([, p]) => (p.no <= MAX || p.forceMain)).map(([id]) => id);
         const payload = codeDMMessage(o);
         const res = { ok: [], fail: [] };
         for (const id of ids) {

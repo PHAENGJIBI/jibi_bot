@@ -187,6 +187,13 @@ module.exports = {
     };
     // แมตช์กำหนดเอง (1v1 / 2v2 ...) — bridge: { action: 'showmatch-custom', A: ['ชื่อ'], B: ['ชื่อ'] }
     // ชื่อตรงกับนักแข่ง (ชื่อ / Riot ID / ชื่อ Discord) → ผูกกับคนนั้น (ทายผลไม่ได้ + ใช้แรงค์จากใบสมัคร)
+    client.jibiShowmatchRelink = (name, uid) => {
+      const m = db.match; if (!m) return false;
+      let hit = false;
+      for (const t of [m.A, m.B]) for (const p of t) if (!/^\d+$/.test(p.id) && String(p.name).toLowerCase() === String(name).toLowerCase()) { m.players = m.players.map((x) => (x === p.id ? uid : x)); p.id = uid; hit = true; }
+      if (hit) { if (m.bets[uid]) { db.balances[uid] = bal(uid) + m.bets[uid].amount; delete m.bets[uid]; } save(); refresh(); }
+      return hit;
+    };
     client.jibiShowmatchCustom = async ({ A = [], B = [] } = {}) => {
       if (db.match && ['open', 'locked'].includes(db.match.status)) throw new Error('ຍັງມີ SHOWMATCH ທີ່ບໍ່ທັນຈົບ — ກົດ 🏆 ຫຼື ↩️ ກ່ອນ');
       if (!A.length || !B.length) throw new Error('ຕ້ອງມີຜູ້ຫຼິ້ນທັງ 2 ຝັ່ງ');
