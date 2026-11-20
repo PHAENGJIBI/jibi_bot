@@ -1,10 +1,11 @@
 {
   "ok": false,
-  "at": "2026-11-20T12:43:59.468Z",
-  "error": "Request with opcode 8 was rate limited. Retry after 4.665 seconds.",
+  "at": "2026-11-20T14:18:09.508Z",
+  "error": "Request with opcode 8 was rate limited. Retry after 6.607 seconds.",
   "log": [
     "🔄 ซิงก์เซิร์ฟ (สั่งจาก Claude)",
     "⚠️ แก้ยศ Staff ไม่ได้: Missing Permissions",
-    "❌ Request with opcode 8 was rate limited. Retry after 4.665 seconds."
+    "✏️ เปลี่ยนชื่อหมวด • VALORANT | SHOWMATCH 2v2 → • VALORANT | SHOWMATCH 1v1",
+    "❌ Request with opcode 8 was rate limited. Retry after 6.607 seconds."
   ]
 }
