@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "action": "tourney-set",
+  "at": "2026-11-20T05:53:40.353Z",
+  "result": {
+    "name": "βETA TOURNAMENT VOL.2",
+    "tag": "B2",
+    "regChannel": "ລົງທະບຽນ-βeta",
+    "codeChannel": "ລະຫັດຫ້ອງ-βeta",
+    "max": 10,
+    "startAt": "2026-11-20T13:00:00.000Z",
+    "reminders": [
+      60,
+      30,
+      5
+    ],
+    "regOpen": false,
+    "games": 5,
+    "prizes": [
+      100000,
+      50000,
+      30000,
+      30000,
+      30000
+    ],
+    "voiceInvite": "https://discord.gg/3yKkE32jH"
+  }
+}
