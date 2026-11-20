@@ -64,6 +64,18 @@ module.exports = {
       return [1000, 2000, 3000, 5000].map((x) => `ລົງ ${fmt(x)} → ໄດ້ຄືນ **${fmt(payout(x, mine, other))}**`).join('\n');
     };
 
+    // รายชื่อคนลงแต่ละฝั่ง + จำนวน (โชว์บนการ์ด ไม่แท็กเด้ง)
+    function who(m, side) {
+      const list = Object.entries(m.bets).filter(([, b]) => b.team === side).sort((a, b) => b[1].amount - a[1].amount);
+      if (!list.length) return '—';
+      let out = '';
+      for (const [k, [uid, b]] of list.entries()) {
+        const line = `<@${uid}> · **${fmt(b.amount)}**\n`;
+        if ((out + line).length > 980) { out += `… ອີກ ${list.length - k} ຄົນ`; break; }
+        out += line;
+      }
+      return out.trim();
+    }
     function teamText(team) {
       return team.map((p) => `${p.rank.emoji} ${p.name ? `**${p.name}**` : `<@${p.id}>`} · ${p.rank.name}`).join('\n');
     }
@@ -89,6 +101,8 @@ module.exports = {
           { name: '​', value: '​', inline: false },
           { name: '🔴 ກອງ A', value: `ຄົນລົງ ${fmt(p.A)} (${p.nA} ຄົນ)\n+ ຮ້ານ ${fmt(HOUSE)} = **${fmt(p.A + HOUSE)}**`, inline: true },
           { name: '🔵 ກອງ B', value: `ຄົນລົງ ${fmt(p.B)} (${p.nB} ຄົນ)\n+ ຮ້ານ ${fmt(HOUSE)} = **${fmt(p.B + HOUSE)}**`, inline: true },
+          { name: `🔴 ໃຜລົງ ${m.A.length === 1 ? m.A[0].name : 'A'}`, value: who(m, 'A'), inline: true },
+          { name: `🔵 ໃຜລົງ ${m.B.length === 1 ? m.B[0].name : 'B'}`, value: who(m, 'B'), inline: true },
           { name: '\u200b', value: '\u200b', inline: false },
           { name: '🧮 ຖ້າລົງ 🔴 A ຕອນນີ້ ແລ້ວ A ຊະນະ', value: preview(p, 'A'), inline: true },
           { name: '🧮 ຖ້າລົງ 🔵 B ຕອນນີ້ ແລ້ວ B ຊະນະ', value: preview(p, 'B'), inline: true },
@@ -325,6 +339,7 @@ module.exports = {
           if (had && had.team !== team) return i.reply({ content: 'ປ່ຽນທີມບໍ່ໄດ້', flags: MessageFlags.Ephemeral });
           db.balances[i.user.id] = bal(i.user.id) - amount;
           m.bets[i.user.id] = { team, amount: (had ? had.amount : 0) + amount }; save();
+          logTo(`🎲 ${i.member ? i.member.displayName : i.user.username} ລົງ ${fmt(amount)} → ${m[team].map((p) => p.name).join(' + ')} (ລວມ ${fmt(m.bets[i.user.id].amount)} · ເຫຼືອ ${fmt(bal(i.user.id))}) · SHOWMATCH #${m.no}`);
           await refresh();
           const pp = pools(m); const mine = m.bets[i.user.id].amount;
           const est = mine + Math.floor((mine / ((team === 'A' ? pp.A : pp.B) + HOUSE)) * ((team === 'A' ? pp.B : pp.A) + HOUSE));
