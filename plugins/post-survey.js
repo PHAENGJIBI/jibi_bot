@@ -114,11 +114,14 @@ module.exports = {
     const thanks = '💛 ຂອບໃຈຫຼາຍໆເດີ້! ທຸກຄຳຕອບ ນ້ອງ JIBI ຈະເອົາໄປປັບງານໜ້າໃຫ້ດີຂຶ້ນ — ພົບກັນງານໜ້າ 🔥';
 
     client.jibiPostSurvey = {
-      async post({ uids = [], dm = true } = {}) {
-        const ch = guild.channels.cache.find(isSurveyCh);
+      async post({ uids = [], dm = true, channel = null, skipAnswered = false } = {}) {
+        await guild.channels.fetch();
+        const ch = channel ? guild.channels.cache.find((c) => c.type === ChannelType.GuildText && c.name.includes(channel)) : guild.channels.cache.find(isSurveyCh);
         if (!ch) throw new Error('ບໍ່ພົບຫ້ອງ ແບບສອບຖາມ');
         if (!uids.length) throw new Error('ບໍ່ມີລາຍຊື່');
         db.targets = [...new Set([...db.targets, ...uids])];
+        if (skipAnswered) uids = uids.filter((u) => !db.responses[u]);
+        if (!uids.length) throw new Error('ທຸກຄົນຕອບແລ້ວ');
         const content = `${uids.map((u) => `<@${u}>`).join(' ')}\nນ້ອງ JIBI ຂໍລົບກວນ ~2 ນາທີ ເດີ້ 🙏 ກົດປຸ່ມແດງລຸ່ມນີ້ 👇`;
         const msg = await ch.send({ content, ...panelMessage(), allowedMentions: { users: uids } });
         db.panels.push({ chId: ch.id, msgId: msg.id }); save();
