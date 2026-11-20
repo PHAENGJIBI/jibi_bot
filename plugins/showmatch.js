@@ -237,6 +237,17 @@ module.exports = {
       logTo(`⚔️ ເລີ່ມຊີຣີ ${title} ${n} ແມັດ · ລ້າງເຄຣດິດທຸກຄົນ → 10,000`);
       return { schedule: sched.url, first: first.url };
     };
+    // เปิดแมตช์นี้ทันที: ยกเลิกแมตช์ค้าง (คืนเครดิต) · ล้างคิว · ไม่รีเซ็ตเครดิต
+    client.jibiShowmatchNow = async ({ A, B, prize = 0 } = {}) => {
+      const m = db.match;
+      if (m && ['open', 'locked'].includes(m.status)) {
+        for (const [uid, b] of Object.entries(m.bets)) db.balances[uid] = bal(uid) + b.amount;
+        m.status = 'cancel'; save(); await refresh(); await leaderboard();
+        logTo(`↩️ ຍົກເລີກ SHOWMATCH #${m.no} — ຄືນເຄຣດິດແລ້ວ (ປ່ຽນຄູ່)`);
+      }
+      db.queue = []; save();
+      return client.jibiShowmatchCustom({ A, B, prize });
+    };
     const openNext = async () => {
       if (!db.queue || !db.queue.length) return;
       const next = db.queue.shift(); save();
