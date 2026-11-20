@@ -71,7 +71,7 @@ module.exports = {
       const p = pools(m);
       const status = { open: '🟢 ເປີດຮັບທາຍຜົນ', locked: '🔒 ປິດຮັບແລ້ວ — ກຳລັງແຂ່ງ', done: '🏁 ຈົບແລ້ວ', cancel: '↩️ ຍົກເລີກ — ຄືນເຄຣດິດແລ້ວ' }[m.status];
       const e = new EmbedBuilder().setColor(m.status === 'done' ? 0xF2C14E : 0xFF4655)
-        .setTitle(`⚔️ SHOWMATCH 2v2 #${m.no}`)
+        .setTitle(`⚔️ SHOWMATCH ${m.A.length}v${m.B.length} #${m.no}`)
         .setDescription([
           `**${status}**`,
           m.winner ? `🏆 **ທີມ ${m.winner === 'A' ? '🔴 A' : '🔵 B'} ຊະນະ!**` : null,
@@ -184,6 +184,36 @@ module.exports = {
       const msg = await ch.send({ content: `⚔️ **SHOWMATCH 2v2 #${db.no}** 🧪 ແມັດທົດລອງ`, ...card(db.match) });
       db.match.msgId = msg.id; save();
       return msg.url;
+    };
+    // แมตช์กำหนดเอง (1v1 / 2v2 ...) — bridge: { action: 'showmatch-custom', A: ['ชื่อ'], B: ['ชื่อ'] }
+    // ชื่อตรงกับนักแข่ง (ชื่อ / Riot ID / ชื่อ Discord) → ผูกกับคนนั้น (ทายผลไม่ได้ + ใช้แรงค์จากใบสมัคร)
+    client.jibiShowmatchCustom = async ({ A = [], B = [] } = {}) => {
+      if (db.match && ['open', 'locked'].includes(db.match.status)) throw new Error('ຍັງມີ SHOWMATCH ທີ່ບໍ່ທັນຈົບ — ກົດ 🏆 ຫຼື ↩️ ກ່ອນ');
+      if (!A.length || !B.length) throw new Error('ຕ້ອງມີຜູ້ຫຼິ້ນທັງ 2 ຝັ່ງ');
+      const regs = store.load('tourney-regs', { players: {} }).players || {};
+      await guild.members.fetch().catch(() => {});
+      const norm = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9\u0e80-\u0eff]/g, '');
+      let k = 0;
+      const resolve = (name) => {
+        const n = norm(name);
+        let id = Object.keys(regs).find((u) => [regs[u].name, String(regs[u].riot || '').split('#')[0]].some((v) => v && norm(v) && (n.includes(norm(v)) || norm(v).includes(n))));
+        if (!id) { const m = guild.members.cache.find((x) => [x.displayName, x.user.username, x.user.globalName].some((v) => v && norm(v) === n)); if (m) id = m.id; }
+        k += 1;
+        return { id: id || `x${k}`, name, rank: rankOf(id && regs[id] ? regs[id].rank : null) };
+      };
+      const tA = A.map(resolve); const tB = B.map(resolve);
+      const sum = (t) => t.reduce((x, p) => x + p.rank.value, 0);
+      const ch = findCh(BET_CH);
+      if (!ch) throw new Error('ບໍ່ພົບຫ້ອງທາຍຜົນ');
+      db.no = (db.no || 0) + 1;
+      const ids = [...tA, ...tB].map((p) => p.id);
+      db.match = { no: db.no, A: tA, B: tB, sumA: sum(tA), sumB: sum(tB), players: ids, bets: {}, status: 'open', chId: ch.id };
+      const real = ids.filter((x) => /^\d+$/.test(x));
+      const vs = `${tA.map((p) => p.name).join(' + ')} 🆚 ${tB.map((p) => p.name).join(' + ')}`;
+      const msg = await ch.send({ content: `⚔️ **SHOWMATCH ${tA.length}v${tB.length} #${db.no}** · ${vs}${real.length ? `\n${real.map((x) => `<@${x}>`).join(' ')}` : ''}`, ...card(db.match), allowedMentions: { users: real } });
+      db.match.msgId = msg.id; save();
+      logTo(`⚔️ ເປີດ SHOWMATCH #${db.no}: ${vs}`);
+      return { url: msg.url, A: tA, B: tB };
     };
     client.on(Events.InteractionCreate, async (i) => {
       try {
