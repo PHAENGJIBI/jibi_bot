@@ -514,6 +514,7 @@ module.exports = {
         }
         if (patch.reminders !== undefined) next.reminders = [...new Set((patch.reminders || []).map((x) => parseInt(x, 10)).filter((x) => x > 0 && x <= 1440))].sort((a, b) => b - a);
         if (patch.regOpen !== undefined) next.regOpen = !!patch.regOpen;
+        if (patch.voiceInvite !== undefined) next.voiceInvite = /^https:\/\/discord\.(gg|com)\//.test(String(patch.voiceInvite)) ? String(patch.voiceInvite) : null;
         if (patch.ended !== undefined) { next.ended = patch.ended ? (EV.ended || new Date().toISOString()) : null; if (patch.ended) next.regOpen = false; }
         if (patch.summary !== undefined) next.summary = String(patch.summary || '').slice(0, 3800) || null;
         next.sent = EV.sent || {};
