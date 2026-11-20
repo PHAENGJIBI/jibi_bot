@@ -6,9 +6,7 @@
   "max": 10,
   "startAt": "2026-11-20T13:00:00.000Z",
   "reminders": [
-    60,
-    30,
-    5
+    60
   ],
   "regOpen": false,
   "sent": {},
