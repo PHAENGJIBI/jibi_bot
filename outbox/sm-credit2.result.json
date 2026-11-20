@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "action": "showmatch-credit",
+  "at": "2026-11-20T15:09:05.788Z",
+  "result": {
+    "before": 0,
+    "after": 10000
+  }
+}
