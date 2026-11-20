@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "action": "today-dm",
+  "at": "2026-11-20T06:00:55.350Z",
+  "result": {
+    "ok": [
+      "phaeng_shiba"
+    ],
+    "fail": []
+  }
+}
