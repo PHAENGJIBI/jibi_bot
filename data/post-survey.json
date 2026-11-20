@@ -166,6 +166,29 @@
         "showmatch": "fun"
       },
       "texts": {}
+    },
+    "446988988222275584": {
+      "name": "chibai",
+      "at": "2026-11-20T19:24:19.175Z",
+      "answers": {
+        "overall": "5",
+        "again": "yes",
+        "recommend": "maybe",
+        "source": "fb",
+        "reg": "easy",
+        "info": "clear",
+        "notify": "ok",
+        "code": "easy",
+        "length": "ok",
+        "time": "ok",
+        "weapon": "all",
+        "format": "1v1",
+        "prize": "ok",
+        "fee": "20k",
+        "freq": "week",
+        "showmatch": "skip"
+      },
+      "texts": {}
     }
   }
 }
