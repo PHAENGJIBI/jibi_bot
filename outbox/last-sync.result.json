@@ -1,10 +1,10 @@
 {
-  "ok": true,
-  "at": "2026-11-20T12:43:34.232Z",
+  "ok": false,
+  "at": "2026-11-20T12:43:59.468Z",
+  "error": "Request with opcode 8 was rate limited. Retry after 4.665 seconds.",
   "log": [
-    "🔄 ซิงก์เซิร์ฟ (config เปลี่ยน)",
+    "🔄 ซิงก์เซิร์ฟ (สั่งจาก Claude)",
     "⚠️ แก้ยศ Staff ไม่ได้: Missing Permissions",
-    "📌 keepLayout: ไม่เรียงตำแหน่งห้องใหม่",
-    "✅ ซิงก์โครงสร้างเสร็จ"
+    "❌ Request with opcode 8 was rate limited. Retry after 4.665 seconds."
   ]
 }
