@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "action": "showmatch-now",
+  "at": "2026-11-20T14:30:10.225Z",
+  "result": {
+    "url": "https://discord.com/channels/1245771682833109032/1572234489713922068/1573344708879581286",
+    "A": [
+      {
+        "id": "590446600401321984",
+        "name": "PG Nanz",
+        "rank": {
+          "name": "Immortal",
+          "value": 8,
+          "emoji": "🔴"
+        }
+      }
+    ],
+    "B": [
+      {
+        "id": "1479742337633488896",
+        "name": "theJu1c3tz",
+        "rank": {
+          "name": "Diamond",
+          "value": 6,
+          "emoji": "💎"
+        }
+      }
+    ]
+  }
+}
