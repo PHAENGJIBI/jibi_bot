@@ -231,37 +231,27 @@ module.exports = {
     }
     // DM แจ้งนักแข่ง "วันนี้แข่ง" + ปุ่มยืนยันมา/ไม่มา
     function todayDMMessage(name, test) {
-      const start = EV.startAt ? laoTime(EV.startAt) : '';
       const hm = (min) => { const d = new Date(new Date(EV.startAt).getTime() + 7 * 3600000 - min * 60000); return `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`; };
+      const code = guild.channels.cache.find(isCodeChannel);
       const content = [test ? '-# 🧪 ຕົວຢ່າງ (ທົດສອບ) — ສົ່ງຫາແອດມິນຄົນດຽວ' : null, '# 🔥 ມື້ນີ້ແຂ່ງແລ້ວ!'].filter(Boolean).join('\n');
       const e = new EmbedBuilder().setColor(0xFFC400)
         .setTitle(`🏆 ${EVENT}`)
         .setDescription([
           `ສະບາຍດີ **${name}** 👋 ນ້ອງ JIBI ເອງ`,
           '',
-          `## 📅 ${start}`,
+          `## 📅 ມື້ນີ້ · ${hm(0)} ໂມງ (ເວລາລາວ)`,
           '⚡ ມາຄົບກ່ອນ ອາດເລີ່ມກ່ອນເວລາ',
           '',
           '**ສິ່ງທີ່ຕ້ອງເຮັດມື້ນີ້:**',
-          `🔑 **${hm(60)}** — ລະຫັດຫ້ອງສົ່ງມາທາງ DM ນີ້ + ຫ້ອງລະຫັດ (ໃຊ້ລະຫັດດຽວ ທັງ ${GAMES()} ເກມ)`,
-          `🎮 **${hm(30)}** — ເປີດ Valorant ລໍຖ້າ · ເຂົ້າ Voice ໄດ້ (ບໍ່ບັງຄັບ)`,
+          `🔑 **${hm(60)}** — ລະຫັດຫ້ອງເກມ ຈະໂພສຢູ່ຫ້ອງ ${code ? `<#${code.id}>` : '**🔑・ລະຫັດຫ້ອງ-βeta**'} (ໃຊ້ລະຫັດດຽວ ທັງ ${GAMES()} ເກມ)`,
+          `🎮 **${hm(30)}** — ເປີດ Valorant ລໍຖ້າ`,
           `🏁 **${hm(0)}** — ເລີ່ມເກມ 1`,
           '',
           '⚠️ ເນັດຫຼຸດ/ຄອມມີບັນຫາ = ບໍ່ມີ Rematch ໃຫ້ຄົນດຽວ',
           '👑 ຄຳຕັດສິນຂອງແອດມິນຖືເປັນທີ່ສຸດ',
-          '',
-          '👇 **ກົດຢືນຢັນແດ່ວ່າມາໄດ້ບໍ່** (ຊ່ວຍແອດມິນກຽມງານ 🙏)',
         ].join('\n'))
         .setFooter({ text: 'JIBI · P SHOP GAMERPOWER' });
-      const row1 = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId('tourney:rsvp:yes').setStyle(ButtonStyle.Success).setLabel('✅ ມາແນ່ນອນ'),
-        new ButtonBuilder().setCustomId('tourney:rsvp:no').setStyle(ButtonStyle.Danger).setLabel('❌ ມາບໍ່ໄດ້'),
-      );
-      const links = [];
-      const code = guild.channels.cache.find(isCodeChannel);
-      if (code) links.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(`https://discord.com/channels/${guild.id}/${code.id}`).setLabel('🔑 ຫ້ອງລະຫັດ'));
-      if (EV.voiceInvite) links.push(new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(EV.voiceInvite).setLabel('🎧 ເຂົ້າ Voice'));
-      return { content, embeds: [e], components: links.length ? [row1, new ActionRowBuilder().addComponents(...links)] : [row1] };
+      return { content, embeds: [e] };
     }
     function panelMessage() {
       const n = count();
