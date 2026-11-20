@@ -233,7 +233,7 @@ module.exports = {
     function todayDMMessage(name, test) {
       const hm = (min) => { const d = new Date(new Date(EV.startAt).getTime() + 7 * 3600000 - min * 60000); return `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`; };
       const code = guild.channels.cache.find(isCodeChannel);
-      const content = [test ? '-# 🧪 ຕົວຢ່າງ (ທົດສອບ) — ສົ່ງຫາແອດມິນຄົນດຽວ' : null, '# 🔥 ມື້ນີ້ແຂ່ງແລ້ວ!'].filter(Boolean).join('\n');
+      const content = test ? '-# 🧪 ຕົວຢ່າງ (ທົດສອບ) — ສົ່ງຫາແອດມິນຄົນດຽວ' : undefined;
       const e = new EmbedBuilder().setColor(0xFFC400)
         .setTitle(`🏆 ${EVENT}`)
         .setDescription([
