@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "action": "showmatch-now",
+  "at": "2026-11-20T14:49:30.907Z",
+  "result": {
+    "url": "https://discord.com/channels/1245771682833109032/1572234489713922068/1573349577262764115",
+    "A": [
+      {
+        "id": "424942885478072338",
+        "name": "phaeng_shiba",
+        "rank": {
+          "name": "Unrated",
+          "value": 3,
+          "emoji": "🏅"
+        }
+      }
+    ],
+    "B": [
+      {
+        "id": "543064147068452876",
+        "name": "sakeeto",
+        "rank": {
+          "name": "Diamond",
+          "value": 6,
+          "emoji": "💎"
+        }
+      }
+    ]
+  }
+}
