@@ -169,8 +169,8 @@
     },
     {
       "name": "• VALORANT | SHOWMATCH 2v2",
-      "visible": "player",
-      "_note": "SHOWMATCH — เปิด 20/11 ระหว่างงาน βETA VOL.2 · เห็นเฉพาะยศ 🎯 ນັກແຂ່ງ (+ Admin, phaeng_shiba) · เครดิตจำลอง ไม่ใช่เงินจริง",
+      "visible": "valorant",
+      "_note": "SHOWMATCH — เปิด 20/11 ระหว่างงาน βETA VOL.2 · เห็นทุกคนที่มียศ Valorant · เครดิตจำลอง ไม่ใช่เงินจริง",
       "channels": [
         {
           "name": "📜・ວິທີຫຼິ້ນ-showmatch",
