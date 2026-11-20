@@ -168,9 +168,9 @@
       ]
     },
     {
-      "name": "• VALORANT | SHOWMATCH 2v2",
-      "visible": "valorant",
-      "_note": "SHOWMATCH — เปิด 20/11 ระหว่างงาน βETA VOL.2 · เห็นทุกคนที่มียศ Valorant · เครดิตจำลอง ไม่ใช่เงินจริง",
+      "name": "• VALORANT | SHOWMATCH 1v1",
+      "visible": "everyone",
+      "_note": "SHOWMATCH 1v1 — เปิด 20/11 หลัง βETA VOL.2 · ทุกคนในเซิร์ฟเห็น/ทายได้ · ผู้ชนะแต่ละแมตช์ได้ 30,000 กีบ · เครดิตจำลอง",
       "channels": [
         {
           "name": "📜・ວິທີຫຼິ້ນ-showmatch",
@@ -202,12 +202,9 @@
         }
       ],
       "was": [
-        "🔴 SHOWMATCH 2v2 (ຍັງບໍ່ເປີດ)",
         "• VALORANT | SHOWMATCH 2v2",
+        "🔴 SHOWMATCH 2v2 (ຍັງບໍ່ເປີດ)",
         "🔴 TEST βETA SHOWMATCH 2v2"
-      ],
-      "allowUsers": [
-        "phaeng_shiba"
       ]
     },
     {

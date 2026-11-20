@@ -74,9 +74,11 @@ module.exports = {
         .setTitle(`⚔️ SHOWMATCH ${m.A.length}v${m.B.length} #${m.no}`)
         .setDescription([
           `**${status}**`,
-          m.winner ? `🏆 **ທີມ ${m.winner === 'A' ? '🔴 A' : '🔵 B'} ຊະນະ!**` : null,
+          m.winner ? `🏆 **${(m[m.winner].length === 1 ? m[m.winner][0].name : `ທີມ ${m.winner}`)} ຊະນະ!**` : null,
           '',
           m.demo ? '🧪 **ແມັດທົດລອງ** — ຜູ້ຫຼິ້ນເປັນຊື່ສົມມຸດ' : null,
+          m.prize ? `🏆 **ຜູ້ຊະນະແມັດນີ້ ໄດ້ ${fmt(m.prize)} ກີບ** (ລາງວັນຈິງ ຈາກ P SHOP)` : null,
+          m.series ? `📋 ແມັດທີ ${m.series.i}/${m.series.n} · ທຸກຄົນໃນເຊີບ ທາຍໄດ້ (ຍົກເວັ້ນຄົນທີ່ຫຼິ້ນແມັດນີ້)` : null,
           `💰 ທຸກຄົນມີ **${fmt(START)} ເຄຣດິດ** · ລົງຂັ້ນຕ່ຳ **${fmt(MIN)}** · ຄົນທີ່ລົງຫຼິ້ນທາຍບໍ່ໄດ້`,
           `🏪 P SHOP ໃສ່ກອງໃຫ້ **ຝັ່ງລະ ${fmt(HOUSE)}** — ທຸກຄົນລົງຝັ່ງດຽວກັນ ກໍ່ຍັງໄດ້ກຳໄລ (ແຕ່ໜ້ອຍລົງ)`,
           '🎮 ເຄຣດິດຈຳລອງ ຫຼິ້ນມ່ວນໆ — ບໍ່ແມ່ນເງິນຈິງ',
@@ -96,16 +98,16 @@ module.exports = {
       const rows = [];
       if (m.status === 'open') {
         rows.push(new ActionRowBuilder().addComponents(
-          new ButtonBuilder().setCustomId('sm:bet:A').setStyle(ButtonStyle.Danger).setLabel('🔴 ລົງທີມ A'),
-          new ButtonBuilder().setCustomId('sm:bet:B').setStyle(ButtonStyle.Primary).setLabel('🔵 ລົງທີມ B'),
+          new ButtonBuilder().setCustomId('sm:bet:A').setStyle(ButtonStyle.Danger).setLabel(`🔴 ລົງ ${m.A.length === 1 ? m.A[0].name : 'ທີມ A'}`.slice(0, 80)),
+          new ButtonBuilder().setCustomId('sm:bet:B').setStyle(ButtonStyle.Primary).setLabel(`🔵 ລົງ ${m.B.length === 1 ? m.B[0].name : 'ທີມ B'}`.slice(0, 80)),
           new ButtonBuilder().setCustomId('sm:me').setStyle(ButtonStyle.Secondary).setLabel('💰 ເຄຣດິດ & ລາງວັນຂອງຂ້ອຍ'),
         ));
       }
       if (m.status === 'open' || m.status === 'locked') {
         rows.push(new ActionRowBuilder().addComponents(
           ...(m.status === 'open' ? [new ButtonBuilder().setCustomId('sm:lock').setStyle(ButtonStyle.Secondary).setLabel('🔒 ປິດຮັບ (ແອດມິນ)')] : []),
-          new ButtonBuilder().setCustomId('sm:win:A').setStyle(ButtonStyle.Secondary).setLabel('🏆 A ຊະນະ'),
-          new ButtonBuilder().setCustomId('sm:win:B').setStyle(ButtonStyle.Secondary).setLabel('🏆 B ຊະນະ'),
+          new ButtonBuilder().setCustomId('sm:win:A').setStyle(ButtonStyle.Secondary).setLabel(`🏆 ${m.A.length === 1 ? m.A[0].name : 'A'} ຊະນະ`.slice(0, 80)),
+          new ButtonBuilder().setCustomId('sm:win:B').setStyle(ButtonStyle.Secondary).setLabel(`🏆 ${m.B.length === 1 ? m.B[0].name : 'B'} ຊະນະ`.slice(0, 80)),
           new ButtonBuilder().setCustomId('sm:cancel').setStyle(ButtonStyle.Secondary).setLabel('↩️ ຍົກເລີກ'),
         ));
       }
@@ -165,9 +167,10 @@ module.exports = {
       m.status = 'done'; m.winner = winner; save();
       await refresh(); await leaderboard();
       const ch = await guild.channels.fetch(m.chId).catch(() => null);
-      if (ch) await ch.send({ embeds: [new EmbedBuilder().setColor(0xF2C14E).setTitle(`🏆 SHOWMATCH #${m.no} — ທີມ ${winner === 'A' ? '🔴 A' : '🔵 B'} ຊະນະ!`)
+      if (ch) await ch.send({ embeds: [new EmbedBuilder().setColor(0xF2C14E).setTitle(`🏆 SHOWMATCH #${m.no} — ${m[winner].length === 1 ? m[winner][0].name : `ທີມ ${winner}`} ຊະນະ!${m.prize ? ` · ໄດ້ ${fmt(m.prize)} ກີບ` : ''}`)
         .setDescription(lines.join('\n') || 'ບໍ່ມີໃຜທາຍຜົນ').setFooter({ text: `ຕັດສິນໂດຍ ${byName}` })], allowedMentions: { parse: [] } });
-      logTo(`🏆 SHOWMATCH #${m.no}: ${winner} ຊະນະ (ໂດຍ ${byName})`);
+      logTo(`🏆 SHOWMATCH #${m.no}: ${m[winner].map((p) => p.name).join(' + ')} ຊະນະ (ໂດຍ ${byName})`);
+      await openNext();
     }
 
     // แมตช์ทดลอง (ผู้เล่นชื่อสมมุติ) — เรียกจาก bridge: { action: 'showmatch-demo', players: [{name, rank}] }
@@ -194,14 +197,48 @@ module.exports = {
       if (hit) { if (m.bets[uid]) { db.balances[uid] = bal(uid) + m.bets[uid].amount; delete m.bets[uid]; } save(); refresh(); }
       return hit;
     };
-    client.jibiShowmatchCustom = async ({ A = [], B = [] } = {}) => {
+    // ซีรีส์ 1v1: ล้างเครดิตทุกคน (เริ่ม 10,000) · ยกเลิกแมตช์ค้าง · โพสต์ตาราง + แท็กนักแข่ง · เปิดแมตช์แรก · จบแมตช์ → เปิดแมตช์ถัดไปเอง
+    client.jibiShowmatchSeries = async ({ pairs = [], prize = 0, title = 'SHOWMATCH 1v1' } = {}) => {
+      if (!pairs.length) throw new Error('ບໍ່ມີຄູ່');
+      const old = db.match;
+      if (old && ['open', 'locked'].includes(old.status)) { old.status = 'cancel'; save(); await refresh(); }
+      db.balances = {}; db.match = null; db.no = 0; db.queue = []; save();
+      const ch = findCh(BET_CH); if (!ch) throw new Error('ບໍ່ພົບຫ້ອງທາຍຜົນ');
+      const n = pairs.length;
+      db.queue = pairs.map((p, k) => ({ A: p.A, B: p.B, prize, series: { i: k + 1, n } })); save();
+      const uids = [...new Set(pairs.flatMap((p) => [...p.A, ...p.B]).map((x) => x.uid).filter(Boolean))];
+      const e = new EmbedBuilder().setColor(0xFF4655).setTitle(`⚔️ ${title} — ຕາຕະລາງແມັດ`)
+        .setDescription([
+          ...pairs.map((p, k) => `**ແມັດ ${k + 1}** · ${p.A.map((x) => `<@${x.uid}>`).join(' + ')} 🆚 ${p.B.map((x) => `<@${x.uid}>`).join(' + ')}`),
+          '',
+          `🏆 ຜູ້ຊະນະແຕ່ລະແມັດ ໄດ້ **${fmt(prize)} ກີບ**`,
+          '🎲 ທຸກຄົນໃນເຊີບ ທາຍຜົນໄດ້ ດ້ວຍເຄຣດິດຈຳລອງ — ເລີ່ມໃໝ່ **10,000** ທຸກຄົນ (ຄົນທີ່ຫຼິ້ນແມັດນັ້ນ ທາຍບໍ່ໄດ້)',
+          '⚖️ ຈັບຄູ່ຕາມຄະແນນລວມ Deathmatch + ແຣງ ໃຫ້ສູສີທີ່ສຸດ',
+        ].join('\n'))
+        .setFooter({ text: 'ເຄຣດິດຈຳລອງ ບໍ່ແມ່ນເງິນຈິງ · JIBI · P SHOP GAMERPOWER' });
+      const sched = await ch.send({ content: `${uids.map((u) => `<@${u}>`).join(' ')}\n🔥 **ຕໍ່ດ້ວຍ ${title}!** ກຽມຕົວເດີ້`, embeds: [e], allowedMentions: { users: uids } });
+      await leaderboard();
+      const next = db.queue.shift(); save();
+      const first = await client.jibiShowmatchCustom(next);
+      logTo(`⚔️ ເລີ່ມຊີຣີ ${title} ${n} ແມັດ · ລ້າງເຄຣດິດທຸກຄົນ → 10,000`);
+      return { schedule: sched.url, first: first.url };
+    };
+    const openNext = async () => {
+      if (!db.queue || !db.queue.length) return;
+      const next = db.queue.shift(); save();
+      await new Promise((r) => setTimeout(r, 1500));
+      await client.jibiShowmatchCustom(next).catch((e) => logTo(`⚠️ ເປີດແມັດຕໍ່ໄປບໍ່ໄດ້: ${e.message}`));
+    };
+    client.jibiShowmatchCustom = async ({ A = [], B = [], prize = 0, series = null } = {}) => {
       if (db.match && ['open', 'locked'].includes(db.match.status)) throw new Error('ຍັງມີ SHOWMATCH ທີ່ບໍ່ທັນຈົບ — ກົດ 🏆 ຫຼື ↩️ ກ່ອນ');
       if (!A.length || !B.length) throw new Error('ຕ້ອງມີຜູ້ຫຼິ້ນທັງ 2 ຝັ່ງ');
       const regs = store.load('tourney-regs', { players: {} }).players || {};
       await guild.members.fetch().catch(() => {});
       const norm = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9\u0e80-\u0eff]/g, '');
       let k = 0;
-      const resolve = (name) => {
+      const resolve = (x) => {
+        if (x && typeof x === 'object' && x.uid) { k += 1; return { id: x.uid, name: x.name, rank: rankOf(regs[x.uid] ? regs[x.uid].rank : null) }; }
+        const name = x;
         const n = norm(name);
         let id = Object.keys(regs).find((u) => [regs[u].name, String(regs[u].riot || '').split('#')[0]].some((v) => v && norm(v) && (n.includes(norm(v)) || norm(v).includes(n))));
         if (!id) { const m = guild.members.cache.find((x) => [x.displayName, x.user.username, x.user.globalName].some((v) => v && norm(v) === n)); if (m) id = m.id; }
@@ -214,7 +251,7 @@ module.exports = {
       if (!ch) throw new Error('ບໍ່ພົບຫ້ອງທາຍຜົນ');
       db.no = (db.no || 0) + 1;
       const ids = [...tA, ...tB].map((p) => p.id);
-      db.match = { no: db.no, A: tA, B: tB, sumA: sum(tA), sumB: sum(tB), players: ids, bets: {}, status: 'open', chId: ch.id };
+      db.match = { no: db.no, A: tA, B: tB, sumA: sum(tA), sumB: sum(tB), players: ids, bets: {}, status: 'open', chId: ch.id, prize: prize || 0, series };
       const real = ids.filter((x) => /^\d+$/.test(x));
       const vs = `${tA.map((p) => p.name).join(' + ')} 🆚 ${tB.map((p) => p.name).join(' + ')}`;
       const msg = await ch.send({ content: `⚔️ **SHOWMATCH ${tA.length}v${tB.length} #${db.no}** · ${vs}${real.length ? `\n${real.map((x) => `<@${x}>`).join(' ')}` : ''}`, ...card(db.match), allowedMentions: { users: real } });
@@ -303,7 +340,7 @@ module.exports = {
           if (act === 'cancel') {
             for (const [uid, b] of Object.entries(m.bets)) db.balances[uid] = bal(uid) + b.amount;
             m.status = 'cancel'; save(); await refresh(); await leaderboard();
-            logTo(`↩️ ຍົກເລີກ SHOWMATCH #${m.no} — ຄືນເຄຣດິດແລ້ວ`); return null;
+            logTo(`↩️ ຍົກເລີກ SHOWMATCH #${m.no} — ຄືນເຄຣດິດແລ້ວ`); await openNext(); return null;
           }
         }
         return null;
