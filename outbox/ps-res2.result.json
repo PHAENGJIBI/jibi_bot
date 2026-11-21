@@ -1,0 +1,261 @@
+{
+  "ok": true,
+  "action": "post-survey-results",
+  "at": "2026-11-21T04:09:59.888Z",
+  "result": {
+    "answered": 7,
+    "total": 11,
+    "waiting": [
+      "543064147068452876",
+      "885723409416331344",
+      "1066437329851531274",
+      "1291710379432607778"
+    ],
+    "tally": {
+      "1. ໃຫ້ຄະແນນງານນີ້ໂດຍລວມ": {
+        "⭐⭐⭐⭐⭐ ດີຫຼາຍ": 3,
+        "⭐⭐⭐⭐ ດີ": 3,
+        "⭐⭐⭐ ພໍໃຊ້": 1
+      },
+      "2. ງານໜ້າ ຈະມາແຂ່ງອີກບໍ?": {
+        "🔥 ມາແນ່ນອນ": 4,
+        "🤔 ອາດຈະມາ": 3
+      },
+      "3. ຈະຊວນໝູ່ມາແຂ່ງບໍ?": {
+        "🤔 ອາດຈະ": 5,
+        "👍 ຊວນແນ່ນອນ": 2
+      },
+      "4. ຮູ້ຈັກງານນີ້ຈາກໃສ?": {
+        "📘 Facebook / ເພຈ": 5,
+        "🏪 ລູກຄ້າຮ້ານ P SHOP": 1,
+        "👥 ໝູ່ບອກ": 1
+      },
+      "5. ສະໝັກ + ກອກຟອມ ງ່າຍບໍ?": {
+        "😄 ງ່າຍຫຼາຍ": 6,
+        "🙂 ພໍໄດ້": 1
+      },
+      "6. ຂໍ້ມູນງານ (ວັນ, ເວລາ, ກົດ) ຊັດເຈນບໍ?": {
+        "✅ ຊັດເຈນ": 5,
+        "🙂 ພໍເຂົ້າໃຈ": 2
+      },
+      "7. ແຈ້ງເຕືອນ / DM ຈາກ JIBI": {
+        "👌 ກຳລັງດີ": 6,
+        "📢 ຫຼາຍໂພດ": 1
+      },
+      "8. ການສົ່ງລະຫັດຫ້ອງ ສະດວກບໍ?": {
+        "😄 ເຫັນງ່າຍ ເຂົ້າໄວ": 4,
+        "🙂 ພໍໄດ້": 2,
+        "😵 ງົງ / ຊ້າ": 1
+      },
+      "9. 5 ເກມ Deathmatch ຍາວບໍ?": {
+        "👌 ກຳລັງດີ": 5,
+        "😮‍💨 ຍາວໂພດ": 1,
+        "⚡ ສັ້ນໄປ ຢາກຫຼິ້ນອີກ": 1
+      },
+      "10. ເວລາແຂ່ງ 20:00 ເປັນແນວໃດ?": {
+        "👌 ກຳລັງດີ": 5,
+        "⏩ ຢາກໃຫ້ຊ້າກວ່ານີ້": 1,
+        "⏪ ຢາກໃຫ້ໄວກວ່ານີ້": 1
+      },
+      "11. ກົດປືນ ງານໜ້າ": {
+        "🔫 ໃຊ້ໄດ້ທຸກປືນ (ຄືເກົ່າ)": 5,
+        "🔀 ສະລັບກົດແຕ່ລະເກມ": 1,
+        "🎯 Vandal / Phantom ເທົ່ານັ້ນ": 1
+      },
+      "12. ຢາກໃຫ້ງານໜ້າ ແຂ່ງແບບໃດ?": {
+        "🔀 ປະສົມຫຼາຍແບບ": 3,
+        "🏆 5v5 ທີມ": 3,
+        "⚔️ 1v1": 1
+      },
+      "13. ລາງວັນງານນີ້ ເປັນແນວໃດ?": {
+        "🤩 ດີຫຼາຍ": 2,
+        "👌 ພໍໃຈ": 5
+      },
+      "14. ຖ້າມີຄ່າສະໝັກ (ລາງວັນໃຫຍ່ຂຶ້ນ) ຈ່າຍໄດ້ເທົ່າໃດ?": {
+        "💵 20,000 ກີບ": 5,
+        "💰 50,000 ກີບ": 1,
+        "💰 100,000 ກີບ ຂຶ້ນໄປ": 1
+      },
+      "15. ຢາກໃຫ້ຈັດງານແຂ່ງເລື້ອຍໆ ສໍ່າໃດ?": {
+        "🤷 ແລ້ວແຕ່ຮ້ານ": 4,
+        "🗓️ 2 ອາທິດເທື່ອ": 1,
+        "📅 ເດືອນລະເທື່ອ": 1,
+        "📆 ທຸກອາທິດ": 1
+      },
+      "16. SHOWMATCH 1v1 + ທາຍຜົນ ມ່ວນບໍ?": {
+        "🔥 ມ່ວນຫຼາຍ ຢາກມີອີກ": 4,
+        "🙂 ພໍໄດ້": 2,
+        "⏭️ ບໍ່ໄດ້ຫຼິ້ນ/ເບິ່ງ": 1
+      }
+    },
+    "responses": {
+      "310734168004755456": {
+        "name": "optimumbai",
+        "at": "2026-11-20T16:08:26.397Z",
+        "answers": {
+          "overall": "5",
+          "again": "yes",
+          "recommend": "maybe",
+          "source": "fb",
+          "reg": "easy",
+          "info": "clear",
+          "notify": "ok",
+          "code": "easy",
+          "length": "ok",
+          "time": "ok",
+          "weapon": "all",
+          "format": "mix",
+          "prize": "great",
+          "fee": "20k",
+          "freq": "any",
+          "showmatch": "fun"
+        },
+        "texts": {}
+      },
+      "1533745210910314598": {
+        "name": "Passobemsolto",
+        "at": "2026-11-20T16:09:56.115Z",
+        "answers": {
+          "overall": "4",
+          "again": "yes",
+          "recommend": "yes",
+          "source": "shop",
+          "reg": "easy",
+          "info": "clear",
+          "notify": "ok",
+          "code": "easy",
+          "length": "ok",
+          "time": "ok",
+          "weapon": "all",
+          "format": "5v5",
+          "prize": "ok",
+          "fee": "20k",
+          "freq": "any",
+          "showmatch": "fun"
+        },
+        "texts": {}
+      },
+      "1129062068323106836": {
+        "name": "Wet Dream",
+        "at": "2026-11-20T16:23:22.210Z",
+        "answers": {
+          "overall": "5",
+          "again": "yes",
+          "recommend": "yes",
+          "source": "friend",
+          "reg": "easy",
+          "info": "clear",
+          "notify": "ok",
+          "code": "easy",
+          "length": "long",
+          "time": "later",
+          "weapon": "all",
+          "format": "5v5",
+          "prize": "ok",
+          "fee": "50k",
+          "freq": "2week",
+          "showmatch": "fun"
+        },
+        "texts": {}
+      },
+      "1479742337633488896": {
+        "name": "thejuicetz",
+        "at": "2026-11-20T16:23:46.248Z",
+        "answers": {
+          "again": "maybe",
+          "recommend": "maybe",
+          "source": "fb",
+          "overall": "4",
+          "reg": "easy",
+          "info": "ok",
+          "notify": "ok",
+          "code": "ok",
+          "length": "short",
+          "time": "ok",
+          "weapon": "all",
+          "format": "mix",
+          "prize": "ok",
+          "fee": "20k",
+          "freq": "any",
+          "showmatch": "ok"
+        },
+        "texts": {
+          "best": "ມັກທີ່ຮ້ານເປີດໂອກາດໃຫ້ຄົນບໍ່ໄຟກັບມາມີໄຟກັນການເລ່ນເກມໆຫນຶ່ງ (ຂ້ອຍທີ່ເຄີຍບໍ່ມີໄຟໃນການວາໂລແຕ່ງານເຮັດໃຫ້ມີຄວາມມັນໃຈແລະໄຟທີ່ຢາກຈະຊະນະໃນເກມຕໍ່ໄປຂື້ນ) ແຕ່ອາດຈະບໍ່ແມ່ນທຸກຄົນເດີ້🫡",
+          "worst": "",
+          "improve": "",
+          "game": "",
+          "other": ""
+        }
+      },
+      "704985716505182298": {
+        "name": "Clayface Thailand",
+        "at": "2026-11-20T16:36:05.272Z",
+        "answers": {
+          "overall": "3",
+          "again": "maybe",
+          "recommend": "maybe",
+          "source": "fb",
+          "reg": "easy",
+          "info": "clear",
+          "notify": "many",
+          "code": "hard",
+          "length": "ok",
+          "time": "earlier",
+          "weapon": "mix",
+          "format": "mix",
+          "prize": "ok",
+          "fee": "20k",
+          "freq": "any",
+          "showmatch": "ok"
+        },
+        "texts": {}
+      },
+      "590446600401321984": {
+        "name": "PG Nanz",
+        "at": "2026-11-20T18:55:34.105Z",
+        "answers": {
+          "overall": "4",
+          "again": "maybe",
+          "recommend": "maybe",
+          "source": "fb",
+          "reg": "ok",
+          "info": "ok",
+          "notify": "ok",
+          "code": "ok",
+          "length": "ok",
+          "time": "ok",
+          "weapon": "rifle",
+          "format": "5v5",
+          "prize": "great",
+          "fee": "100k",
+          "freq": "month",
+          "showmatch": "fun"
+        },
+        "texts": {}
+      },
+      "446988988222275584": {
+        "name": "chibai",
+        "at": "2026-11-20T19:24:19.175Z",
+        "answers": {
+          "overall": "5",
+          "again": "yes",
+          "recommend": "maybe",
+          "source": "fb",
+          "reg": "easy",
+          "info": "clear",
+          "notify": "ok",
+          "code": "easy",
+          "length": "ok",
+          "time": "ok",
+          "weapon": "all",
+          "format": "1v1",
+          "prize": "ok",
+          "fee": "20k",
+          "freq": "week",
+          "showmatch": "skip"
+        },
+        "texts": {}
+      }
+    }
+  }
+}
